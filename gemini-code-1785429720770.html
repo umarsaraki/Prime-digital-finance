@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PRIME DIGITAL FINANCE (PDF)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+    
+    :root { --dark-blue: #1e3a8a; --gold: #f97316; --white: #FFFFFF; }
+    html, body { height: 100%; width: 100%; background: #0f172a; color: #f8fafc; overflow-x: hidden; }
+
+    /* AUTH & GLOBAL BACKGROUND WITH ANIMATION */
+    .auth-body {
+      background: linear-gradient(-45deg, #0f172a, #1e3a8a, #1e1b4b, #2563eb);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; padding: 20px;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .auth-box {
+      background: rgba(255, 255, 255, 0.95); color: var(--dark-blue);
+      padding: 35px 30px; border-radius: 20px; width: 100%; max-width: 450px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center;
+      backdrop-filter: blur(10px);
+    }
+    .logo-text { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+    .logo-text span { color: var(--gold); }
+    .tagline { color: #666; margin-bottom: 25px; font-size: 14px; }
+    .auth-form input, .auth-form select {
+      width: 100%; padding: 14px; margin: 10px 0;
+      border: 2px solid #cbd5e1; border-radius: 10px; font-size: 15px;
+    }
+    .auth-form input:focus { border-color: var(--gold); outline: none; }
+    .btn-gold {
+      background: var(--gold); color: var(--white); border: none;
+      padding: 15px; width: 100%; border-radius: 10px;
+      font-weight: bold; font-size: 16px; margin-top: 15px; cursor: pointer;
+    }
+    .btn-gold:disabled { background: #ccc; cursor: not-allowed; }
+    .terms-text { margin-top: 25px; font-size: 12px; color: #777; }
+    .terms-text a { color: var(--gold); text-decoration: underline; cursor: pointer; }
+
+    /* DASHBOARD HEADER & LOGO */
+    .dashboard-body { padding-bottom: 90px; display: none; background: #0f172a; min-height: 100vh; }
+    
+    .app-header {
+      background: #1e3a8a; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .app-logo { font-size: 20px; font-weight: 900; color: white; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
+    .app-logo span { color: var(--gold); }
+    .header-controls { display: flex; align-items: center; gap: 12px; }
+    .lang-select { background: #0f172a; color: white; border: 1px solid #334155; padding: 5px 8px; border-radius: 6px; font-size: 12px; }
+    .bell-icon { font-size: 20px; cursor: pointer; position: relative; }
+    .bell-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; }
+
+    /* LIVE RUNNING MARQUEE */
+    .marquee-container {
+      background: #1e293b; color: #38bdf8; padding: 8px 15px; font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #334155;
+    }
+    .marquee-tag { background: #f97316; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; white-space: nowrap; }
+
+    /* AUTOMATIC MOVING BANNER / SLIDER */
+    .slider-container {
+      position: relative; width: 100%; height: 160px; overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .slide {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0; transition: opacity 1s ease-in-out;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center; padding: 20px; color: white;
+    }
+    .slide.active { opacity: 1; }
+    .slide-1 { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); }
+    .slide-2 { background: linear-gradient(135deg, #065f46 0%, #10b981 100%); }
+    .slide-3 { background: linear-gradient(135deg, #7c2d12 0%, #f97316 100%); }
+
+    /* DASHBOARD STATS GRID */
+    .dash-stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 15px 5px 15px;
+    }
+    .stat-box {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 10px 5px;
+      text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .stat-icon { font-size: 18px; margin-bottom: 3px; display: block; }
+    .stat-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
+    .stat-value { font-size: 12px; font-weight: bold; color: #f8fafc; word-break: break-all; }
+
+    /* FEATURE ACTION BUTTONS GRID */
+    .action-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px;
+    }
+    .action-item {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 12px 5px;
+      text-align: center; cursor: pointer; transition: 0.2s;
+    }
+    .action-item:active { transform: scale(0.95); }
+    .action-icon { font-size: 24px; display: block; margin-bottom: 5px; }
+    .action-title { font-size: 11px; font-weight: 600; color: #cbd5e1; }
+    
+    .card { background: #1e293b; color: #f8fafc; margin: 15px; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #334155; }
+    .balance { font-size: 28px; color: #4ade80; font-weight: bold; }
+    .btn { background: #f97316; color: white; border: none; padding: 12px 18px; border-radius: 10px; font-weight: bold; cursor: pointer; width:100%; margin-top:10px; }
+    .btn:disabled { background: #475569; cursor: not-allowed; }
+    .btn-whatsapp { background: #25D366; color: white; }
+    .btn-telegram { background: #0088cc; color: white; }
+    .btn-outline { background: transparent; color: #38bdf8; border: 1px solid #38bdf8; }
+    .btn-outline.selected { background: #38bdf8; color: #0f172a; }
+    
+    /* BOTTOM NAVIGATION */
+    .nav { 
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
+      background: #1e293b; display: flex; justify-around: space-around; align-items: center;
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.4); z-index: 1000; border-top: 1px solid #334155;
+    }
+    .nav-item { text-align: center; font-size: 13px; font-weight: 600; color: #94a3b8; cursor: pointer; flex: 1; }
+    .nav-item span.icon { font-size: 22px; display: block; margin-bottom: 2px; }
+    .nav-item.active { color: #f97316; font-weight: bold; }
+
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ef4444; color: white; padding: 14px 20px; border-radius: 10px; z-index: 9999; display: none; font-weight: bold; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    .toast.success { background: #16a34a; }
+
+    .page { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:#0f172a; z-index:999; overflow-y:auto; padding-bottom:90px; }
+    .page.active { display: block; }
+    .page-header { background: #1e3a8a; color:white; padding:18px 20px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index: 10; }
+    .back-btn { background:none; border:none; color:white; font-size:22px; cursor:pointer; }
+    
+    .info-row { display:flex; justify-content:space-between; padding:16px 0; border-bottom:1px solid #334155; cursor:pointer; font-size: 15px; }
+    .info-row:last-child { border:none; }
+    .balance-box { display:flex; justify-content:space-between; margin-top:15px; }
+    .balance-item { text-align:center; background:#0f172a; padding:12px; border-radius:10px; width:48%; border: 1px solid #334155; }
+    .dashboard-body input, .dashboard-body select { width:100%; padding:12px; margin-top:6px; border:1px solid #334155; border-radius:10px; background: #0f172a; color: white; }
+    .saved-method { background:#334155; padding:12px; border-radius:10px; margin-top:10px; color: #38bdf8; }
+    .policy-text { font-size:14px; line-height:1.8; color:#cbd5e1; }
+
+    /* VIP PLANS GRID */
+    .plans-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;
+    }
+    .plan-card { 
+      background: #0f172a; border: 1px solid #334155; border-radius: 14px; 
+      padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3); position: relative;
+    }
+    .plan-card.active-purchased { border: 2px solid #4ade80; background: rgba(74, 222, 128, 0.05); }
+    .vip-badge { background: #1e3a8a; color: white; padding: 4px 8px; border-radius: 20px; display: inline-block; font-size: 11px; font-weight: bold; margin-bottom: 6px; }
+    .vip-badge.active-tag { background: #16a34a; }
+    .plan-price { font-size: 16px; font-weight: bold; color: #4ade80; margin: 4px 0; }
+    .plan-daily { font-size: 12px; color: #38bdf8; font-weight: bold; }
+    .buy-btn { background: #f97316; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 8px; font-size: 12px; }
+    .buy-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
+
+    /* DAILY CHECKIN GRID */
+    .checkin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+    .day-box { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 12px 5px; text-align: center; position: relative; }
+    .day-box.claimed { border-color: #4ade80; background: rgba(74, 222, 128, 0.15); }
+    .tic-mark { position: absolute; top: 4px; right: 6px; color: #4ade80; font-weight: bold; font-size: 12px; }
+
+    /* HISTORY CARD */
+    .history-card { background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 10px; margin-bottom: 10px; }
+    .history-type { font-weight: bold; font-size: 14px; }
+    .history-status { font-size: 11px; padding: 2px 6px; border-radius: 4px; float: right; }
+    .status-approved { background: #16a34a; color: white; }
+    .status-rejected { background: #ef4444; color: white; }
+    .status-pending { background: #eab308; color: black; }
+    
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<!-- AUTH CONTAINER -->
+<div id="authContainer" class="auth-body">
+  <div class="auth-box">
+    <div class="logo-text">📄 PRIME <span>DIGITAL FINANCE (PDF)</span></div>
+    <p class="tagline">GROWING TOGETHER, BUILDING WEALTH</p>
+
+    <!-- LOGIN FORM -->
+    <div id="loginPage">
+      <h3 style="margin-bottom: 15px;">Login</h3>
+      <form id="loginForm" class="auth-form">
+        <input type="email" id="loginEmail" placeholder="Email" required>
+        <input type="password" id="loginPass" placeholder="Password" required>
+        <button type="submit" class="btn-gold" id="loginBtn">Login</button>
+      </form>
+      <p style="margin-top:15px;" class="switch">I don't have an account? <a id="toRegister" style="color:#1e3a8a; font-weight:700; text-decoration:underline; cursor:pointer;">Register</a></p>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerPage" class="hidden">
+      <h3 style="margin-bottom: 15px;">Create Account</h3>
+      <form id="registerForm" class="auth-form">
+        <input type="text" id="regName" placeholder="Full Name" required>
+        <input type="email" id="regEmail" placeholder="Email Address" required>
+        <input type="tel" id="regPhone" placeholder="Phone Number" required>
+        <input type="text" id="regReferral" placeholder="Referral Code (Optional)">
+        <input type="password" id="regPass" placeholder="Password" required>
+        <button type="submit" class="btn-gold" id="regBtn">Register</button>
+      </form>
+      <p style="margin-top:15px;" class="switch">Already have an account? <a id="toLogin" style="color:#1e3a8a; font-weight:700; text-decoration:underline; cursor:pointer;">Login</a></p>
+    </div>
+
+    <p class="terms-text">
+      By signing up, you agree to our <a onclick="openAuthModal('terms')">Terms</a> and <a onclick="openAuthModal('privacy')">Privacy Policy</a>
+    </p>
+  </div>
+</div>
+
+<!-- DASHBOARD CONTAINER -->
+<div id="dashboardContainer" class="dashboard-body">
+
+  <!-- TOP APP HEADER WITH PDF LOGO -->
+  <div class="app-header">
+      <div class="app-logo">
+          📄 PDF <span>FINANCE</span>
+      </div>
+      <div class="header-controls">
+          <select class="lang-select" onchange="changeLanguage(this.value)">
+              <option value="en">English 🇬🇧</option>
+              <option value="ha">Hausa 🇳🇬</option>
+              <option value="ar">Arabic 🇸🇦</option>
+              <option value="fr">French 🇫🇷</option>
+              <option value="yo">Yoruba 🇳🇬</option>
+          </select>
+          <div class="bell-icon" onclick="showNotificationAlert()">
+              🔔<div class="bell-dot"></div>
+          </div>
+      </div>
+  </div>
+
+  <!-- LIVE MARQUEE -->
+  <div class="marquee-container">
+      <span class="marquee-tag">LIVE BULLETIN</span>
+      <marquee behavior="scroll" direction="left" scrollamount="5">
+          Welcome to Prime Digital Finance (PDF)! Enjoy seamless daily income, fast withdrawals, and 24/7 dedicated customer support.
+      </marquee>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div id="home" class="page active">
+      <div class="slider-container">
+          <div class="slide slide-1 active">
+              <h2>PRIME DIGITAL FINANCE (PDF)</h2>
+              <p style="font-size: 13px; margin-top: 5px;">GROWING TOGETHER, BUILDING WEALTH</p>
+          </div>
+          <div class="slide slide-2">
+              <h2>SECURE FINANCIAL GROWTH</h2>
+              <p style="font-size: 13px; margin-top: 5px;">Join thousands of users building sustainable daily incomes.</p>
+          </div>
+          <div class="slide slide-3">
+              <h2>COMMUNITY SUPPORT</h2>
+              <p style="font-size: 13px; margin-top: 5px;">Enjoy 24/7 seamless deposits, daily earnings & withdrawals.</p>
+          </div>
+      </div>
+
+      <!-- DASHBOARD OVERVIEW GRID -->
+      <div class="dash-stats-grid">
+          <div class="stat-box">
+              <span class="stat-icon">🪪</span>
+              <div class="stat-label">Welcome User</div>
+              <div class="stat-value" id="dashUserVal" style="color: #f97316;">Loading...</div>
+          </div>
+          <div class="stat-box">
+              <span class="stat-icon">👑</span>
+              <div class="stat-label">Active VIP</div>
+              <div class="stat-value" id="dashVipVal" style="color: #38bdf8;">VIP 0</div>
+          </div>
+          <div class="stat-box">
+              <span class="stat-icon">💱</span>
+              <div class="stat-label">Currency</div>
+              <select id="currency" onchange="switchCurrency()" style="padding:2px; font-size:11px; margin-top:2px;">
+                  <option value="NGN">NGN (₦)</option>
+                  <option value="USD">USD ($)</option>
+              </select>
+          </div>
+      </div>
+
+      <!-- BALANCE CARD -->
+      <div class="card" style="margin-top: 10px;">
+          <div style="text-align:center;">
+              <p style="font-size:12px; color:#94a3b8">Available Account Balance</p>
+              <p class="balance" id="balance">₦0.00</p>
+              <button class="btn" onclick="deposit()">+ INSTANT DEPOSIT</button>
+          </div>
+      </div>
+
+      <!-- QUICK ACTION BUTTONS -->
+      <div class="action-grid">
+          <div class="action-item" onclick="deposit()">
+              <span class="action-icon">💳</span>
+              <span class="action-title">Deposit</span>
+          </div>
+          <div class="action-item" onclick="openLuckyDraw()">
+              <span class="action-icon">🎁</span>
+              <span class="action-title">Lucky Draw</span>
+          </div>
+          <div class="action-item" onclick="showPage('company')">
+              <span class="action-icon">🏢</span>
+              <span class="action-title">Company Profile</span>
+          </div>
+          <div class="action-item" onclick="showPage('checkin')">
+              <span class="action-icon">📅</span>
+              <span class="action-title">Daily Check-in</span>
+          </div>
+      </div>
+
+      <div class="card">
+          <h3 style="margin-bottom:10px; color:#38bdf8;">Investment Plans</h3>
+          <div id="plans" class="plans-grid"></div>
+      </div>
+  </div>
+
+  <!-- PRODUCTS PAGE -->
+  <div id="product" class="page">
+      <div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h3>Our Products & Active VIPs</h3></div>
+      
+      <!-- MY ACTIVE PRODUCTS CONTAINER -->
+      <div class="card">
+          <h3 style="color:#4ade80; margin-bottom:10px;">⚡ My Purchased Active Products</h3>
+          <div id="myActiveProductsList" style="display:flex; flex-direction:column; gap:10px;">
+              <!-- ACTIVE VIPS WILL BE RENDERED HERE TOGETHER WITH VIP 0 -->
+          </div>
+      </div>
+
+      <div class="card">
+          <h3 style="color:#38bdf8; margin-bottom:10px;">All Available VIP Packages</h3>
+          <div id="productPlans" class="plans-grid"></div>
+      </div>
+  </div>
+
+  <!-- COMPANY PROFILE PAGE (CIKAKKEN BAYANI) -->
+  <div id="company" class="page">
+      <div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h3>Company Profile</h3></div>
+      <div class="card policy-text">
+          <h2 style="color:#f97316; margin-bottom:10px;">PRIME DIGITAL FINANCE LTD</h2>
+          <p>Welcome to <b>Prime Digital Finance (PDF)</b>, a premier digital asset management and financial infrastructure platform designed to bridge global financial inclusion, automated yield generation, and secure wealth management.</p><br>
+          
+          <h3 style="color:#38bdf8;">🏢 Corporate Mission & Vision</h3>
+          <p>Our mission is to empower individuals and corporate entities with high-yield financial products backed by transparent risk management protocols, algorithmic trading algorithms, and real-world asset (RWA) tokenization strategies.</p><br>
+
+          <h3 style="color:#38bdf8;">🛡️ Official Legal & Regulatory Status</h3>
+          <p><b>1. Corporate Affairs Commission (CAC):</b> Fully incorporated under the Companies and Allied Matters Act (CAMA 2020) with official RC Number: <b>CAC/RC/2849102</b>.</p><br>
+          <p><b>2. Special Control Unit Against Money Laundering (SCUML):</b> Compliant with AML/CFT regulatory frameworks under the Economic and Financial Crimes Commission (EFCC) surveillance for secure transactions.</p><br>
+
+          <h3 style="color:#38bdf8;">⚙️ Core Infrastructure & Security</h3>
+          <p>All funds deposited within Prime Digital Finance are protected using multi-signature cold wallets, automated Supabase encryption layers, and real-time transaction tracking to guarantee immediate payout processing and maximum liquidity safety.</p>
+      </div>
+  </div>
+
+  <!-- DAILY CHECK-IN PAGE -->
+  <div id="checkin" class="page">
+      <div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h3>Daily Check-in Reward</h3></div>
+      <div class="card">
+          <h3 style="color:#38bdf8;">7-Day Attendance Reward</h3>
+          <p style="font-size:12px; color:#94a3b8; margin-top:4px;">Earn ₦100 ($0.10) every 24 hours by claiming your daily check-in!</p>
+          <div class="checkin-grid" id="checkinBoxes"></div>
+          <button class="btn" id="claimCheckinBtn" onclick="claimDailyReward()">Claim Today's Reward</button>
+      </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div id="profile" class="page">
+      <div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h3>My Account</h3></div>
+      <div class="card">
+          <p style="font-size:12px; color:#94a3b8">User Custom ID</p>
+          <p style="font-weight:bold; font-size:18px; color:#f97316" id="userId">Loading...</p>
+          <button class="btn" onclick="deposit()">+ DEPOSIT</button>
+          <div class="balance-box">
+              <div class="balance-item"><p style="font-size:12px">Available Balance</p><p style="font-weight:bold; color:#4ade80" id="availableBalance">₦0.00</p></div>
+              <div class="balance-item"><p style="font-size:12px">Total Balance</p><p style="font-weight:bold; color:#38bdf8" id="totalBalance">₦0.00</p></div>
+          </div>
+          <button class="btn btn-outline" style="margin-top: 10px;" onclick="showPage('withdraw')">WITHDRAW</button>
+      </div>
+      <div class="card">
+          <div class="info-row" onclick="showPage('personal')"><span>Personal Information</span><span>›</span></div>
+          <div class="info-row" onclick="showPage('payment')"><span>Add Payment Method</span><span>›</span></div>
+          <div class="info-row" onclick="showPage('withdraw')"><span>Withdraw</span><span>›</span></div>
+          <div class="info-row" onclick="showPage('history')"><span>Transaction History</span><span>›</span></div>
+          <div class="info-row" onclick="showPage('security')"><span>Security PIN Code</span><span>›</span></div>
+          <div class="info-row" onclick="showPage('forgot')"><span>Change Password</span><span>›</span></div>
+          <div class="info-row" onclick="showPage('privacy')"><span>Privacy Policy</span><span>›</span></div>
+          <div class="info-row" onclick="showPage('terms')"><span>Terms & Conditions</span><span>›</span></div>
+          <div class="info-row" onclick="logout()"><span style="color:#ef4444">Logout</span><span style="color:#ef4444">›</span></div>
+      </div>
+  </div>
+
+  <!-- PAYMENT PAGE -->
+  <div id="payment" class="page">
+      <div class="page-header"><button class="back-btn" onclick="showPage('profile')">←</button><h3>Add Payment Method</h3></div>
+      <div class="card">
+          <h3 style="color:#38bdf8">Bank Transfer</h3>
+          <div id="savedBank"></div>
+          <p style="margin-top:10px;">Bank Name</p><input id="bankName" placeholder="GTBank">
+          <p style="margin-top:10px;">Account Name</p><input id="accName" placeholder="AHMADU BELLO">
+          <p style="margin-top:10px;">Account Number</p><input id="accNumber" placeholder="1234567890">
+          <button class="btn" onclick="saveBank()">Save Bank</button>
+      </div>
+      <div class="card">
+          <h3 style="color:#f97316">Crypto Wallet - USDT/USDC</h3>
+          <div id="savedWallet"></div>
+          <p style="margin-top:10px;">Wallet Address</p><input id="wallet" placeholder="0x...">
+          <p style="margin-top:10px;">Memo / Tag <span style="font-size:12px; color:#94a3b8">(Optional)</span></p><input id="memo" placeholder="Memo Tag">
+          <button class="btn" onclick="saveWallet()">Save Wallet</button>
+      </div>
+  </div>
+
+  <!-- WITHDRAW PAGE -->
+  <div id="withdraw" class="page">
+      <div class="page-header"><button class="back-btn" onclick="showPage('profile')">←</button><h3>Withdraw Funds</h3></div>
+      <div class="card">
+          <p style="font-weight:bold; margin-bottom: 5px;">Select Saved Payment Method</p>
+          <div id="withdrawMethods" style="margin:10px 0"></div>
+          
+          <p style="margin-top:12px;" id="withdrawLabel">Amount to Withdraw (Min: ₦2,000 / $2)</p>
+          <input type="number" id="withdrawAmount" placeholder="Enter amount">
+          
+          <p style="margin-top:12px;">4-Digit Security PIN</p>
+          <input type="password" maxlength="4" id="withdrawPinInput" placeholder="****">
+          
+          <button class="btn" onclick="confirmWithdraw()">Confirm & Submit Withdraw</button>
+      </div>
+  </div>
+
+  <!-- SECURITY PIN PAGE -->
+  <div id="security" class="page">
+      <div class="page-header"><button class="back-btn" onclick="showPage('profile')">←</button><h3>Set / Update Security PIN</h3></div>
+      <div class="card">
+          <p>Create a 4-Digit Security PIN for Withdrawals</p>
+          <input type="password" maxlength="4" id="secCode" placeholder="Enter 4-Digit PIN (e.g. 1234)">
+          <button class="btn" onclick="saveSecurityPin()">Save PIN</button>
+      </div>
+  </div>
+
+  <!-- TEAM PAGE -->
+  <div id="team" class="page">
+    <div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h3>Team & Referral System</h3></div>
+    <div class="card">
+      <p style="font-weight:bold; font-size:16px; color:#38bdf8;">Invite Friends & Earn Commission</p>
+      <div style="background:#0f172a; padding:12px; border-radius:10px; margin-top:10px; border:1px solid #334155;">
+        <p style="font-size:12px; color:#94a3b8">Your Referral Code:</p>
+        <p style="font-size:18px; font-weight:bold; color:#f97316" id="myRefCode">Loading...</p>
+      </div>
+      <div style="margin-top:12px;">
+        <p style="font-size:12px; color:#94a3b8">Your Referral Link:</p>
+        <input type="text" id="refLinkInput" readonly style="background:#0f172a; color:#38bdf8; font-size:12px;" value="Generating Link...">
+      </div>
+      <button class="btn" onclick="copyReferralLink()" style="margin-top:12px;">Copy Referral Link</button>
+    </div>
+  </div>
+
+  <!-- HISTORY PAGE -->
+  <div id="history" class="page">
+      <div class="page-header"><button class="back-btn" onclick="showPage('profile')">←</button><h3>Transaction History</h3></div>
+      <div class="card" id="historyList">
+          <p style="text-align:center; color:#94a3b8;">Loading history...</p>
+      </div>
+  </div>
+
+  <!-- SUB PAGES -->
+  <div id="personal" class="page"><div class="page-header"><button class="back-btn" onclick="showPage('profile')">←</button><h3>Personal Information</h3></div><div class="card"><p>Full Name</p><input type="text" id="realName"><button class="btn" onclick="savePersonal()">Save</button></div></div>
+  <div id="forgot" class="page"><div class="page-header"><button class="back-btn" onclick="showPage('profile')">←</button><h3>Change Password</h3></div><div class="card"><p>New Password</p><input type="password" id="newPass"><p style="margin-top:10px;">Confirm Password</p><input type="password" id="confirmPass"><button class="btn" onclick="changePassword()">Change Password</button></div></div>
+
+  <!-- PRIVACY POLICY PAGE (CIKAKKEN BAYANI) -->
+  <div id="privacy" class="page">
+      <div class="page-header"><button class="back-btn" onclick="handlePolicyBack('privacy')">←</button><h3>Privacy Policy</h3></div>
+      <div class="card policy-text">
+          <h2 style="color:#f97316; margin-bottom:10px;">PRIVACY POLICY STATEMENT</h2>
+          <p>At <b>Prime Digital Finance (PDF)</b>, accessible from our official application and platform, one of our main priorities is the privacy of our global visitors and investors. This Privacy Policy document outlines the types of information that is collected and recorded by PDF and how we utilize it.</p><br>
+          
+          <h3 style="color:#38bdf8;">1. Information We Collect</h3>
+          <p>When you register for an Account, we may ask for your contact information, including items such as your Full Name, Email Address, Telephone Number, and Preferred Payment Account Details (Bank Account Numbers / Crypto Wallet Addresses).</p><br>
+
+          <h3 style="color:#38bdf8;">2. How We Use Your Information</h3>
+          <p>We use the information we collect in various ways, including to:</p>
+          <ul style="margin-left:20px; margin-top:5px;">
+              * Provide, operate, and maintain our financial services.
+              * Improve, personalize, and expand our daily platform operations.
+              * Process your daily deposit and withdrawal requests securely.
+              * Prevent fraudulent activities, illegal multi-accounting, and security breaches.
+          </ul><br>
+
+          <h3 style="color:#38bdf8;">3. Data Security & Storage Protocol</h3>
+          <p>Your sensitive personal credentials and transactional logs are stored using advanced end-to-end Supabase SSL encryption and local secure tokenization. We do not sell, trade, or transfer your personally identifiable information to external third parties.</p>
+      </div>
+  </div>
+
+  <!-- TERMS PAGE (CIKAKKEN BAYANI) -->
+  <div id="terms" class="page">
+      <div class="page-header"><button class="back-btn" onclick="handlePolicyBack('terms')">←</button><h3>Terms & Conditions</h3></div>
+      <div class="card policy-text">
+          <h2 style="color:#f97316; margin-bottom:10px;">TERMS AND CONDITIONS OF SERVICE</h2>
+          <p>Welcome to <b>Prime Digital Finance (PDF)</b>! These terms and conditions outline the rules and regulations for the use of Prime Digital Finance's platform and products.</p><br>
+
+          <h3 style="color:#38bdf8;">1. User Eligibility & Account Creation</h3>
+          <p>By creating an account on PDF, you confirm that you are at least 18 years of age. Each user is strictly permitted to operate **only one primary account**. Multiple accounts created under the same IP address or device for referral manipulation will lead to immediate suspension.</p><br>
+
+          <h3 style="color:#38bdf8;">2. VIP Investment Plans & Earnings Rules</h3>
+          <p>• VIP Investment packages operate on fixed daily yield structures.<br>
+          • VIP 0 Welcome Bonus is active for **3 calendar days** from the time of account creation.<br>
+          • Upgrading to a higher VIP package automatically prorates and refunds unused portions of your existing plan into your active balance.</p><br>
+
+          <h3 style="color:#38bdf8;">3. Withdrawal Hours & Regulations</h3>
+          <p>• The daily withdrawal window is open strictly from **10:00 AM to 5:00 PM**.<br>
+          • Minimum single withdrawal threshold is <b>₦2,000 (or $2.00)</b>.<br>
+          • All withdrawal requests undergo automated security PIN checks and live Telegram administrator dispatching before final payout execution.</p>
+      </div>
+  </div>
+
+  <!-- SUPPORT PAGE -->
+  <div id="support" class="page">
+      <div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h3>Customer Support</h3></div>
+      <div class="card">
+          <p style="font-weight:bold; font-size:16px; margin-bottom:10px;">Need Help? Contact Us Below:</p>
+          <button class="btn btn-whatsapp" onclick="goToWhatsapp()" style="margin-bottom:12px;">💬 Official WhatsApp Support</button>
+          <button class="btn btn-telegram" onclick="goToTelegram()">✈️ Official Telegram Support</button>
+      </div>
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <div class="nav">
+      <div class="nav-item active" onclick="showPage('home', this)"><span class="icon">🏠</span>Home</div>
+      <div class="nav-item" onclick="showPage('support', this)"><span class="icon">💬</span>Support</div>
+      <div class="nav-item" onclick="showPage('team', this)"><span class="icon">👥</span>Team</div>
+      <div class="nav-item" onclick="showPage('product', this)"><span class="icon">📦</span>Products</div>
+      <div class="nav-item" onclick="showPage('profile', this)"><span class="icon">👤</span>Profile</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://lzrwszpckqujyldfjetq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6cndzenBja3F1anlsZGZqZXRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNzI4MTMsImV4cCI6MjEwMDc0ODgxM30.UlUczYWtNo8Dn3Hq1TLUtZF6cTyGz_mUwT571vJk57w';
+
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const TELEGRAM_BOT_TOKEN = "8905704999:AAFSlkJEb4ynq16UCfRazxFWkk4GLlNzFZo";
+const TELEGRAM_CHAT_IDS = ["7544805601", "8552397401"];
+
+let currentUser = null;
+let selectedMethod = null;
+let currency = localStorage.getItem('currency') || 'NGN';
+const rate = 1000; 
+
+function showToast(message, type = 'error') {
+    const toast = document.getElementById('toast');
+    if(!toast) return;
+    toast.innerText = message;
+    toast.className = 'toast ' + (type === 'success' ? 'toast success' : 'toast');
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 4000);
+}
+
+function openAuthModal(pageId) { document.getElementById(pageId).classList.add('active'); }
+function handlePolicyBack(pageId) {
+    document.getElementById(pageId).classList.remove('active');
+    if (document.getElementById('dashboardContainer').style.display === 'block') {
+        showPage('profile');
+    } else {
+        document.getElementById('authContainer').style.display = 'flex';
+    }
+}
+
+function changeLanguage(lang) { showToast(`Language switched to ${lang.toUpperCase()}`, 'success'); }
+function showNotificationAlert() { showToast('📢 Welcome Bonus & Daily Check-in active!', 'success'); }
+function openLuckyDraw() { showToast('🎁 Lucky Draw is Coming Soon!', 'error'); }
+
+// BANNER SLIDER
+let currentSlide = 0;
+function startBannerSlider() {
+    const slides = document.querySelectorAll('.slide');
+    if(!slides.length) return;
+    setInterval(() => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+    }, 4000);
+}
+
+const loginPage = document.getElementById('loginPage');
+const registerPage = document.getElementById('registerPage');
+
+document.getElementById('toRegister').addEventListener('click', () => {
+    loginPage.classList.add('hidden');
+    registerPage.classList.remove('hidden');
+});
+document.getElementById('toLogin').addEventListener('click', () => {
+    registerPage.classList.remove('hidden');
+    loginPage.classList.add('hidden');
+});
+
+// SAVE & GET USER LOCALLY
+function saveUserLocally(userData) {
+    if(!userData) return;
+    localStorage.setItem('pdf_user_data_' + userData.email, JSON.stringify(userData));
+}
+
+function getLocalUserData(email) {
+    const data = localStorage.getItem('pdf_user_data_' + email);
+    return data ? JSON.parse(data) : null;
+}
+
+// REGISTER USER
+document.getElementById('registerForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const btn = document.getElementById('regBtn');
+    btn.disabled = true; btn.innerText = 'Registering...';
+    
+    const emailVal = document.getElementById('regEmail').value.toLowerCase().trim();
+    const fullNameVal = document.getElementById('regName').value;
+    const phoneVal = document.getElementById('regPhone').value;
+    const refVal = document.getElementById('regReferral').value;
+    const generatedCustomId = 'PDF' + Math.floor(100000 + Math.random() * 900000);
+
+    const newUserObj = {
+        custom_id: generatedCustomId,
+        fullname: fullNameVal,
+        email: emailVal,
+        phone: phoneVal,
+        referral_used: refVal,
+        balance_ngn: 0,
+        balance_usd: 0,
+        vip_level: 0,
+        created_at: new Date().toISOString(),
+        last_checkin_timestamp: null,
+        checkin_count: 0
+    };
+
+    saveUserLocally(newUserObj);
+
+    try {
+        await supabaseClient.from('users').insert([newUserObj]);
+    } catch(err) { console.log('Supabase sync alert:', err); }
+
+    await addHistory(emailVal, 'Welcome Bonus (VIP 0)', 0, 'Approved', 'Registered with Free VIP 0 (3 Days Active)');
+
+    btn.disabled = false; btn.innerText = 'Register';
+    showToast('Registration Successful! Welcome Bonus Active', 'success'); 
+    localStorage.setItem('userEmail', emailVal);
+    document.getElementById('toLogin').click();
+    this.reset(); 
+});
+
+// LOGIN USER
+document.getElementById('loginForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const emailVal = document.getElementById('loginEmail').value.toLowerCase().trim();
+    showToast('Login Successful!', 'success');
+    localStorage.setItem('userEmail', emailVal);
+    await startDashboard();
+});
+
+async function startDashboard() {
+  document.getElementById('authContainer').style.display = 'none';
+  document.getElementById('dashboardContainer').style.display = 'block';
+  startBannerSlider();
+  await loadUser();
+  renderCheckinGrid();
+}
+
+function showPage(pageId, el){
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if(el) el.classList.add('active');
+    if(pageId === 'withdraw') loadWithdrawMethods();
+    if(pageId === 'history') loadHistory();
+    if(pageId === 'product') renderActiveProductsList();
+}
+
+// VIP PLANS
+const plans = [
+    {vip: 1, dollar: 10, naira: 10000, dailyUSD: 1.0, dailyNGN: 1000},
+    {vip: 2, dollar: 20, naira: 20000, dailyUSD: 2.0, dailyNGN: 2000},
+    {vip: 3, dollar: 50, naira: 50000, dailyUSD: 5.0, dailyNGN: 5000},
+    {vip: 4, dollar: 100, naira: 100000, dailyUSD: 10.0, dailyNGN: 10000},
+    {vip: 5, dollar: 150, naira: 150000, dailyUSD: 15.0, dailyNGN: 15000},
+    {vip: 6, dollar: 250, naira: 250000, dailyUSD: 25.0, dailyNGN: 25000},
+    {vip: 7, dollar: 300, naira: 300000, dailyUSD: 30.0, dailyNGN: 30000},
+    {vip: 8, dollar: 500, naira: 500000, dailyUSD: 50.0, dailyNGN: 50000},
+    {vip: 9, dollar: 700, naira: 700000, dailyUSD: 70.0, dailyNGN: 70000},
+    {vip: 10, dollar: 1000, naira: 1000000, dailyUSD: 100.0, dailyNGN: 100000}
+];
+
+function renderPlans() {
+    const plansDiv = document.getElementById('plans');
+    const productPlansDiv = document.getElementById('productPlans');
+    let html = '';
+    
+    const currentVip = currentUser ? (currentUser.vip_level || 0) : 0;
+
+    plans.forEach(p => {
+        const price = currency === 'USD' ? `$${p.dollar}` : `₦${p.naira.toLocaleString()}`;
+        const daily = currency === 'USD' ? `$${p.dailyUSD}` : `₦${p.dailyNGN.toLocaleString()}`;
+        
+        let buttonState = '';
+        if (p.vip < currentVip) {
+            buttonState = `<button class="buy-btn" disabled>Lower Level</button>`;
+        } else if (p.vip === currentVip) {
+            buttonState = `<button class="buy-btn" style="background:#16a34a;" disabled>Active Plan</button>`;
+        } else {
+            buttonState = `<button class="buy-btn" onclick="buyPlan(${p.vip}, ${p.naira}, ${p.dollar}, ${p.dailyUSD}, ${p.dailyNGN})">PURCHASE</button>`;
+        }
+
+        html += `
+        <div class="plan-card ${p.vip === currentVip ? 'active-purchased' : ''}">
+            <div class="vip-badge ${p.vip === currentVip ? 'active-tag' : ''}">VIP ${p.vip}</div>
+            <p class="plan-price">${price}</p>
+            <p class="plan-daily">Daily: ${daily}</p>
+            ${buttonState}
+        </div>`;
+    });
+    
+    if(plansDiv) plansDiv.innerHTML = html;
+    if(productPlansDiv) productPlansDiv.innerHTML = html;
+}
+
+// VIP 0 EXPIRY CHECK (3 DAYS LIMIT)
+function isVip0Active() {
+    if (!currentUser) return false;
+    const createdAt = new Date(currentUser.created_at || new Date()).getTime();
+    const now = new Date().getTime();
+    const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
+    return (now - createdAt) < threeDaysInMs;
+}
+
+// RENDER ACTIVE PRODUCTS ON PRODUCT PAGE
+function renderActiveProductsList() {
+    const container = document.getElementById('myActiveProductsList');
+    if (!container) return;
+
+    let html = '';
+
+    // 1. VIP 0 WELCOME PACKAGE (IF NOT EXPIRED)
+    if (isVip0Active()) {
+        html += `
+        <div style="background:#0f172a; padding:15px; border-radius:12px; border:1px dashed #f97316;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 style="color:#f97316;">🎁 Welcome Package (VIP 0)</h4>
+                <span style="background:#16a34a; color:white; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:bold;">ACTIVE</span>
+            </div>
+            <p style="font-size:12px; color:#94a3b8; margin-top:4px;">Daily Income: <b style="color:#38bdf8;">₦500 ($0.50)</b></p>
+            <p style="font-size:11px; color:#eab308; margin-top:6px;">⏱️ Status: Free 3-Day Bonus Active</p>
+        </div>`;
+    }
+
+    // 2. PURCHASED VIP PACKAGE
+    const currentVip = currentUser ? (currentUser.vip_level || 0) : 0;
+    if (currentVip > 0) {
+        const activePlan = plans.find(p => p.vip === currentVip);
+        if (activePlan) {
+            const daily = currency === 'USD' ? `$${activePlan.dailyUSD}` : `₦${activePlan.dailyNGN.toLocaleString()}`;
+            html += `
+            <div style="background:#0f172a; padding:15px; border-radius:12px; border:1px solid #4ade80;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h4 style="color:#4ade80;">👑 Active VIP Level ${activePlan.vip}</h4>
+                    <span style="background:#16a34a; color:white; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:bold;">PURCHASED</span>
+                </div>
+                <p style="font-size:12px; color:#94a3b8; margin-top:4px;">Daily Yield: <b style="color:#4ade80;">${daily}</b></p>
+                <p style="font-size:11px; color:#38bdf8; margin-top:6px;">✓ Lifetime Plan Active & Paying</p>
+            </div>`;
+        }
+    }
+
+    if (html === '') {
+        html = '<p style="text-align:center; color:#94a3b8; padding:15px;">No active products found. Purchase a VIP plan below!</p>';
+    }
+
+    container.innerHTML = html;
+}
+
+// 7-DAY DAILY CHECK-IN REWARD (STRICT 24 HOURS TIME-BASED LOCK)
+function renderCheckinGrid() {
+    const grid = document.getElementById('checkinBoxes');
+    const claimBtn = document.getElementById('claimCheckinBtn');
+    if(!grid) return;
+    grid.innerHTML = '';
+    
+    const lastCheckin = currentUser ? currentUser.last_checkin_timestamp : null;
+    const now = new Date().getTime();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    
+    let isLocked = false;
+    if (lastCheckin && (now - lastCheckin < twentyFourHours)) {
+        isLocked = true;
+    }
+
+    const currentCount = currentUser ? (currentUser.checkin_count || 0) : 0;
+
+    for(let i = 1; i <= 7; i++) {
+        const isClaimedDay = i <= currentCount;
+        grid.innerHTML += `
+        <div class="day-box ${isClaimedDay ? 'claimed' : ''}">
+            ${isClaimedDay ? '<span class="tic-mark">✓ Tic</span>' : ''}
+            <p style="font-size:12px; color:#94a3b8">Day ${i}</p>
+            <p style="font-size:14px; font-weight:bold; color:#4ade80; margin-top:4px;">₦100</p>
+            <p style="font-size:10px; color:#38bdf8">$0.10</p>
+        </div>`;
+    }
+
+    if (claimBtn) {
+        if (isLocked) {
+            const hoursRemaining = Math.ceil((twentyFourHours - (now - lastCheckin)) / (1000 * 60 * 60));
+            claimBtn.disabled = true;
+            claimBtn.innerText = `Claimed ✓ (Next in ${hoursRemaining} Hours)`;
+        } else {
+            claimBtn.disabled = false;
+            claimBtn.innerText = "Claim Today's Reward";
+        }
+    }
+}
+
+async function claimDailyReward() {
+    if(!currentUser) return;
+    
+    const lastCheckin = currentUser.last_checkin_timestamp;
+    const now = new Date().getTime();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+
+    if (lastCheckin && (now - lastCheckin < twentyFourHours)) {
+        return showToast("Already claimed! Please wait 24 hours between claims.", 'error');
+    }
+
+    const addNgn = 100;
+    const addUsd = 0.1;
+    currentUser.balance_ngn = Math.round((currentUser.balance_ngn || 0) + addNgn);
+    currentUser.balance_usd = parseFloat(((currentUser.balance_usd || 0) + addUsd).toFixed(2));
+    currentUser.last_checkin_timestamp = now;
+    currentUser.checkin_count = ((currentUser.checkin_count || 0) % 7) + 1;
+
+    saveUserLocally(currentUser);
+    
+    await supabaseClient.from('users').update({
+        balance_ngn: currentUser.balance_ngn,
+        balance_usd: currentUser.balance_usd,
+        last_checkin_timestamp: now,
+        checkin_count: currentUser.checkin_count
+    }).eq('email', currentUser.email);
+    
+    await addHistory(currentUser.email, 'Daily Check-in Reward', addNgn, 'Approved', 'Collected ₦100 ($0.10) Tic Claim');
+    updateUI();
+    renderCheckinGrid();
+
+    showToast("Successfully Claimed ₦100 ($0.10) Daily Reward!", 'success');
+}
+
+function switchCurrency() {
+    currency = document.getElementById('currency').value;
+    localStorage.setItem('currency', currency);
+    renderPlans();
+    updateUI();
+    renderActiveProductsList();
+}
+
+// PURCHASE VIP PLAN WITH PRO-RATED REFUND FOR PREVIOUS VIP
+async function buyPlan(targetVip, priceNaira, priceDollar, dailyUSD, dailyNGN) {
+    if(!currentUser) return showToast('Please login first', 'error');
+    
+    const currentVipLevel = currentUser.vip_level || 0;
+
+    // RULE: PREVENT BUYING LOWER OR EQUAL VIP
+    if (targetVip <= currentVipLevel) {
+        return showToast(`You are already on VIP ${currentVipLevel}. You can only upgrade to a higher VIP level!`, 'error');
+    }
+
+    let currentBalNgn = currentUser.balance_ngn || 0;
+    let cost = currency === 'USD' ? (priceDollar * rate) : priceNaira;
+
+    // REFUND LOGIC: IF USER HAS PREVIOUS VIP, REFUND 50% OF PREVIOUS VIP PRICE AS BONUS
+    let refundBonus = 0;
+    if (currentVipLevel > 0) {
+        const oldPlan = plans.find(p => p.vip === currentVipLevel);
+        if (oldPlan) {
+            refundBonus = Math.round(oldPlan.naira * 0.5); // 50% REFUND
+        }
+    }
+
+    if(currentBalNgn < cost) {
+        await addHistory(currentUser.email, `VIP ${targetVip} Upgrade`, cost, 'Rejected', 'Insufficient Balance');
+        return showToast(`Insufficient Balance! You need ₦${cost.toLocaleString()} to upgrade to VIP ${targetVip}`, 'error');
+    }
+
+    const newBalanceNgn = Math.round((currentBalNgn - cost) + refundBonus);
+    const newBalanceUsd = parseFloat((newBalanceNgn / rate).toFixed(2));
+
+    currentUser.balance_ngn = newBalanceNgn;
+    currentUser.balance_usd = newBalanceUsd;
+    currentUser.vip_level = targetVip;
+
+    saveUserLocally(currentUser);
+
+    await supabaseClient.from('users').update({
+        balance_ngn: newBalanceNgn,
+        balance_usd: newBalanceUsd,
+        vip_level: targetVip
+    }).eq('email', currentUser.email);
+
+    let detailsMsg = `Upgraded to VIP ${targetVip}`;
+    if (refundBonus > 0) {
+        detailsMsg += ` (Includes ₦${refundBonus.toLocaleString()} Previous VIP Refund Bonus)`;
+    }
+
+    await addHistory(currentUser.email, `VIP ${targetVip} Purchase`, cost, 'Approved', detailsMsg);
+    
+    updateUI();
+    renderPlans();
+    renderActiveProductsList();
+    showToast(`VIP ${targetVip} Activated Successfully!`, 'success');
+}
+
+function deposit() {
+    window.open("https://flutterwave.com/pay/primedigitalfinance", '_blank'); 
+    addHistory(currentUser ? currentUser.email : '', 'Deposit Attempt', 0, 'Pending', 'Initiated Deposit');
+    showToast('Redirecting to Payment...', 'success');
+}
+
+// LOAD USER SAFELY
+async function loadUser() {
+    const email = localStorage.getItem('userEmail');
+    if(!email) return;
+
+    let localUser = getLocalUserData(email);
+
+    const { data, error } = await supabaseClient.from('users').select('*').eq('email', email).single();
+    if(data) {
+        currentUser = data;
+        if(localUser && localUser.custom_id) currentUser.custom_id = localUser.custom_id;
+    } else if(localUser) {
+        currentUser = localUser;
+    } else {
+        currentUser = {
+            custom_id: 'PDF' + Math.floor(100000 + Math.random() * 900000),
+            email: email,
+            fullname: 'Valued User',
+            balance_ngn: 0,
+            balance_usd: 0,
+            vip_level: 0,
+            created_at: new Date().toISOString()
+        };
+    }
+    
+    saveUserLocally(currentUser);
+    updateUI();
+    renderPlans();
+    renderActiveProductsList();
+}
+
+function updateUI() {
+    if(!currentUser) return;
+    const ngn = currentUser.balance_ngn || 0;
+    const usd = currentUser.balance_usd || (ngn / rate);
+    const displayId = currentUser.custom_id || 'PDF100201';
+    
+    if(document.getElementById('dashUserVal')) document.getElementById('dashUserVal').innerText = displayId;
+    if(document.getElementById('dashVipVal')) document.getElementById('dashVipVal').innerText = 'VIP ' + (currentUser.vip_level || 0);
+    
+    const balanceText = currency === 'USD' ? `$${usd.toFixed(2)}` : `₦${ngn.toLocaleString()}`;
+    if(document.getElementById('balance')) document.getElementById('balance').innerText = balanceText;
+    
+    if(document.getElementById('userId')) document.getElementById('userId').innerText = displayId;
+    if(document.getElementById('myRefCode')) document.getElementById('myRefCode').innerText = displayId;
+    
+    const refLink = `https://primedigitalfinance.com/register?ref=${displayId}`;
+    if(document.getElementById('refLinkInput')) document.getElementById('refLinkInput').value = refLink;
+    
+    if(document.getElementById('availableBalance')) document.getElementById('availableBalance').innerText = balanceText;
+    if(document.getElementById('totalBalance')) document.getElementById('totalBalance').innerText = balanceText;
+    
+    if(document.getElementById('withdrawLabel')) {
+        document.getElementById('withdrawLabel').innerText = currency === 'USD' ? 'Amount to Withdraw (Min: $2)' : 'Amount to Withdraw (Min: ₦2,000)';
+    }
+
+    if(currentUser.bank_name && document.getElementById('savedBank')) {
+        document.getElementById('savedBank').innerHTML = `<div class="saved-method">✓ ${currentUser.bank_name} - ${currentUser.account_number}</div>`;
+    }
+    if(currentUser.wallet_address && document.getElementById('savedWallet')) {
+        document.getElementById('savedWallet').innerHTML = `<div class="saved-method">✓ ${currentUser.wallet_address}</div>`;
+    }
+}
+
+// TRANSACTION HISTORY WITH LOCALSTORAGE BACKUP
+async function addHistory(email, type, amount, status, details) {
+    if(!email) return;
+    const item = {
+        user_email: email,
+        type: type,
+        amount: amount,
+        status: status,
+        details: details,
+        created_at: new Date().toISOString()
+    };
+
+    let localHistory = JSON.parse(localStorage.getItem('pdf_history_' + email) || '[]');
+    localHistory.unshift(item);
+    localStorage.setItem('pdf_history_' + email, JSON.stringify(localHistory));
+
+    try {
+        await supabaseClient.from('transactions').insert([item]);
+    } catch(err) { console.log('Supabase transaction alert:', err); }
+}
+
+async function loadHistory() {
+    const historyList = document.getElementById('historyList');
+    if(!currentUser) return;
+    
+    let localHistory = JSON.parse(localStorage.getItem('pdf_history_' + currentUser.email) || '[]');
+    
+    try {
+        const { data } = await supabaseClient.from('transactions').select('*').eq('user_email', currentUser.email).order('created_at', { ascending: false });
+        if(data && data.length > 0) localHistory = data;
+    } catch(e){}
+
+    if(localHistory.length === 0) {
+        historyList.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:20px;">No transaction records found.</p>';
+        return;
+    }
+
+    let html = '';
+    localHistory.forEach(item => {
+        let statusClass = 'status-pending';
+        if(item.status === 'Approved') statusClass = 'status-approved';
+        if(item.status === 'Rejected') statusClass = 'status-rejected';
+
+        const amountFormatted = currency === 'USD' ? `$${(item.amount / rate).toFixed(2)}` : `₦${item.amount.toLocaleString()}`;
+
+        html += `
+        <div class="history-card">
+            <span class="history-status ${statusClass}">${item.status}</span>
+            <div class="history-type">${item.type}</div>
+            <p style="font-size:12px; color:#4ade80; font-weight:bold; margin:4px 0;">Amount: ${amountFormatted}</p>
+            <p style="font-size:11px; color:#94a3b8;">${item.details || ''}</p>
+            <p style="font-size:10px; color:#64748b; margin-top:4px;">${new Date(item.created_at).toLocaleString()}</p>
+        </div>`;
+    });
+    
+    historyList.innerHTML = html;
+}
+
+function loadWithdrawMethods(){
+    let html = '';
+    if(currentUser && currentUser.bank_name) html += `<button class="btn btn-outline" style="margin-bottom:8px;" onclick="selectMethod('bank', this)">Bank: ${currentUser.bank_name} - ${currentUser.account_number}</button>`;
+    if(currentUser && currentUser.wallet_address) html += `<button class="btn btn-outline" onclick="selectMethod('wallet', this)">Crypto: ${currentUser.wallet_address.slice(0,10)}...</button>`;
+    if(html === '') html = '<p style="color:#ef4444">Please add a payment method first in Profile</p>';
+    document.getElementById('withdrawMethods').innerHTML = html;
+}
+
+function selectMethod(type, el){
+    selectedMethod = type;
+    document.querySelectorAll('#withdrawMethods .btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+}
+
+async function saveSecurityPin(){
+    const pin = document.getElementById('secCode').value;
+    if(pin.length !== 4) return showToast('PIN must be exactly 4 digits');
+    currentUser.withdraw_pin = pin;
+    saveUserLocally(currentUser);
+    await supabaseClient.from('users').update({ withdraw_pin: pin }).eq('email', currentUser.email);
+    showToast('Security PIN Saved Successfully!', 'success');
+}
+
+// WITHDRAWAL REQUEST WITH TELEGRAM
+async function confirmWithdraw(){
+    const currentHour = new Date().getHours();
+    if (currentHour < 10 || currentHour >= 17) {
+        await addHistory(currentUser.email, 'Withdrawal', 0, 'Rejected', 'Withdrawal Window Closed');
+        return showToast('Withdrawal hours are strictly from 10:00 AM to 5:00 PM.', 'error');
+    }
+
+    const amt = parseFloat(document.getElementById('withdrawAmount').value);
+    const pinEntered = document.getElementById('withdrawPinInput').value;
+
+    const minNgn = 2000;
+    const minUsd = 2;
+    if(currency === 'USD' && amt < minUsd) return showToast('Minimum withdrawal is $2', 'error');
+    if(currency === 'NGN' && amt < minNgn) return showToast('Minimum withdrawal is ₦2,000', 'error');
+
+    if(!selectedMethod) return showToast('Select payment method above');
+    if(!currentUser.withdraw_pin) return showToast('Set Security PIN in Profile first!', 'error');
+    if(pinEntered !== currentUser.withdraw_pin) return showToast('Incorrect Security PIN!', 'error');
+
+    const amtNgn = currency === 'USD' ? (amt * rate) : amt;
+    if(currentUser.balance_ngn < amtNgn) {
+        await addHistory(currentUser.email, 'Withdrawal Request', amtNgn, 'Rejected', 'Insufficient Balance');
+        return showToast('Insufficient account balance', 'error');
+    }
+
+    let paymentDetails = selectedMethod === 'bank' 
+        ? `🏦 Bank: ${currentUser.bank_name}\n👤 Account Name: ${currentUser.account_name}\n🔢 Account Number: ${currentUser.account_number}`
+        : `🪙 Wallet: ${currentUser.wallet_address}`;
+
+    const textMessage = `🔔 *NEW WITHDRAWAL REQUEST*\n\n` +
+                        `👤 Name: ${currentUser.fullname}\n` +
+                        `🆔 User ID: ${currentUser.custom_id}\n` +
+                        `📧 Email: ${currentUser.email}\n` +
+                        `💵 Amount: ₦${amtNgn.toLocaleString()} ($${(amtNgn/rate).toFixed(2)})\n\n` +
+                        `${paymentDetails}`;
+
+    const keyboardMarkup = {
+        inline_keyboard: [
+            [
+                { text: "✅ Approve Withdrawal", callback_data: `approve_${currentUser.custom_id}_${amtNgn}` },
+                { text: "❌ Reject Withdrawal", callback_data: `reject_${currentUser.custom_id}_${amtNgn}` }
+            ]
+        ]
+    };
+
+    try {
+        for (const chatId of TELEGRAM_CHAT_IDS) {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    chat_id: chatId, 
+                    text: textMessage, 
+                    parse_mode: 'Markdown',
+                    reply_markup: keyboardMarkup
+                })
+            });
+        }
+
+        currentUser.balance_ngn = currentUser.balance_ngn - amtNgn;
+        currentUser.balance_usd = currentUser.balance_ngn / rate;
+        saveUserLocally(currentUser);
+
+        await supabaseClient.from('users').update({ balance_ngn: currentUser.balance_ngn, balance_usd: currentUser.balance_usd }).eq('email', currentUser.email);
+        await addHistory(currentUser.email, 'Withdrawal Request', amtNgn, 'Pending', `Requested payout via ${selectedMethod.toUpperCase()}`);
+        
+        updateUI();
+        showToast('Withdrawal Request Submitted Successfully!', 'success');
+        showPage('profile');
+    } catch (error) {
+        showToast('Error submitting withdrawal request. Try again!', 'error');
+    }
+}
+
+async function savePersonal(){
+    const name = document.getElementById('realName').value;
+    if(!name) return showToast('Enter name');
+    currentUser.fullname = name;
+    saveUserLocally(currentUser);
+    await supabaseClient.from('users').update({fullname: name}).eq('email', currentUser.email);
+    updateUI();
+    showToast('Personal Info Saved', 'success');
+}
+
+async function saveBank(){
+    const bank = document.getElementById('bankName').value;
+    const name = document.getElementById('accName').value;
+    const num = document.getElementById('accNumber').value;
+    if(!bank || !name || !num) return showToast('Fill all bank details');
+    
+    currentUser.bank_name = bank; currentUser.account_name = name; currentUser.account_number = num;
+    saveUserLocally(currentUser);
+    await supabaseClient.from('users').update({ bank_name: bank, account_name: name, account_number: num }).eq('email', currentUser.email);
+    showToast('Bank Saved Successfully', 'success'); updateUI();
+}
+
+async function saveWallet(){
+    const wall = document.getElementById('wallet').value;
+    const memo = document.getElementById('memo').value;
+    if(!wall) return showToast('Enter wallet address');
+    
+    currentUser.wallet_address = wall; currentUser.wallet_memo = memo;
+    saveUserLocally(currentUser);
+    await supabaseClient.from('users').update({ wallet_address: wall, wallet_memo: memo }).eq('email', currentUser.email);
+    showToast('Wallet Saved Successfully', 'success'); updateUI();
+}
+
+async function changePassword(){
+    const newP = document.getElementById('newPass').value;
+    const confP = document.getElementById('confirmPass').value;
+    if(!newP || newP !== confP) return showToast('Passwords do not match');
+    
+    const { error } = await supabaseClient.auth.updateUser({ password: newP });
+    if(error) showToast(error.message); else showToast('Password Changed', 'success');
+}
+
+function copyReferralLink() {
+    const input = document.getElementById('refLinkInput');
+    if (input) {
+        input.select();
+        navigator.clipboard.writeText(input.value);
+        showToast('Referral Link Copied!', 'success');
+    }
+}
+
+function goToTelegram() { window.open('https://t.me/primedigitalfinance', '_blank'); }
+function goToWhatsapp() { window.open('https://wa.me/2340000000000', '_blank'); }
+function logout(){ localStorage.removeItem('userEmail'); location.reload(); }
+
+window.onload = async function() {
+  const savedEmail = localStorage.getItem('userEmail');
+  if(savedEmail) {
+      await startDashboard();
+  }
+}
+</script>
+</body>
+</html>

@@ -1,16 +1,16 @@
 let plans = [];
 let currentUser = null;
 let transactions = [];
+let countdownInterval = null;
 
-function smartAlert(message, type = "info") {
-  const alertEl = document.getElementById("smartAlert");
-  const cleanText = String(message || "Action completed.").slice(0, 140);
-  alertEl.textContent = cleanText;
-  alertEl.className = `smart-alert ${type} show`;
-  clearTimeout(window.__smartAlertTimer);
-  window.__smartAlertTimer = setTimeout(() => {
-    alertEl.classList.remove("show");
-  }, 3400);
+function smartAlert(msg, type = "info") {
+  const el = document.getElementById("smartAlert");
+  el.textContent = String(msg || "Done.").slice(0, 140);
+  el.className = `smart-alert ${type} show`;
+  clearTimeout(window.__alertTimer);
+  window.__alertTimer = setTimeout(() => {
+    el.classList.remove("show");
+  }, 3300);
 }
 
 function toggleAuth(mode) {
@@ -18,17 +18,17 @@ function toggleAuth(mode) {
   document.getElementById("registerBox").classList.toggle("hidden", mode !== "register");
 }
 
-function switchSection(sectionId, triggerBtn) {
-  document.querySelectorAll(".section").forEach((sec) => sec.classList.remove("active"));
-  const targetSec = document.getElementById(sectionId);
-  if (targetSec) targetSec.classList.add("active");
+function switchTab(sectionId, navBtn) {
+  document.querySelectorAll(".tab-section").forEach((sec) => sec.classList.remove("active"));
+  const target = document.getElementById(sectionId);
+  if (target) target.classList.add("active");
 
-  document.querySelectorAll(".nav-item").forEach((btn) => btn.classList.remove("active"));
-  if (triggerBtn && triggerBtn.classList.contains("nav-item")) {
-    triggerBtn.classList.add("active");
+  document.querySelectorAll(".nav-tab").forEach((btn) => btn.classList.remove("active"));
+  if (navBtn && navBtn.classList.contains("nav-tab")) {
+    navBtn.classList.add("active");
   } else {
-    const matchedNav = document.querySelector(`.nav-item[data-target="${sectionId}"]`);
-    if (matchedNav) matchedNav.classList.add("active");
+    const match = document.querySelector(`.nav-tab[data-target="${sectionId}"]`);
+    if (match) match.classList.add("active");
   }
 
   if (sectionId === "sec-admin") {
@@ -36,21 +36,21 @@ function switchSection(sectionId, triggerBtn) {
   }
 }
 
-async function apiRequest(endpoint, options = {}) {
+async function api(path, options = {}) {
   try {
-    const response = await fetch(endpoint, {
+    const res = await fetch(path, {
       headers: { "Content-Type": "application/json" },
       ...options
     });
-    return await response.json();
+    return await res.json();
   } catch (err) {
-    return { ok: false, message: "Unable to connect to server." };
+    return { ok: false, message: "Connection failed. Please try again." };
   }
 }
 
 document.getElementById("registerForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const res = await apiRequest("/api/auth", {
+  const res = await api("/api/auth", {
     method: "POST",
     body: JSON.stringify({
       mode: "register",
@@ -61,7 +61,6 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
       password: document.getElementById("regPassword").value
     })
   });
-
   if (!res.ok) return smartAlert(res.message, "error");
   smartAlert(res.message, "success");
   toggleAuth("login");
@@ -70,7 +69,7 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("loginEmail").value.toLowerCase().trim();
-  const res = await apiRequest("/api/auth", {
+  const res = await api("/api/auth", {
     method: "POST",
     body: JSON.stringify({
       mode: "login",
@@ -78,18 +77,17 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
       password: document.getElementById("loginPassword").value
     })
   });
-
   if (!res.ok) return smartAlert(res.message, "error");
   localStorage.setItem("pdf_usdt_email", email);
   smartAlert(res.message, "success");
-  await hydrateApp();
+  await enterApp();
 });
 
-async function hydrateApp() {
-  const savedEmail = localStorage.getItem("pdf_usdt_email");
-  if (!savedEmail) return;
+async function enterApp() {
+  const email = localStorage.getItem("pdf_usdt_email");
+  if (!email) return;
 
-  const data = await apiRequest(`/api/user?email=${encodeURIComponent(savedEmail)}`);
+  const data = await api(`/api/user?email=${encodeURIComponent(email)}`);
   if (!data.ok) {
     localStorage.removeItem("pdf_usdt_email");
     return;
@@ -101,121 +99,137 @@ async function hydrateApp() {
 
   document.getElementById("authWrap").style.display = "none";
   document.getElementById("appShell").style.display = "block";
-  document.getElementById("adminNavBtn").classList.toggle("hidden", !currentUser.is_super_admin);
+  document.getElementById("adminTopBtn").classList.toggle("hidden", !currentUser.is_super_admin);
 
-  renderDashboard();
+  renderApp();
+  startCountdownTicker();
 }
 
-function renderDashboard() {
+function renderApp() {
   if (!currentUser) return;
 
   const vipLevel = Number(currentUser.vip_level || 0);
-  const balance = Number(currentUser.balance_usdt || 0).toFixed(2);
+  const balance = Number(currentUser.balance_usdt || 0);
+  const memberId = currentUser.custom_id || "PDF783516";
 
-  document.getElementById("topUserEmail").textContent = currentUser.email;
-  document.getElementById("statId").textContent = currentUser.custom_id;
-  document.getElementById("statVip").textContent = `VIP ${vipLevel}`;
-  document.getElementById("balanceUsdt").textContent = `${balance} USDT`;
+  document.getElementById("homeMemberId").textContent = memberId;
+  document.getElementById("homeBalanceVal").textContent = `${balance.toFixed(2)} USDT`;
+  document.getElementById("profileEmailVal").textContent = currentUser.email;
+
+  const refUrl = `${window.location.origin}/?ref=${encodeURIComponent(memberId)}`;
+  document.getElementById("referralLinkInput").value = refUrl;
+
+  let totalDeposit = 0;
+  let totalStake = 0;
+  let totalReward = 0;
+
+  transactions.forEach((t) => {
+    const amt = Number(t.amount_usdt || 0);
+    const type = String(t.type || "").toLowerCase();
+    if (type.includes("deposit") && t.status === "Approved") totalDeposit += amt;
+    if ((type.includes("purchase") || type.includes("upgrade")) && t.status === "Approved") totalStake += amt;
+    if ((type.includes("check-in") || type.includes("bonus") || type.includes("refund")) && t.status === "Approved") {
+      totalReward += amt;
+    }
+  });
+
+  document.getElementById("statTotalDeposit").textContent = `${totalDeposit.toFixed(2)} USDT`;
+  document.getElementById("statTotalStake").textContent = `${totalStake.toFixed(2)} USDT`;
+  document.getElementById("statTotalReward").textContent = `${totalReward.toFixed(2)} USDT`;
+  document.getElementById("statMyTeam").textContent = "0 Members";
+
+  document.getElementById("teamTotalMembers").textContent = "0";
+  document.getElementById("teamActiveMembers").textContent = "0";
+  document.getElementById("teamDirectRefs").textContent = "0";
+  document.getElementById("teamEarningsVal").textContent = "0.00 USDT";
+  document.getElementById("perfEarnings").textContent = "0.00 USDT";
+
   document.getElementById("walletAddress").value = currentUser.wallet_address || "";
   document.getElementById("walletNetwork").value = currentUser.wallet_network || "TRC20";
 
-  const vipGrid = document.getElementById("vipGrid");
-  if (!plans.length) {
-    vipGrid.innerHTML = `<p class="row-sub">No VIP plans configured yet.</p>`;
-  } else {
-    vipGrid.innerHTML = plans
-      .map((plan) => {
-        const level = Number(plan.vip_level);
-        const isCurrent = level === vipLevel;
-        const isLowerOrEqual = level <= vipLevel;
-        const title = plan.title || `VIP ${level}`;
+  // VIP Plans Grid (Matches Home VIP 1 / VIP 2 / VIP 3 style)
+  const tierClasses = ["", "tier-blue", "tier-gold"];
+  const wreathIcons = ["👑", "🥈", "🏆"];
 
+  const renderPlanCardsHtml = (list) => {
+    if (!list.length) return `<p class="tx-sub">No VIP plans yet.</p>`;
+    return list
+      .map((p, idx) => {
+        const lvl = Number(p.vip_level);
+        const isCurrent = lvl === vipLevel;
+        const disabled = lvl <= vipLevel;
+        const tierCls = tierClasses[idx % 3] || "";
+        const ico = wreathIcons[idx % 3] || "👑";
         return `
-          <div class="plan-card ${isCurrent ? "active" : ""}">
+          <div class="vip-card-item ${tierCls}">
             <div>
-              <div class="plan-name">${title}</div>
-              <div class="plan-price">${Number(plan.price_usdt).toFixed(2)} USDT</div>
-              <div class="plan-meta">Daily Yield: ${Number(plan.daily_usdt).toFixed(2)} USDT</div>
-              <div class="plan-duration">Duration: ${Number(plan.duration_days)} Days</div>
+              <div class="vip-pill-head">${p.title || `VIP ${lvl}`}</div>
+              <div class="vip-wreath-icon">${ico}</div>
+              <div class="vip-price-big">${Number(p.price_usdt).toFixed(2)} USDT</div>
+              <div class="vip-line-meta">
+                Daily Yield: ${Number(p.daily_usdt).toFixed(2)} USDT<br />
+                Duration: ${Number(p.duration_days)} Days
+              </div>
             </div>
             <button
               type="button"
-              class="btn btn-primary"
-              ${isLowerOrEqual ? "disabled" : ""}
-              onclick="buyVip(${level})"
+              class="vip-upgrade-btn"
+              ${disabled ? "disabled" : ""}
+              onclick="buyVip(${lvl})"
             >
-              ${isCurrent ? "Active Plan" : isLowerOrEqual ? "Unavailable" : `Upgrade to ${title}`}
+              ${isCurrent ? "Active" : disabled ? "Lower Tier" : "Upgrade Now &gt;"}
             </button>
           </div>
         `;
       })
       .join("");
-  }
+  };
 
-  const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
-  const vip0Active = Date.now() - Number(currentUser.created_at || Date.now()) < threeDaysMs;
-  let activePackagesHtml = "";
+  document.getElementById("homeVipGrid").innerHTML = renderPlanCardsHtml(plans.slice(0, 3));
+  document.getElementById("allVipPlansContainer").innerHTML = renderPlanCardsHtml(plans);
 
-  if (vip0Active) {
-    activePackagesHtml += `
-      <div class="list-row">
-        <div>
-          <strong>VIP 0 Welcome Bonus</strong>
-          <div class="row-sub">3-Day Trial Yield: 0.50 USDT / day</div>
-        </div>
-        <span class="badge Approved">Active</span>
-      </div>
-    `;
-  }
-
-  const activePlan = plans.find((item) => Number(item.vip_level) === vipLevel);
+  // Products Tab Current Product
+  const activePlan = plans.find((x) => Number(x.vip_level) === vipLevel);
   if (vipLevel > 0 && activePlan) {
-    const expiryLabel = currentUser.vip_expires_at
-      ? `Expires: ${new Date(Number(currentUser.vip_expires_at)).toLocaleDateString()}`
-      : `Duration: ${Number(activePlan.duration_days)} Days`;
+    document.getElementById("prodActiveTitle").textContent = activePlan.title || `VIP ${vipLevel}`;
+    document.getElementById("prodActivePrice").textContent = `${Number(activePlan.price_usdt).toFixed(2)} USDT`;
+    document.getElementById("prodDuration").textContent = `${Number(activePlan.duration_days)} Days`;
+    document.getElementById("prodDailyVal").textContent = `${Number(activePlan.daily_usdt).toFixed(2)} USDT`;
 
-    activePackagesHtml += `
-      <div class="list-row">
-        <div>
-          <strong>${activePlan.title || `VIP ${vipLevel}`}</strong>
-          <div class="row-sub">Daily Yield: ${Number(activePlan.daily_usdt).toFixed(2)} USDT • ${expiryLabel}</div>
-        </div>
-        <span class="badge Approved">Purchased</span>
-      </div>
-    `;
-  }
-
-  document.getElementById("activePackagesBox").innerHTML =
-    activePackagesHtml || `<p class="row-sub">No active packages right now.</p>`;
-
-  const checkinBtn = document.getElementById("checkinBtn");
-  const twentyFourHours = 24 * 60 * 60 * 1000;
-  const lastCheckin = Number(currentUser.last_checkin_ms || 0);
-  if (lastCheckin && Date.now() - lastCheckin < twentyFourHours) {
-    const hoursLeft = Math.ceil((twentyFourHours - (Date.now() - lastCheckin)) / (1000 * 60 * 60));
-    checkinBtn.disabled = true;
-    checkinBtn.textContent = `Claimed Today • Next in ${hoursLeft}h`;
+    const daysLeft = currentUser.vip_expires_at
+      ? Math.max(0, Math.ceil((Number(currentUser.vip_expires_at) - Date.now()) / (1000 * 60 * 60 * 24)))
+      : Number(activePlan.duration_days);
+    document.getElementById("prodDaysLeft").textContent = `${daysLeft} Days`;
   } else {
-    checkinBtn.disabled = false;
-    checkinBtn.textContent = "Claim +0.20 USDT";
+    document.getElementById("prodActiveTitle").textContent = "VIP 0";
+    document.getElementById("prodActivePrice").textContent = "Free Trial";
+    document.getElementById("prodDuration").textContent = "3 Days";
+    document.getElementById("prodDailyVal").textContent = "0.20 USDT";
+    document.getElementById("prodDaysLeft").textContent = "3 Days";
   }
 
-  const historyBox = document.getElementById("historyContainer");
+  document.getElementById("prodStartDate").textContent = new Date(
+    Number(currentUser.created_at || Date.now())
+  ).toLocaleDateString();
+  document.getElementById("prodTotalEarnings").textContent = `${totalReward.toFixed(2)} USDT`;
+  document.getElementById("prodTotalDeposit").textContent = `${totalDeposit.toFixed(2)} USDT`;
+
+  // History List
+  const histBox = document.getElementById("txHistoryList");
   if (!transactions.length) {
-    historyBox.innerHTML = `<p class="row-sub">No transactions recorded yet.</p>`;
+    histBox.innerHTML = `<p class="tx-sub">No transactions yet.</p>`;
   } else {
-    historyBox.innerHTML = transactions
+    histBox.innerHTML = transactions
       .map(
-        (tx) => `
-          <div class="list-row">
+        (t) => `
+          <div class="tx-row">
             <div>
-              <strong>${tx.type}</strong>
-              <div class="row-sub">${tx.details || ""}</div>
-              <div class="row-sub">${new Date(tx.created_at).toLocaleString()}</div>
+              <strong>${t.type}</strong>
+              <div class="tx-sub">${t.details || ""} • ${new Date(t.created_at).toLocaleString()}</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-weight:800; color:var(--usdt-mint);">${Number(tx.amount_usdt || 0).toFixed(2)} USDT</div>
-              <span class="badge ${tx.status}">${tx.status}</span>
+              <div style="font-weight:900; color:var(--neon-green);">${Number(t.amount_usdt || 0).toFixed(2)} USDT</div>
+              <span class="st-badge ${t.status}">${t.status}</span>
             </div>
           </div>
         `
@@ -224,210 +238,103 @@ function renderDashboard() {
   }
 }
 
-function populatePlanEditor(plan) {
-  document.getElementById("planLevel").value = plan.vip_level;
-  document.getElementById("planTitle").value = plan.title;
-  document.getElementById("planPrice").value = plan.price_usdt;
-  document.getElementById("planDaily").value = plan.daily_usdt;
-  document.getElementById("planDuration").value = plan.duration_days;
+function startCountdownTicker() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  const updateClock = () => {
+    const el = document.getElementById("countdownClock");
+    const btn = document.getElementById("prodCheckinBtn");
+    if (!el || !currentUser) return;
+
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    const lastMs = Number(currentUser.last_checkin_ms || 0);
+    const elapsed = Date.now() - lastMs;
+
+    if (lastMs && elapsed < twentyFourHours) {
+      const remSec = Math.max(0, Math.floor((twentyFourHours - elapsed) / 1000));
+      const hrs = String(Math.floor(remSec / 3600)).padStart(2, "0");
+      const mins = String(Math.floor((remSec % 3600) / 60)).padStart(2, "0");
+      const secs = String(remSec % 60).padStart(2, "0");
+      el.textContent = `${hrs}:${mins}:${secs}`;
+      if (btn) btn.disabled = true;
+    } else {
+      el.textContent = "00:00:00";
+      if (btn) btn.disabled = false;
+    }
+  };
+  updateClock();
+  countdownInterval = setInterval(updateClock, 1000);
 }
 
-async function saveVipPlan() {
-  const level = Number(document.getElementById("planLevel").value);
-  const title = (document.getElementById("planTitle").value || `VIP ${level}`).trim();
-  const priceUsdt = Number(document.getElementById("planPrice").value);
-  const dailyUsdt = Number(document.getElementById("planDaily").value);
-  const durationDays = Number(document.getElementById("planDuration").value);
-
-  const res = await apiRequest("/api/admin/upsert-plan", {
-    method: "POST",
-    body: JSON.stringify({
-      adminEmail: currentUser.email,
-      vip_level: level,
-      title,
-      price_usdt: priceUsdt,
-      daily_usdt: dailyUsdt,
-      duration_days: durationDays
-    })
-  });
-
-  smartAlert(res.message, res.ok ? "success" : "error");
-  if (res.ok) {
-    await loadAdminOverview();
-    await hydrateApp();
-  }
+function openDepositBox() {
+  document.getElementById("depositDrawer").classList.toggle("hidden");
+  document.getElementById("depositInput").focus();
 }
 
-async function deleteVipPlan(vipLevel) {
-  const res = await apiRequest("/api/admin/delete-plan", {
-    method: "POST",
-    body: JSON.stringify({
-      adminEmail: currentUser.email,
-      vip_level: vipLevel
-    })
-  });
-
-  smartAlert(res.message, res.ok ? "success" : "error");
-  if (res.ok) {
-    await loadAdminOverview();
-    await hydrateApp();
-  }
-}
-
-async function loadAdminOverview() {
-  if (!currentUser || !currentUser.is_super_admin) return;
-  const data = await apiRequest(`/api/admin/overview?adminEmail=${encodeURIComponent(currentUser.email)}`);
-  if (!data.ok) return smartAlert(data.message, "error");
-
-  const adminPlans = data.plans || [];
-  window.__adminPlansCache = adminPlans;
-
-  const adminPlansList = document.getElementById("adminPlansList");
-  if (!adminPlans.length) {
-    adminPlansList.innerHTML = `<p class="row-sub">No VIP plans yet. Add one above.</p>`;
-  } else {
-    adminPlansList.innerHTML = adminPlans
-      .map(
-        (plan, index) => `
-          <div class="list-row">
-            <div>
-              <strong>${plan.title} (Level ${plan.vip_level})</strong>
-              <div class="row-sub" style="color:var(--usdt-mint);">
-                Price: ${Number(plan.price_usdt).toFixed(2)} USDT • Daily: ${Number(plan.daily_usdt).toFixed(2)} USDT • Duration: ${Number(plan.duration_days)} Days
-              </div>
-            </div>
-            <div class="row-actions">
-              <button type="button" class="btn btn-secondary btn-sm" onclick="editAdminPlan(${index})">Edit</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="deleteVipPlan(${Number(plan.vip_level)})">Delete</button>
-            </div>
-          </div>
-        `
-      )
-      .join("");
-  }
-
-  document.getElementById("adminTelegramIds").value = data.telegram_chat_ids || "";
-
-  const adminsList = document.getElementById("superAdminsList");
-  adminsList.innerHTML = (data.super_admins || [])
-    .map(
-      (admin) => `
-        <div class="list-row">
-          <div>
-            <strong>${admin.email}</strong>
-            <div class="row-sub">Added by: ${admin.added_by}</div>
-          </div>
-          <span class="badge Approved">${admin.role}</span>
-        </div>
-      `
-    )
-    .join("");
-
-  const pendingList = document.getElementById("pendingWithdrawalsList");
-  const pendings = data.pending_withdrawals || [];
-  if (!pendings.length) {
-    pendingList.innerHTML = `<p class="row-sub">No pending withdrawals.</p>`;
-  } else {
-    pendingList.innerHTML = pendings
-      .map(
-        (item) => `
-          <div class="list-row">
-            <div>
-              <strong>#${item.id} • ${item.user_email}</strong>
-              <div class="row-sub" style="color:var(--usdt-mint);">${Number(item.amount_usdt).toFixed(2)} USDT</div>
-              <div class="row-sub">${item.details || ""}</div>
-            </div>
-            <div class="row-actions">
-              <button type="button" class="btn btn-primary btn-sm" onclick="decideWithdrawal(${item.id}, 'Approved')">Approve</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="decideWithdrawal(${item.id}, 'Rejected')">Reject</button>
-            </div>
-          </div>
-        `
-      )
-      .join("");
-  }
-}
-
-function editAdminPlan(index) {
-  const list = window.__adminPlansCache || [];
-  if (list[index]) populatePlanEditor(list[index]);
-}
-
-async function saveTelegramSettings() {
-  const res = await apiRequest("/api/admin/settings", {
-    method: "POST",
-    body: JSON.stringify({
-      adminEmail: currentUser.email,
-      telegram_chat_ids: document.getElementById("adminTelegramIds").value
-    })
-  });
-  smartAlert(res.message, res.ok ? "success" : "error");
-  if (res.ok) await loadAdminOverview();
-}
-
-async function addSuperAdmin() {
-  const res = await apiRequest("/api/admin/add-super-admin", {
-    method: "POST",
-    body: JSON.stringify({
-      adminEmail: currentUser.email,
-      newAdminEmail: document.getElementById("newSuperAdminEmail").value
-    })
-  });
-  if (res.ok) document.getElementById("newSuperAdminEmail").value = "";
-  smartAlert(res.message, res.ok ? "success" : "error");
-  if (res.ok) await loadAdminOverview();
-}
-
-async function decideWithdrawal(txId, decision) {
-  const res = await apiRequest("/api/admin/withdrawal-action", {
-    method: "POST",
-    body: JSON.stringify({
-      adminEmail: currentUser.email,
-      txId,
-      decision
-    })
-  });
-  smartAlert(res.message, res.ok ? "success" : "error");
-  if (res.ok) {
-    await loadAdminOverview();
-    await hydrateApp();
-  }
-}
-
-async function quickDeposit() {
-  const amount = Number(document.getElementById("depositAmount").value);
-  const res = await apiRequest("/api/deposit", {
+async function submitQuickDeposit() {
+  const amount = Number(document.getElementById("depositInput").value);
+  const res = await api("/api/deposit", {
     method: "POST",
     body: JSON.stringify({ email: currentUser.email, amount })
   });
   if (!res.ok) return smartAlert(res.message, "error");
-  document.getElementById("depositAmount").value = "";
+  document.getElementById("depositInput").value = "";
+  document.getElementById("depositDrawer").classList.add("hidden");
   smartAlert(res.message, "success");
-  await hydrateApp();
+  await enterApp();
 }
 
 async function buyVip(vip) {
-  const res = await apiRequest("/api/buy-vip", {
+  const res = await api("/api/buy-vip", {
     method: "POST",
     body: JSON.stringify({ email: currentUser.email, vip })
   });
   if (!res.ok) return smartAlert(res.message, "error");
   smartAlert(res.message, "success");
-  await hydrateApp();
+  await enterApp();
 }
 
-async function claimCheckin() {
-  const res = await apiRequest("/api/checkin", {
+async function claimDailyReward() {
+  const res = await api("/api/checkin", {
     method: "POST",
     body: JSON.stringify({ email: currentUser.email })
   });
   if (!res.ok) return smartAlert(res.message, "error");
   smartAlert(res.message, "success");
-  await hydrateApp();
+  await enterApp();
 }
 
-async function saveWallet() {
-  const res = await apiRequest("/api/payment-method", {
+function copyMemberId() {
+  const idText = document.getElementById("homeMemberId").textContent;
+  navigator.clipboard?.writeText(idText).catch(() => {});
+  smartAlert(`Copied Member ID: ${idText}`, "success");
+}
+
+function copyReferralLink() {
+  const link = document.getElementById("referralLinkInput").value;
+  navigator.clipboard?.writeText(link).catch(() => {});
+  smartAlert("Referral link copied!", "success");
+}
+
+function shareReferral(channel) {
+  const link = encodeURIComponent(document.getElementById("referralLinkInput").value);
+  const text = encodeURIComponent("Join PDF USDT and earn daily rewards: ");
+  const url =
+    channel === "whatsapp"
+      ? `https://wa.me/?text=${text}${link}`
+      : `https://t.me/share/url?url=${link}&text=${text}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function toggleFaqBox() {
+  document.getElementById("faqPanel").classList.toggle("hidden");
+}
+
+function scrollToAllPlans() {
+  document.getElementById("allVipPlansContainer").scrollIntoView({ behavior: "smooth" });
+}
+
+async function saveWalletAddress() {
+  const res = await api("/api/payment-method", {
     method: "POST",
     body: JSON.stringify({
       email: currentUser.email,
@@ -436,11 +343,11 @@ async function saveWallet() {
     })
   });
   smartAlert(res.message, res.ok ? "success" : "error");
-  if (res.ok) await hydrateApp();
+  if (res.ok) await enterApp();
 }
 
-async function savePin() {
-  const res = await apiRequest("/api/security-pin", {
+async function saveSecurityPin() {
+  const res = await api("/api/security-pin", {
     method: "POST",
     body: JSON.stringify({
       email: currentUser.email,
@@ -451,8 +358,8 @@ async function savePin() {
   smartAlert(res.message, res.ok ? "success" : "error");
 }
 
-async function submitWithdraw() {
-  const res = await apiRequest("/api/withdraw", {
+async function submitWithdrawal() {
+  const res = await api("/api/withdraw", {
     method: "POST",
     body: JSON.stringify({
       email: currentUser.email,
@@ -464,7 +371,152 @@ async function submitWithdraw() {
   document.getElementById("withdrawAmount").value = "";
   document.getElementById("withdrawPin").value = "";
   smartAlert(res.message, "success");
-  await hydrateApp();
+  await enterApp();
+}
+
+async function loadAdminOverview() {
+  if (!currentUser || !currentUser.is_super_admin) return;
+  const data = await api(`/api/admin/overview?adminEmail=${encodeURIComponent(currentUser.email)}`);
+  if (!data.ok) return smartAlert(data.message, "error");
+
+  const adminPlans = data.plans || [];
+  window.__adminPlans = adminPlans;
+  document.getElementById("adminPlansContainer").innerHTML = adminPlans.length
+    ? adminPlans
+        .map(
+          (p, idx) => `
+            <div class="tx-row">
+              <div>
+                <strong>${p.title} (Level ${p.vip_level})</strong>
+                <div class="tx-sub" style="color:var(--neon-green);">
+                  Price: ${Number(p.price_usdt).toFixed(2)} USDT • Daily: ${Number(p.daily_usdt).toFixed(2)} USDT • ${Number(p.duration_days)} Days
+                </div>
+              </div>
+              <div class="tx-btns">
+                <button type="button" class="mini-action-btn" onclick="editAdminPlan(${idx})">Edit</button>
+                <button type="button" class="mini-action-btn" onclick="deleteAdminPlan(${Number(p.vip_level)})">Delete</button>
+              </div>
+            </div>
+          `
+        )
+        .join("")
+    : `<p class="tx-sub">No VIP plans configured.</p>`;
+
+  document.getElementById("adminTgIds").value = data.telegram_chat_ids || "";
+
+  document.getElementById("superAdminsContainer").innerHTML = (data.super_admins || [])
+    .map(
+      (a) => `
+        <div class="tx-row">
+          <div>
+            <strong>${a.email}</strong>
+            <div class="tx-sub">Added by: ${a.added_by}</div>
+          </div>
+          <span class="st-badge Approved">${a.role}</span>
+        </div>
+      `
+    )
+    .join("");
+
+  const pendings = data.pending_withdrawals || [];
+  document.getElementById("pendingWithdrawalsContainer").innerHTML = pendings.length
+    ? pendings
+        .map(
+          (w) => `
+            <div class="tx-row">
+              <div>
+                <strong>#${w.id} • ${w.user_email}</strong>
+                <div class="tx-sub" style="color:var(--neon-green);">${Number(w.amount_usdt).toFixed(2)} USDT</div>
+                <div class="tx-sub">${w.details || ""}</div>
+              </div>
+              <div class="tx-btns">
+                <button type="button" class="mini-action-btn" onclick="decideWithdrawal(${w.id}, 'Approved')">Approve</button>
+                <button type="button" class="mini-action-btn" onclick="decideWithdrawal(${w.id}, 'Rejected')">Reject</button>
+              </div>
+            </div>
+          `
+        )
+        .join("")
+    : `<p class="tx-sub">No pending withdrawals.</p>`;
+}
+
+function editAdminPlan(idx) {
+  const p = (window.__adminPlans || [])[idx];
+  if (!p) return;
+  document.getElementById("adminPlanLevel").value = p.vip_level;
+  document.getElementById("adminPlanTitle").value = p.title;
+  document.getElementById("adminPlanPrice").value = p.price_usdt;
+  document.getElementById("adminPlanDaily").value = p.daily_usdt;
+  document.getElementById("adminPlanDuration").value = p.duration_days;
+}
+
+async function saveAdminPlan() {
+  const lvl = Number(document.getElementById("adminPlanLevel").value);
+  const res = await api("/api/admin/upsert-plan", {
+    method: "POST",
+    body: JSON.stringify({
+      adminEmail: currentUser.email,
+      vip_level: lvl,
+      title: (document.getElementById("adminPlanTitle").value || `VIP ${lvl}`).trim(),
+      price_usdt: Number(document.getElementById("adminPlanPrice").value),
+      daily_usdt: Number(document.getElementById("adminPlanDaily").value),
+      duration_days: Number(document.getElementById("adminPlanDuration").value)
+    })
+  });
+  smartAlert(res.message, res.ok ? "success" : "error");
+  if (res.ok) {
+    await loadAdminOverview();
+    await enterApp();
+  }
+}
+
+async function deleteAdminPlan(vipLevel) {
+  const res = await api("/api/admin/delete-plan", {
+    method: "POST",
+    body: JSON.stringify({ adminEmail: currentUser.email, vip_level: vipLevel })
+  });
+  smartAlert(res.message, res.ok ? "success" : "error");
+  if (res.ok) {
+    await loadAdminOverview();
+    await enterApp();
+  }
+}
+
+async function saveAdminTgIds() {
+  const res = await api("/api/admin/settings", {
+    method: "POST",
+    body: JSON.stringify({
+      adminEmail: currentUser.email,
+      telegram_chat_ids: document.getElementById("adminTgIds").value
+    })
+  });
+  smartAlert(res.message, res.ok ? "success" : "error");
+  if (res.ok) await loadAdminOverview();
+}
+
+async function addNewSuperAdmin() {
+  const res = await api("/api/admin/add-super-admin", {
+    method: "POST",
+    body: JSON.stringify({
+      adminEmail: currentUser.email,
+      newAdminEmail: document.getElementById("newSuperAdminInput").value
+    })
+  });
+  if (res.ok) document.getElementById("newSuperAdminInput").value = "";
+  smartAlert(res.message, res.ok ? "success" : "error");
+  if (res.ok) await loadAdminOverview();
+}
+
+async function decideWithdrawal(txId, decision) {
+  const res = await api("/api/admin/withdrawal-action", {
+    method: "POST",
+    body: JSON.stringify({ adminEmail: currentUser.email, txId, decision })
+  });
+  smartAlert(res.message, res.ok ? "success" : "error");
+  if (res.ok) {
+    await loadAdminOverview();
+    await enterApp();
+  }
 }
 
 function logout() {
@@ -472,4 +524,5 @@ function logout() {
   location.reload();
 }
 
-window.addEventListener("DOMContentLoaded", hydrateApp);
+window.addEventListener("DOMContentLoaded", enterApp);
+                          

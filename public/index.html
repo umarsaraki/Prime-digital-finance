@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PDF USDT — Invest • Earn • Grow</title>
+  <title>Prime Digital Finance (PDF)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -20,16 +20,16 @@
         <div class="brand-left">
           <div class="tether-mark">₮</div>
           <div>
-            <div class="brand-name">PDF <span>USDT</span></div>
-            <div class="brand-tagline">Invest • Earn • Grow</div>
+            <div class="brand-name">PRIME <span>DIGITAL</span></div>
+            <div class="brand-tagline">FINANCE • TRANSPARENCY • CONTROL</div>
           </div>
         </div>
-        <span class="live-chip">SMART VIP</span>
+        <span class="live-chip">PDF PLATFORM</span>
       </div>
 
       <div id="loginBox">
         <h2 class="auth-title">Welcome Back</h2>
-        <p class="auth-sub">Sign in to access your USDT wallet, VIP plans & team.</p>
+        <p class="auth-sub">Sign in to access your Prime Digital Finance account.</p>
         <form id="loginForm" class="form-stack">
           <div class="field">
             <label for="loginEmail">Email Address</label>
@@ -48,7 +48,7 @@
 
       <div id="registerBox" class="hidden">
         <h2 class="auth-title">Create Account</h2>
-        <p class="auth-sub">Join PDF USDT and start earning daily rewards.</p>
+        <p class="auth-sub">Create your Prime Digital Finance account.</p>
         <form id="registerForm" class="form-stack">
           <div class="field">
             <label for="regName">Full Name</label>
@@ -86,8 +86,8 @@
       <div class="brand-left">
         <div class="tether-mark">₮</div>
         <div>
-          <div class="brand-name">PDF <span>USDT</span></div>
-          <div class="brand-tagline">Invest • Earn • Grow</div>
+          <div class="brand-name">PRIME <span>DIGITAL</span></div>
+          <div class="brand-tagline">FINANCE • TRANSPARENCY • CONTROL</div>
         </div>
       </div>
 
@@ -114,14 +114,15 @@
       <!-- 1. HOME TAB -->
       <section id="sec-home" class="tab-section active">
         <!-- Hero Banner -->
-        <div class="hero-banner neon-green-box">
+        <div class="hero-banner neon-green-box" id="homeHeroBanner">
+          <img id="heroBannerImg" class="hero-banner-image hidden" alt="Prime Digital Finance announcement banner" />
           <div class="hero-text-col">
             <div class="hero-welcome">Welcome to</div>
-            <h1 class="hero-brand">PDF <span>USDT</span></h1>
-            <div class="hero-sub-bold">Smart Investment Platform</div>
-            <div class="hero-sub-italic">Earn Daily, Grow Forever</div>
+            <h1 class="hero-brand" id="heroTitle">PRIME DIGITAL FINANCE</h1>
+            <div class="hero-sub-bold">Prime Digital Finance</div>
+            <div class="hero-sub-italic" id="heroSubtitle">Your account. Your transactions. Clear records.</div>
             <button type="button" class="btn-gold-cta" onclick="switchTab('sec-products')">
-              Start Earning Now <span class="cta-circle">›</span>
+              Explore Products <span class="cta-circle">›</span>
             </button>
           </div>
           <div class="hero-visual-col" aria-hidden="true">
@@ -176,9 +177,20 @@
 
         <!-- Quick Deposit Drawer (when clicked) -->
         <div id="depositDrawer" class="deposit-drawer neon-green-box hidden">
-          <div class="drawer-row">
-            <input type="number" step="0.01" min="1" id="depositInput" placeholder="Enter USDT deposit amount (e.g. 25)" />
-            <button type="button" class="btn-deposit-green" onclick="submitQuickDeposit()">Confirm Deposit</button>
+          <h3 class="panel-heading">Submit a Deposit Request</h3>
+          <div class="payment-instructions">
+            <div><strong>Network:</strong> <span id="depositNetworkLabel">TRC20</span></div>
+            <div><strong>Deposit limits:</strong> <span id="depositLimitsLabel">1–5000 USDT</span></div>
+            <div><strong>Wallet address:</strong></div>
+            <div class="copy-wallet-row"><code id="depositAddressLabel">Admin has not configured a deposit wallet.</code><button type="button" class="copy-mini-btn" onclick="copyDepositAddress()">Copy</button></div>
+            <p id="depositInstructionsLabel">Please wait for payment instructions from the administrator.</p>
+          </div>
+          <div class="form-stack">
+            <div class="field"><label for="depositInput">Amount (USDT)</label><input type="number" step="0.01" min="0.01" id="depositInput" placeholder="Enter amount sent" /></div>
+            <div class="field"><label for="depositTxRef">Transaction hash / reference (optional)</label><input type="text" id="depositTxRef" placeholder="Paste transaction reference" /></div>
+            <div class="field"><label for="depositProof">Payment screenshot (JPG, PNG or WEBP, max 3 MB)</label><input type="file" accept="image/png,image/jpeg,image/webp" id="depositProof" required /></div>
+            <button type="button" class="btn-deposit-green" onclick="submitQuickDeposit()">Submit for Admin Review</button>
+            <p class="tx-sub">Your balance is not credited until an administrator verifies the payment and approves this request. Never send funds to an address that does not match the selected network.</p>
           </div>
         </div>
 
@@ -222,9 +234,7 @@
           <div class="support-hero-text">
             <h2>Support <span>Center</span></h2>
             <p>We are here to help you anytime, anywhere. Feel free to contact us!</p>
-            <button type="button" class="btn-live-pill" onclick="smartAlert('24/7 Live Support is online and ready.', 'success')">
-              🎧 24/7 Live Support
-            </button>
+            <a id="liveChatLink" class="btn-live-pill" href="#" target="_blank" rel="noopener noreferrer">🎧 Contact Support</a>
           </div>
           <div class="support-chat-bubble">•••</div>
         </div>
@@ -234,21 +244,21 @@
             <div class="s-icon">💬</div>
             <h3>Live Chat</h3>
             <p>Chat with our support team instantly</p>
-            <button type="button" class="s-btn btn-g" onclick="smartAlert('Opening Live Chat desk...', 'info')">Start Chat &gt;</button>
+            <a id="supportChatLink" class="s-btn btn-g" href="#" target="_blank" rel="noopener noreferrer">Start Chat &gt;</a>
           </div>
 
           <div class="support-box theme-blue">
             <div class="s-icon">✈️</div>
             <h3>Telegram Channel</h3>
             <p>Follow us for latest updates and support</p>
-            <button type="button" class="s-btn btn-b" onclick="smartAlert('Telegram channel updates enabled.', 'info')">Follow Now &gt;</button>
+            <a id="telegramChannelLink" class="s-btn btn-b" href="#" target="_blank" rel="noopener noreferrer">Follow Now &gt;</a>
           </div>
 
           <div class="support-box theme-green">
             <div class="s-icon">💚</div>
             <h3>WhatsApp Channel</h3>
             <p>Join our WhatsApp channel for instant news</p>
-            <button type="button" class="s-btn btn-g" onclick="smartAlert('WhatsApp broadcast channel ready.', 'info')">Join Now &gt;</button>
+            <a id="whatsappChannelLink" class="s-btn btn-g" href="#" target="_blank" rel="noopener noreferrer">Join Now &gt;</a>
           </div>
 
           <div class="support-box theme-purple">
@@ -271,7 +281,7 @@
             <span class="megaphone">📣</span>
             <div>
               <div class="ann-title">Latest Announcement</div>
-              <div class="ann-desc">Welcome to PDF USDT. Enjoy our services and grow together!</div>
+              <div class="ann-desc" id="announcementText">Welcome to Prime Digital Finance.</div>
             </div>
           </div>
           <button type="button" class="view-all-btn" onclick="switchTab('sec-history')">View All &gt;</button>
@@ -337,13 +347,7 @@
             <div class="vip-sec-title">👥 Your Team Members</div>
             <button type="button" class="view-all-btn" onclick="smartAlert('Team network synced with D1.', 'info')">View All &gt;</button>
           </div>
-          <div class="members-strip">
-            <div class="member-slot"><div class="slot-ring">👤</div><span>user001</span><small>12-11-2025</small></div>
-            <div class="member-slot"><div class="slot-ring">👤</div><span>user002</span><small>12-11-2025</small></div>
-            <div class="member-slot"><div class="slot-ring">👤</div><span>user003</span><small>12-11-2025</small></div>
-            <div class="member-slot"><div class="slot-ring">👤</div><span>user004</span><small>12-11-2025</small></div>
-            <div class="member-slot"><div class="slot-ring">👤</div><span>user005</span><small>12-11-2025</small></div>
-          </div>
+          <div id="teamMembersList" class="members-strip"><p class="tx-sub">Your real referrals will appear here.</p></div>
         </div>
 
         <div class="performance-bar neon-green-box">
@@ -369,7 +373,7 @@
         <div class="products-hero neon-green-box">
           <div>
             <h2 class="prod-hero-title">📦 Products</h2>
-            <p class="prod-hero-sub">View your current VIP product and track your earnings</p>
+            <p class="prod-hero-sub">View your current product, duration and account activity</p>
           </div>
           <div class="prod-crown-box">👑<br /><small>VIP</small></div>
         </div>
@@ -396,13 +400,13 @@
           <div class="earn-left">
             <span class="sack-ico">💰</span>
             <div>
-              <div class="small-muted">Daily Earning</div>
+              <div class="small-muted">Indicative Daily Figure</div>
               <div id="prodDailyVal" class="earn-big-green">0.20 USDT</div>
-              <div class="earn-sub-green">(Daily Check-In / VIP Yield)</div>
+              <div class="earn-sub-green">(Figures are not guaranteed returns)</div>
             </div>
           </div>
           <div class="earn-right">
-            <div class="small-muted">Next Earning In:</div>
+            <div class="small-muted">Next Check-In Available In:</div>
             <div id="countdownClock" class="countdown-digits">23:59:12</div>
             <div class="clock-labels"><span>Hrs</span><span>Min</span><span>Sec</span></div>
             <button type="button" id="prodCheckinBtn" class="btn-claim-mini" onclick="claimDailyReward()">Claim Reward</button>
@@ -432,7 +436,7 @@
             <span class="chart-up">📈</span>
             <div>
               <div class="ann-title">Upgrade Your Product</div>
-              <div class="ann-desc">Choose a higher VIP plan and earn more!</div>
+              <div class="ann-desc">Review available products and their terms before choosing.</div>
             </div>
           </div>
           <button type="button" class="btn-gold-cta compact" onclick="scrollToAllPlans()">👑 View VIP Plans &gt;</button>
@@ -450,6 +454,12 @@
             <span class="active-member-pill">✓ Verified Member</span>
           </div>
           <button type="button" class="btn-logout-dark" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Account & Transactions</h3>
+          <button type="button" class="btn-deposit-green" onclick="goToDeposit()">＋ Make a Deposit</button>
+          <button type="button" class="btn-live-pill" onclick="switchTab('sec-history')">View Deposit / Withdrawal History</button>
         </div>
 
         <div class="dark-panel neon-green-box">
@@ -483,11 +493,11 @@
         </div>
 
         <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading">Withdraw USDT (Min 2.00 USDT)</h3>
+          <h3 class="panel-heading" id="withdrawHeading">Withdraw USDT</h3>
           <div class="form-stack">
             <div class="field">
               <label for="withdrawAmount">Amount (USDT)</label>
-              <input type="number" step="0.01" min="2" id="withdrawAmount" placeholder="Minimum 2.00 USDT" />
+              <input type="number" step="0.01" min="0.01" id="withdrawAmount" placeholder="Enter withdrawal amount" />
             </div>
             <div class="field">
               <label for="withdrawPin">4-Digit Security PIN</label>
@@ -512,8 +522,46 @@
       <!-- SUPER ADMIN PANEL VIEW -->
       <section id="sec-admin" class="tab-section">
         <div class="dark-panel neon-gold-box">
+          <h3 class="panel-heading">Prime Digital Finance — Website Control</h3>
+          <p class="auth-sub">Manage the public website content, payment instructions and support links.</p>
+          <div class="admin-plan-grid">
+            <div class="field"><label for="cfgCompanyName">Company name</label><input id="cfgCompanyName" value="Prime Digital Finance" /></div>
+            <div class="field"><label for="cfgBrandShort">Short brand</label><input id="cfgBrandShort" value="PDF" /></div>
+            <div class="field full-w"><label for="cfgTagline">Tagline</label><input id="cfgTagline" /></div>
+            <div class="field full-w"><label for="cfgHeroTitle">Home banner title</label><input id="cfgHeroTitle" /></div>
+            <div class="field full-w"><label for="cfgHeroSubtitle">Home banner subtitle</label><input id="cfgHeroSubtitle" /></div>
+            <div class="field full-w"><label for="cfgBannerFile">Upload / replace Home banner (JPG, PNG, WEBP; max 5 MB)</label><input type="file" id="cfgBannerFile" accept="image/png,image/jpeg,image/webp" /></div>
+            <div class="field full-w"><label for="cfgDepositAddress">USDT deposit wallet address</label><input id="cfgDepositAddress" /></div>
+            <div class="field"><label for="cfgDepositNetwork">Deposit network</label><select id="cfgDepositNetwork"><option>TRC20</option><option>BEP20</option><option>ERC20</option></select></div>
+            <div class="field"><label for="cfgDepositMin">Minimum deposit (USDT)</label><input type="number" id="cfgDepositMin" min="0.01" step="0.01" /></div>
+            <div class="field"><label for="cfgDepositMax">Maximum deposit (USDT)</label><input type="number" id="cfgDepositMax" min="0.01" step="0.01" /></div>
+            <div class="field"><label for="cfgWithdrawMin">Minimum withdrawal (USDT)</label><input type="number" id="cfgWithdrawMin" min="0.01" step="0.01" /></div>
+            <div class="field"><label for="cfgCheckinReward">Daily check-in reward (USDT; 0 disables)</label><input type="number" id="cfgCheckinReward" min="0" step="0.01" /></div>
+            <div class="field full-w"><label for="cfgDepositInstructions">Deposit instructions</label><textarea id="cfgDepositInstructions" rows="3"></textarea></div>
+            <div class="field"><label for="cfgLiveChat">Live chat URL</label><input id="cfgLiveChat" placeholder="https://..." /></div>
+            <div class="field"><label for="cfgTelegram">Telegram channel URL</label><input id="cfgTelegram" placeholder="https://t.me/..." /></div>
+            <div class="field"><label for="cfgWhatsapp">WhatsApp channel URL</label><input id="cfgWhatsapp" placeholder="https://whatsapp.com/channel/..." /></div>
+            <div class="field full-w"><label for="cfgAnnouncement">Home / Support announcement</label><textarea id="cfgAnnouncement" rows="2"></textarea></div>
+            <div class="field full-w"><label for="cfgFaq">FAQ / Support information</label><textarea id="cfgFaq" rows="3"></textarea></div>
+          </div>
+          <button type="button" class="btn-deposit-green" onclick="savePlatformSettings()">Save Website Settings</button>
+          <button type="button" class="btn-live-pill" onclick="uploadHomeBanner()">Upload Home Banner</button>
+        </div>
+
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Pending Deposit Requests</h3>
+          <p class="tx-sub">Check the submitted proof and transaction reference before approving. Approval credits the member balance once.</p>
+          <div id="pendingDepositsContainer" class="tx-stack"></div>
+        </div>
+
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Recent Members</h3>
+          <div id="adminMembersContainer" class="tx-stack"></div>
+        </div>
+
+        <div class="dark-panel neon-gold-box">
           <h3 class="panel-heading">👑 VIP Plan Builder (Add / Edit Any Plan)</h3>
-          <p class="auth-sub" style="margin-bottom:12px;">Set VIP level, title, price (USDT), daily yield (USDT), and duration (days).</p>
+          <p class="auth-sub" style="margin-bottom:12px;">Set product level, title, price and duration. Any reward figures must be clearly disclosed and must not be presented as guaranteed.</p>
           <div class="admin-plan-grid">
             <div class="field">
               <label for="adminPlanLevel">VIP Level</label>
@@ -528,7 +576,7 @@
               <input type="number" min="0.01" step="0.01" id="adminPlanPrice" placeholder="10.00" />
             </div>
             <div class="field">
-              <label for="adminPlanDaily">Daily Yield (USDT)</label>
+              <label for="adminPlanDaily">Daily projection (USDT; not guaranteed)</label>
               <input type="number" min="0" step="0.01" id="adminPlanDaily" placeholder="1.00" />
             </div>
             <div class="field full-w">
@@ -540,19 +588,10 @@
           <div id="adminPlansContainer" class="tx-stack" style="margin-top:14px;"></div>
         </div>
 
-        <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading">Telegram Chat IDs</h3>
-          <div class="form-stack">
-            <div class="field">
-              <label for="adminTgIds">Comma-separated Telegram Chat IDs</label>
-              <input type="text" id="adminTgIds" placeholder="7544805601,8552397401" />
-            </div>
-            <button type="button" class="btn-deposit-green" onclick="saveAdminTgIds()">Save Telegram IDs</button>
-          </div>
-        </div>
+        
 
         <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading">Super Admins (Primary: umarsaraki96@gmail.com)</h3>
+          <h3 class="panel-heading">Super Admin Accounts</h3>
           <div class="form-stack">
             <div class="field">
               <label for="newSuperAdminInput">Add New Super Admin Email</label>

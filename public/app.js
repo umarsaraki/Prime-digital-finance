@@ -2,6 +2,8 @@ let plans = [];
 let currentUser = null;
 let transactions = [];
 let countdownInterval = null;
+let siteSettings = {};
+let teamData = { members: [], total: 0, active: 0, earnings: 0 };
 
 function smartAlert(msg, type = "info") {
   const el = document.getElementById("smartAlert");
@@ -38,10 +40,11 @@ function switchTab(sectionId, navBtn) {
 
 async function api(path, options = {}) {
   try {
-    const res = await fetch(path, {
-      headers: { "Content-Type": "application/json" },
-      ...options
-    });
+    const token = localStorage.getItem("pdf_session_token") || "";
+    const headers = { ...(options.headers || {}) };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    if (!(options.body instanceof FormData) && options.body && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
+    const res = await fetch(path, { ...options, headers });
     return await res.json();
   } catch (err) {
     return { ok: false, message: "Connection failed. Please try again." };
@@ -78,30 +81,29 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     })
   });
   if (!res.ok) return smartAlert(res.message, "error");
-  localStorage.setItem("pdf_usdt_email", email);
+  localStorage.setItem("pdf_session_token", res.token);
   smartAlert(res.message, "success");
   await enterApp();
 });
 
 async function enterApp() {
-  const email = localStorage.getItem("pdf_usdt_email");
-  if (!email) return;
-
-  const data = await api(`/api/user?email=${encodeURIComponent(email)}`);
+  const token = localStorage.getItem("pdf_session_token");
+  if (!token) return;
+  const data = await api("/api/user");
   if (!data.ok) {
-    localStorage.removeItem("pdf_usdt_email");
+    localStorage.removeItem("pdf_session_token");
     return;
   }
-
   currentUser = data.user;
   plans = data.plans || [];
   transactions = data.transactions || [];
-
+  siteSettings = data.settings || {};
+  teamData = data.team || { members: [], total: 0, active: 0, earnings: 0 };
   document.getElementById("authWrap").style.display = "none";
   document.getElementById("appShell").style.display = "block";
   document.getElementById("adminTopBtn").classList.toggle("hidden", !currentUser.is_super_admin);
-
   renderApp();
+  renderPublicSettings();
   startCountdownTicker();
 }
 
@@ -136,13 +138,15 @@ function renderApp() {
   document.getElementById("statTotalDeposit").textContent = `${totalDeposit.toFixed(2)} USDT`;
   document.getElementById("statTotalStake").textContent = `${totalStake.toFixed(2)} USDT`;
   document.getElementById("statTotalReward").textContent = `${totalReward.toFixed(2)} USDT`;
-  document.getElementById("statMyTeam").textContent = "0 Members";
+  document.getElementById("statMyTeam").textContent = `${teamData.total || 0} Members`;
 
-  document.getElementById("teamTotalMembers").textContent = "0";
-  document.getElementById("teamActiveMembers").textContent = "0";
-  document.getElementById("teamDirectRefs").textContent = "0";
-  document.getElementById("teamEarningsVal").textContent = "0.00 USDT";
-  document.getElementById("perfEarnings").textContent = "0.00 USDT";
+  document.getElementById("teamTotalMembers").textContent = String(teamData.total || 0);
+  document.getElementById("teamActiveMembers").textContent = String(teamData.active || 0);
+  document.getElementById("teamDirectRefs").textContent = String(teamData.total || 0);
+  document.getElementById("teamEarningsVal").textContent = `${Number(teamData.earnings || 0).toFixed(2)} USDT`;
+  document.getElementById("perfEarnings").textContent = `${Number(teamData.earnings || 0).toFixed(2)} USDT`;
+  const teamList=document.getElementById("teamMembersList");
+  if(teamList) teamList.innerHTML=(teamData.members||[]).map(m=>`<div class="member-slot"><div class="slot-ring">👤</div><span>${escapeHtml(m.fullname)}</span><small>${new Date(m.created_at).toLocaleDateString()}</small></div>`).join("") || `<p class="tx-sub">No referred members yet.</p>`;
 
   document.getElementById("walletAddress").value = currentUser.wallet_address || "";
   document.getElementById("walletNetwork").value = currentUser.wallet_network || "TRC20";
@@ -163,11 +167,11 @@ function renderApp() {
         return `
           <div class="vip-card-item ${tierCls}">
             <div>
-              <div class="vip-pill-head">${p.title || `VIP ${lvl}`}</div>
+              <div class="vip-pill-head">${escapeHtml(p.title || `VIP ${lvl}`)}</div>
               <div class="vip-wreath-icon">${ico}</div>
               <div class="vip-price-big">${Number(p.price_usdt).toFixed(2)} USDT</div>
               <div class="vip-line-meta">
-                Daily Yield: ${Number(p.daily_usdt).toFixed(2)} USDT<br />
+                Indicative daily projection (not guaranteed): ${Number(p.daily_usdt).toFixed(2)} USDT<br />
                 Duration: ${Number(p.duration_days)} Days
               </div>
             </div>
@@ -204,7 +208,7 @@ function renderApp() {
     document.getElementById("prodActiveTitle").textContent = "VIP 0";
     document.getElementById("prodActivePrice").textContent = "Free Trial";
     document.getElementById("prodDuration").textContent = "3 Days";
-    document.getElementById("prodDailyVal").textContent = "0.20 USDT";
+    document.getElementById("prodDailyVal").textContent = `${Number(siteSettings.checkin_reward ?? 0.2).toFixed(2)} USDT`;
     document.getElementById("prodDaysLeft").textContent = "3 Days";
   }
 
@@ -224,8 +228,8 @@ function renderApp() {
         (t) => `
           <div class="tx-row">
             <div>
-              <strong>${t.type}</strong>
-              <div class="tx-sub">${t.details || ""} • ${new Date(t.created_at).toLocaleString()}</div>
+              <strong>${escapeHtml(t.type)}</strong>
+              <div class="tx-sub">${escapeHtml(t.details || "")} • ${new Date(t.created_at).toLocaleString()}</div>
             </div>
             <div style="text-align:right;">
               <div style="font-weight:900; color:var(--neon-green);">${Number(t.amount_usdt || 0).toFixed(2)} USDT</div>
@@ -237,6 +241,41 @@ function renderApp() {
       .join("");
   }
 }
+
+function setExternalLink(id, url) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (url && /^https:\/\//i.test(url)) { el.href = url; el.classList.remove("hidden"); }
+  else { el.href = "#"; el.classList.add("hidden"); }
+}
+
+function renderPublicSettings() {
+  const cfg = siteSettings || {};
+  const banner = document.getElementById("heroBannerImg");
+  if (banner) {
+    if (cfg.banner_key) { banner.src = `/media/${cfg.banner_key}`; banner.classList.remove("hidden"); }
+    else { banner.removeAttribute("src"); banner.classList.add("hidden"); }
+  }
+  const brand = document.querySelectorAll(".brand-name");
+  brand.forEach(el => { el.innerHTML = `${escapeHtml(cfg.company_name || "Prime Digital Finance")} <span>(${escapeHtml(cfg.brand_short || "PDF")})</span>`; });
+  const heroTitle=document.getElementById("heroTitle"); if(heroTitle) heroTitle.textContent=cfg.hero_title || "PRIME DIGITAL FINANCE";
+  const heroSubtitle=document.getElementById("heroSubtitle"); if(heroSubtitle) heroSubtitle.textContent=cfg.hero_subtitle || "Your account. Your transactions. Clear records.";
+  const tagline = document.querySelectorAll(".brand-tagline");
+  tagline.forEach(el => el.textContent = cfg.tagline || "FINANCE • TRANSPARENCY • CONTROL");
+  const ann = document.getElementById("announcementText"); if (ann) ann.textContent = cfg.announcement || "Welcome to Prime Digital Finance.";
+  const faq = document.querySelector("#faqPanel p"); if (faq) faq.textContent = cfg.faq_text || "Contact support if you need help with a payment or account.";
+  setExternalLink("liveChatLink", cfg.live_chat_url);
+  setExternalLink("supportChatLink", cfg.live_chat_url);
+  setExternalLink("telegramChannelLink", cfg.telegram_url);
+  setExternalLink("whatsappChannelLink", cfg.whatsapp_url);
+  const net = document.getElementById("depositNetworkLabel"); if (net) net.textContent = cfg.deposit_network || "TRC20";
+  const addr = document.getElementById("depositAddressLabel"); if (addr) addr.textContent = cfg.deposit_address || "Admin has not configured a deposit wallet.";
+  const instructions = document.getElementById("depositInstructionsLabel"); if (instructions) instructions.textContent = cfg.deposit_instructions || "Please contact support for deposit instructions.";
+  const limits=document.getElementById("depositLimitsLabel"); if(limits) limits.textContent=`${cfg.deposit_min||1}–${cfg.deposit_max||5000} USDT`;
+  const withdrawHeading=document.getElementById("withdrawHeading"); if(withdrawHeading) withdrawHeading.textContent=`Withdraw USDT (Minimum ${cfg.withdraw_min||2} USDT)`;
+  const withdrawAmount=document.getElementById("withdrawAmount"); if(withdrawAmount) withdrawAmount.min=cfg.withdraw_min||2;
+}
+function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
 function startCountdownTicker() {
   if (countdownInterval) clearInterval(countdownInterval);
@@ -266,21 +305,37 @@ function startCountdownTicker() {
 }
 
 function openDepositBox() {
-  document.getElementById("depositDrawer").classList.toggle("hidden");
+  const drawer=document.getElementById("depositDrawer");
+  drawer.classList.remove("hidden");
   document.getElementById("depositInput").focus();
+}
+function goToDeposit() {
+  switchTab("sec-home");
+  openDepositBox();
 }
 
 async function submitQuickDeposit() {
   const amount = Number(document.getElementById("depositInput").value);
-  const res = await api("/api/deposit", {
-    method: "POST",
-    body: JSON.stringify({ email: currentUser.email, amount })
-  });
+  const proof = document.getElementById("depositProof").files[0];
+  if (!proof) return smartAlert("Please upload your payment screenshot.", "error");
+  const form = new FormData();
+  form.append("amount", String(amount));
+  form.append("network", siteSettings.deposit_network || "TRC20");
+  form.append("tx_reference", document.getElementById("depositTxRef").value.trim());
+  form.append("proof", proof);
+  const res = await api("/api/deposit", { method: "POST", body: form });
   if (!res.ok) return smartAlert(res.message, "error");
   document.getElementById("depositInput").value = "";
+  document.getElementById("depositTxRef").value = "";
+  document.getElementById("depositProof").value = "";
   document.getElementById("depositDrawer").classList.add("hidden");
   smartAlert(res.message, "success");
   await enterApp();
+}
+function copyDepositAddress() {
+  const value = document.getElementById("depositAddressLabel").textContent;
+  if (!value || value.includes("not configured")) return smartAlert("Deposit wallet has not been configured.", "error");
+  navigator.clipboard?.writeText(value).then(() => smartAlert("Deposit address copied.", "success")).catch(() => smartAlert("Could not copy address.", "error"));
 }
 
 async function buyVip(vip) {
@@ -317,7 +372,7 @@ function copyReferralLink() {
 
 function shareReferral(channel) {
   const link = encodeURIComponent(document.getElementById("referralLinkInput").value);
-  const text = encodeURIComponent("Join PDF USDT and earn daily rewards: ");
+  const text = encodeURIComponent("Explore Prime Digital Finance (PDF): ");
   const url =
     channel === "whatsapp"
       ? `https://wa.me/?text=${text}${link}`
@@ -376,68 +431,42 @@ async function submitWithdrawal() {
 
 async function loadAdminOverview() {
   if (!currentUser || !currentUser.is_super_admin) return;
-  const data = await api(`/api/admin/overview?adminEmail=${encodeURIComponent(currentUser.email)}`);
+  const data = await api("/api/admin/overview");
   if (!data.ok) return smartAlert(data.message, "error");
-
-  const adminPlans = data.plans || [];
-  window.__adminPlans = adminPlans;
-  document.getElementById("adminPlansContainer").innerHTML = adminPlans.length
-    ? adminPlans
-        .map(
-          (p, idx) => `
-            <div class="tx-row">
-              <div>
-                <strong>${p.title} (Level ${p.vip_level})</strong>
-                <div class="tx-sub" style="color:var(--neon-green);">
-                  Price: ${Number(p.price_usdt).toFixed(2)} USDT • Daily: ${Number(p.daily_usdt).toFixed(2)} USDT • ${Number(p.duration_days)} Days
-                </div>
-              </div>
-              <div class="tx-btns">
-                <button type="button" class="mini-action-btn" onclick="editAdminPlan(${idx})">Edit</button>
-                <button type="button" class="mini-action-btn" onclick="deleteAdminPlan(${Number(p.vip_level)})">Delete</button>
-              </div>
-            </div>
-          `
-        )
-        .join("")
-    : `<p class="tx-sub">No VIP plans configured.</p>`;
-
-  document.getElementById("adminTgIds").value = data.telegram_chat_ids || "";
-
-  document.getElementById("superAdminsContainer").innerHTML = (data.super_admins || [])
-    .map(
-      (a) => `
-        <div class="tx-row">
-          <div>
-            <strong>${a.email}</strong>
-            <div class="tx-sub">Added by: ${a.added_by}</div>
-          </div>
-          <span class="st-badge Approved">${a.role}</span>
-        </div>
-      `
-    )
-    .join("");
-
-  const pendings = data.pending_withdrawals || [];
-  document.getElementById("pendingWithdrawalsContainer").innerHTML = pendings.length
-    ? pendings
-        .map(
-          (w) => `
-            <div class="tx-row">
-              <div>
-                <strong>#${w.id} • ${w.user_email}</strong>
-                <div class="tx-sub" style="color:var(--neon-green);">${Number(w.amount_usdt).toFixed(2)} USDT</div>
-                <div class="tx-sub">${w.details || ""}</div>
-              </div>
-              <div class="tx-btns">
-                <button type="button" class="mini-action-btn" onclick="decideWithdrawal(${w.id}, 'Approved')">Approve</button>
-                <button type="button" class="mini-action-btn" onclick="decideWithdrawal(${w.id}, 'Rejected')">Reject</button>
-              </div>
-            </div>
-          `
-        )
-        .join("")
-    : `<p class="tx-sub">No pending withdrawals.</p>`;
+  const adminPlans = data.plans || []; window.__adminPlans = adminPlans;
+  document.getElementById("adminPlansContainer").innerHTML = adminPlans.map((p, idx) => `
+    <div class="tx-row"><div><strong>${escapeHtml(p.title)} (Level ${p.vip_level})</strong><div class="tx-sub">Price: ${Number(p.price_usdt).toFixed(2)} USDT • Indicative daily figure: ${Number(p.daily_usdt).toFixed(2)} USDT • ${Number(p.duration_days)} days</div></div><div class="tx-btns"><button type="button" class="mini-action-btn" onclick="editAdminPlan(${idx})">Edit</button><button type="button" class="mini-action-btn" onclick="deleteAdminPlan(${Number(p.vip_level)})">Delete</button></div></div>`).join("") || `<p class="tx-sub">No products configured.</p>`;
+  const cfg = data.settings || {};
+  const fields = {cfgCompanyName:"company_name",cfgBrandShort:"brand_short",cfgTagline:"tagline",cfgHeroTitle:"hero_title",cfgHeroSubtitle:"hero_subtitle",cfgDepositAddress:"deposit_address",cfgDepositNetwork:"deposit_network",cfgDepositMin:"deposit_min",cfgDepositMax:"deposit_max",cfgWithdrawMin:"withdraw_min",cfgCheckinReward:"checkin_reward",cfgDepositInstructions:"deposit_instructions",cfgLiveChat:"live_chat_url",cfgTelegram:"telegram_url",cfgWhatsapp:"whatsapp_url",cfgAnnouncement:"announcement",cfgFaq:"faq_text"};
+  for (const [id,key] of Object.entries(fields)) { const el=document.getElementById(id); if(el) el.value=cfg[key] ?? ""; }
+  window.__adminAccounts = data.super_admins || [];
+  document.getElementById("superAdminsContainer").innerHTML = window.__adminAccounts.map((a,idx)=>`<div class="tx-row"><div><strong>${escapeHtml(a.email)}</strong><div class="tx-sub">Added by: ${escapeHtml(a.added_by)}</div></div><div class="tx-btns"><span class="st-badge Approved">${escapeHtml(a.role)}</span>${a.email.toLowerCase()!==currentUser.email.toLowerCase()?`<button class="mini-action-btn" onclick="removeSuperAdminAt(${idx})">Remove</button>`:""}</div></div>`).join("");
+  document.getElementById("pendingWithdrawalsContainer").innerHTML = (data.pending_withdrawals||[]).map(w=>`<div class="tx-row"><div><strong>#${w.id} • ${escapeHtml(w.user_email)}</strong><div class="tx-sub">${Number(w.amount_usdt).toFixed(2)} USDT</div><div class="tx-sub">${escapeHtml(w.details||"")}</div></div><div class="tx-btns"><button class="mini-action-btn" onclick="decideWithdrawal(${w.id},'Approved')">Approve</button><button class="mini-action-btn" onclick="decideWithdrawal(${w.id},'Rejected')">Reject</button></div></div>`).join("") || `<p class="tx-sub">No pending withdrawals.</p>`;
+  document.getElementById("adminMembersContainer").innerHTML = (data.recent_users||[]).map(u=>`<div class="tx-row"><div><strong>${escapeHtml(u.fullname)}</strong><div class="tx-sub">${escapeHtml(u.custom_id)} • ${escapeHtml(u.email)}</div></div><strong>${Number(u.balance_usdt).toFixed(2)} USDT</strong></div>`).join("") || `<p class="tx-sub">No members yet.</p>`;
+  const deposits = data.pending_deposits || [];
+  const box = document.getElementById("pendingDepositsContainer");
+  box.innerHTML = deposits.map(d=>`<div class="admin-review-row"><strong>Deposit #${d.id} • ${escapeHtml(d.user_email)}</strong><div class="tx-sub">${Number(d.amount_usdt).toFixed(2)} USDT • ${escapeHtml(d.network)} • ${new Date(d.created_at).toLocaleString()}</div><div class="tx-sub">Reference: ${escapeHtml(d.tx_reference||"Not supplied")}</div><div id="proof-${d.id}" class="tx-sub">Loading payment proof…</div><input id="deposit-note-${d.id}" placeholder="Optional review note" /><div class="admin-review-actions"><button class="approve" onclick="reviewDeposit(${d.id},'Approved')">Approve & Credit</button><button class="reject" onclick="reviewDeposit(${d.id},'Rejected')">Reject</button></div></div>`).join("") || `<p class="tx-sub">No pending deposit requests.</p>`;
+  for (const d of deposits) loadDepositProof(d.id);
+}
+async function loadDepositProof(id) {
+  const token=localStorage.getItem("pdf_session_token");
+  try { const res=await fetch(`/api/admin/deposit-proof/${id}`,{headers:{Authorization:`Bearer ${token}`}}); if(!res.ok) throw new Error(); const blob=await res.blob(); const url=URL.createObjectURL(blob); const box=document.getElementById(`proof-${id}`); if(box) box.innerHTML=`<img src="${url}" alt="Payment proof for deposit ${id}" />`; }
+  catch { const box=document.getElementById(`proof-${id}`); if(box) box.textContent="Unable to load proof image."; }
+}
+async function reviewDeposit(requestId, decision) {
+  const note=document.getElementById(`deposit-note-${requestId}`)?.value||"";
+  const res=await api("/api/admin/deposit-action",{method:"POST",body:JSON.stringify({requestId,decision,note})});
+  smartAlert(res.message,res.ok?"success":"error");
+  if(res.ok){await loadAdminOverview();await enterApp();}
+}
+async function savePlatformSettings() {
+  const values={company_name:"cfgCompanyName",brand_short:"cfgBrandShort",tagline:"cfgTagline",hero_title:"cfgHeroTitle",hero_subtitle:"cfgHeroSubtitle",deposit_address:"cfgDepositAddress",deposit_network:"cfgDepositNetwork",deposit_min:"cfgDepositMin",deposit_max:"cfgDepositMax",withdraw_min:"cfgWithdrawMin",checkin_reward:"cfgCheckinReward",deposit_instructions:"cfgDepositInstructions",live_chat_url:"cfgLiveChat",telegram_url:"cfgTelegram",whatsapp_url:"cfgWhatsapp",announcement:"cfgAnnouncement",faq_text:"cfgFaq"};
+  const body={}; for(const [key,id] of Object.entries(values)) body[key]=document.getElementById(id).value;
+  const res=await api("/api/admin/settings",{method:"POST",body:JSON.stringify(body)}); smartAlert(res.message,res.ok?"success":"error"); if(res.ok){await loadAdminOverview();await enterApp();}
+}
+async function uploadHomeBanner() {
+  const file=document.getElementById("cfgBannerFile").files[0]; if(!file) return smartAlert("Choose a banner image first.","error");
+  const form=new FormData(); form.append("banner",file); const res=await api("/api/admin/banner",{method:"POST",body:form}); smartAlert(res.message,res.ok?"success":"error"); if(res.ok){document.getElementById("cfgBannerFile").value="";await loadAdminOverview();await enterApp();}
 }
 
 function editAdminPlan(idx) {
@@ -482,17 +511,7 @@ async function deleteAdminPlan(vipLevel) {
   }
 }
 
-async function saveAdminTgIds() {
-  const res = await api("/api/admin/settings", {
-    method: "POST",
-    body: JSON.stringify({
-      adminEmail: currentUser.email,
-      telegram_chat_ids: document.getElementById("adminTgIds").value
-    })
-  });
-  smartAlert(res.message, res.ok ? "success" : "error");
-  if (res.ok) await loadAdminOverview();
-}
+async function saveAdminTgIds() { smartAlert("Use Website Control to set your Telegram channel URL.", "info"); }
 
 async function addNewSuperAdmin() {
   const res = await api("/api/admin/add-super-admin", {
@@ -507,6 +526,12 @@ async function addNewSuperAdmin() {
   if (res.ok) await loadAdminOverview();
 }
 
+async function removeSuperAdminAt(index) {
+  const email=(window.__adminAccounts||[])[index]?.email; if(!email) return;
+  if(!confirm(`Remove Super Admin access for ${email}?`)) return;
+  const res=await api("/api/admin/remove-super-admin",{method:"POST",body:JSON.stringify({email})});
+  smartAlert(res.message,res.ok?"success":"error"); if(res.ok) await loadAdminOverview();
+}
 async function decideWithdrawal(txId, decision) {
   const res = await api("/api/admin/withdrawal-action", {
     method: "POST",
@@ -519,8 +544,9 @@ async function decideWithdrawal(txId, decision) {
   }
 }
 
-function logout() {
-  localStorage.removeItem("pdf_usdt_email");
+async function logout() {
+  await api("/api/logout", { method: "POST", body: "{}" });
+  localStorage.removeItem("pdf_session_token");
   location.reload();
 }
 

@@ -3,194 +3,459 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PDF USDT — Smart Digital Finance</title>
+  <title>PDF USDT — Invest • Earn • Grow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
 
-  <!-- Smart Notification Banner -->
   <div id="smartAlert" class="smart-alert info" role="status" aria-live="polite"></div>
 
-  <!-- Authentication View -->
+  <!-- AUTH VIEW -->
   <section id="authWrap" class="auth-wrap">
-    <div class="auth-glow"></div>
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="brand-group">
-          <div class="brand-logo">₮</div>
+    <div class="auth-card neon-green-box">
+      <div class="brand-header">
+        <div class="brand-left">
+          <div class="tether-mark">₮</div>
           <div>
-            <div class="brand-title">PDF FINANCE</div>
-            <div class="brand-sub">USDT Smart Settlement Engine</div>
+            <div class="brand-name">PDF <span>USDT</span></div>
+            <div class="brand-tagline">Invest • Earn • Grow</div>
           </div>
         </div>
-        <span class="pill-badge">LIVE D1</span>
+        <span class="live-chip">SMART VIP</span>
       </div>
 
-      <!-- Login Form -->
       <div id="loginBox">
-        <form id="loginForm" class="stack-form">
-          <div class="input-group">
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-sub">Sign in to access your USDT wallet, VIP plans & team.</p>
+        <form id="loginForm" class="form-stack">
+          <div class="field">
             <label for="loginEmail">Email Address</label>
-            <input type="email" id="loginEmail" placeholder="name@example.com" required />
+            <input type="email" id="loginEmail" placeholder="Enter your email" required />
           </div>
-          <div class="input-group">
+          <div class="field">
             <label for="loginPassword">Password</label>
             <input type="password" id="loginPassword" placeholder="Enter your password" required />
           </div>
-          <button type="submit" class="btn btn-primary">Sign In to Account</button>
+          <button type="submit" class="btn btn-gold-pill">Sign In Now <span class="arrow-circle">›</span></button>
         </form>
-        <p class="switch-text">
-          New to PDF Finance? <button type="button" class="link-btn" onclick="toggleAuth('register')">Create Account</button>
+        <p class="auth-switch">
+          Don't have an account? <button type="button" class="link-green" onclick="toggleAuth('register')">Register Here</button>
         </p>
       </div>
 
-      <!-- Register Form -->
       <div id="registerBox" class="hidden">
-        <form id="registerForm" class="stack-form">
-          <div class="input-group">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-sub">Join PDF USDT and start earning daily rewards.</p>
+        <form id="registerForm" class="form-stack">
+          <div class="field">
             <label for="regName">Full Name</label>
             <input type="text" id="regName" placeholder="Your full name" required />
           </div>
-          <div class="input-group">
+          <div class="field">
             <label for="regEmail">Email Address</label>
-            <input type="email" id="regEmail" placeholder="name@example.com" required />
+            <input type="email" id="regEmail" placeholder="Enter your email" required />
           </div>
-          <div class="input-group">
+          <div class="field">
             <label for="regPhone">Phone Number</label>
             <input type="tel" id="regPhone" placeholder="+234 800 000 0000" />
           </div>
-          <div class="input-group">
+          <div class="field">
             <label for="regReferral">Referral Code (Optional)</label>
-            <input type="text" id="regReferral" placeholder="Enter invite code" />
+            <input type="text" id="regReferral" placeholder="e.g. PDF783516" />
           </div>
-          <div class="input-group">
+          <div class="field">
             <label for="regPassword">Password</label>
-            <input type="password" id="regPassword" placeholder="Create strong password" required />
+            <input type="password" id="regPassword" placeholder="Create password" required />
           </div>
-          <button type="submit" class="btn btn-primary">Create USDT Account</button>
+          <button type="submit" class="btn btn-gold-pill">Create Account <span class="arrow-circle">›</span></button>
         </form>
-        <p class="switch-text">
-          Already registered? <button type="button" class="link-btn" onclick="toggleAuth('login')">Sign In</button>
+        <p class="auth-switch">
+          Already have an account? <button type="button" class="link-green" onclick="toggleAuth('login')">Sign In</button>
         </p>
       </div>
     </div>
   </section>
 
-  <!-- Main Application Shell -->
+  <!-- MAIN APP -->
   <div id="appShell" class="app-shell">
-    <header class="topbar">
-      <div class="brand-group">
-        <div class="brand-logo sm">₮</div>
+    <!-- Top Header -->
+    <header class="top-bar">
+      <div class="brand-left">
+        <div class="tether-mark">₮</div>
         <div>
-          <div class="brand-title sm">PDF USDT</div>
-          <div class="brand-sub" id="topUserEmail">Smart Wallet</div>
+          <div class="brand-name">PDF <span>USDT</span></div>
+          <div class="brand-tagline">Invest • Earn • Grow</div>
         </div>
       </div>
 
-      <div class="topbar-actions">
-        <button id="adminNavBtn" class="btn btn-accent btn-sm hidden" onclick="switchSection('sec-admin', this)">Admin Panel</button>
-        <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+      <div class="top-right-controls">
+        <button type="button" id="adminTopBtn" class="admin-pill-btn hidden" onclick="switchTab('sec-admin', this)">Admin</button>
+        <button type="button" class="bell-btn" onclick="switchTab('sec-support', this)" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span class="bell-badge">3</span>
+        </button>
+        <button type="button" class="avatar-btn" onclick="switchTab('sec-profile', this)" aria-label="Profile">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"></path>
+          </svg>
+        </button>
       </div>
     </header>
 
-    <main class="container">
+    <main class="page-container">
 
-      <!-- HOME SECTION -->
-      <section id="sec-home" class="section active">
-        <div class="stats-grid">
-          <div class="stat-tile">
-            <span class="stat-caption">Member ID</span>
-            <strong class="stat-value" id="statId">—</strong>
+      <!-- 1. HOME TAB -->
+      <section id="sec-home" class="tab-section active">
+        <!-- Hero Banner -->
+        <div class="hero-banner neon-green-box">
+          <div class="hero-text-col">
+            <div class="hero-welcome">Welcome to</div>
+            <h1 class="hero-brand">PDF <span>USDT</span></h1>
+            <div class="hero-sub-bold">Smart Investment Platform</div>
+            <div class="hero-sub-italic">Earn Daily, Grow Forever</div>
+            <button type="button" class="btn-gold-cta" onclick="switchTab('sec-products')">
+              Start Earning Now <span class="cta-circle">›</span>
+            </button>
           </div>
-          <div class="stat-tile">
-            <span class="stat-caption">Current Tier</span>
-            <strong class="stat-value" id="statVip">VIP 0</strong>
-          </div>
-          <div class="stat-tile">
-            <span class="stat-caption">Currency</span>
-            <strong class="stat-value">USDT</strong>
-          </div>
-        </div>
-
-        <div class="hero-wallet-card">
-          <div class="hero-top-row">
-            <span class="hero-label">Available Balance</span>
-            <span class="pill-badge">INSTANT USDT</span>
-          </div>
-          <div class="hero-balance" id="balanceUsdt">0.00 USDT</div>
-          <p class="hero-hint">Deposit USDT to upgrade VIP tiers or withdraw anytime once PIN and wallet are set.</p>
-
-          <div class="wallet-quick-bar">
-            <div class="deposit-inline">
-              <input type="number" step="0.01" min="1" id="depositAmount" placeholder="Amount in USDT" />
-              <button type="button" class="btn btn-primary" onclick="quickDeposit()">+ Deposit</button>
+          <div class="hero-visual-col" aria-hidden="true">
+            <div class="hero-coin-stack">
+              <div class="coin-disc">₮</div>
+              <div class="coin-pile">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="growth-arrow">↗</div>
             </div>
-            <button type="button" class="btn btn-secondary" onclick="switchSection('sec-wallet')">Withdraw USDT</button>
           </div>
         </div>
 
-        <div class="panel-card">
-          <div class="panel-head">
+        <div class="carousel-dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+
+        <!-- Member ID & Available Balance Bar -->
+        <div class="wallet-strip neon-green-box">
+          <div class="wallet-left">
+            <div class="mini-avatar">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"></path>
+              </svg>
+            </div>
             <div>
-              <h2>Smart VIP Plans</h2>
-              <p>Upgrade to unlock higher daily USDT yields and custom plan durations.</p>
+              <div class="strip-label">Member ID</div>
+              <div class="strip-id-row">
+                <span id="homeMemberId" class="strip-id-val">PDF783516</span>
+                <button type="button" class="copy-mini-btn" onclick="copyMemberId()" title="Copy Member ID">⧉</button>
+              </div>
+              <span class="active-member-pill">✓ Active Member</span>
             </div>
           </div>
-          <div id="vipGrid" class="plans-grid"></div>
+
+          <div class="wallet-divider"></div>
+
+          <div class="wallet-right">
+            <div class="balance-head-row">
+              <span class="wallet-icon-box">💼</span>
+              <div>
+                <div class="strip-label">Available Balance</div>
+                <div id="homeBalanceVal" class="strip-balance-val">0.00 USDT</div>
+              </div>
+            </div>
+            <button type="button" class="btn-deposit-green" onclick="openDepositBox()">↓ Deposit</button>
+          </div>
+        </div>
+
+        <!-- Quick Deposit Drawer (when clicked) -->
+        <div id="depositDrawer" class="deposit-drawer neon-green-box hidden">
+          <div class="drawer-row">
+            <input type="number" step="0.01" min="1" id="depositInput" placeholder="Enter USDT deposit amount (e.g. 25)" />
+            <button type="button" class="btn-deposit-green" onclick="submitQuickDeposit()">Confirm Deposit</button>
+          </div>
+        </div>
+
+        <!-- 4 Colored Stat Cards -->
+        <div class="four-stats-grid">
+          <div class="color-stat-card theme-green">
+            <div class="stat-icon-circle">💰</div>
+            <div class="stat-card-title">Total Deposit</div>
+            <div id="statTotalDeposit" class="stat-card-num">0.00 USDT</div>
+          </div>
+          <div class="color-stat-card theme-blue">
+            <div class="stat-icon-circle">📈</div>
+            <div class="stat-card-title">Total Stake</div>
+            <div id="statTotalStake" class="stat-card-num">0.00 USDT</div>
+          </div>
+          <div class="color-stat-card theme-gold">
+            <div class="stat-icon-circle">🎁</div>
+            <div class="stat-card-title">Total Reward</div>
+            <div id="statTotalReward" class="stat-card-num">0.00 USDT</div>
+          </div>
+          <div class="color-stat-card theme-purple">
+            <div class="stat-icon-circle">👥</div>
+            <div class="stat-card-title">My Team</div>
+            <div id="statMyTeam" class="stat-card-num">0 Members</div>
+          </div>
+        </div>
+
+        <!-- VIP Plans Section -->
+        <div class="vip-section-header">
+          <div class="vip-sec-title"><span class="crown-emoji">👑</span> VIP Plans</div>
+          <button type="button" class="view-all-btn" onclick="switchTab('sec-products')">View All &gt;</button>
+        </div>
+
+        <div id="homeVipGrid" class="vip-three-grid"></div>
+      </section>
+
+      <!-- 2. SUPPORT TAB -->
+      <section id="sec-support" class="tab-section">
+        <div class="support-hero neon-green-box">
+          <div class="support-agent-badge">🎧</div>
+          <div class="support-hero-text">
+            <h2>Support <span>Center</span></h2>
+            <p>We are here to help you anytime, anywhere. Feel free to contact us!</p>
+            <button type="button" class="btn-live-pill" onclick="smartAlert('24/7 Live Support is online and ready.', 'success')">
+              🎧 24/7 Live Support
+            </button>
+          </div>
+          <div class="support-chat-bubble">•••</div>
+        </div>
+
+        <div class="support-two-grid">
+          <div class="support-box theme-green">
+            <div class="s-icon">💬</div>
+            <h3>Live Chat</h3>
+            <p>Chat with our support team instantly</p>
+            <button type="button" class="s-btn btn-g" onclick="smartAlert('Opening Live Chat desk...', 'info')">Start Chat &gt;</button>
+          </div>
+
+          <div class="support-box theme-blue">
+            <div class="s-icon">✈️</div>
+            <h3>Telegram Channel</h3>
+            <p>Follow us for latest updates and support</p>
+            <button type="button" class="s-btn btn-b" onclick="smartAlert('Telegram channel updates enabled.', 'info')">Follow Now &gt;</button>
+          </div>
+
+          <div class="support-box theme-green">
+            <div class="s-icon">💚</div>
+            <h3>WhatsApp Channel</h3>
+            <p>Join our WhatsApp channel for instant news</p>
+            <button type="button" class="s-btn btn-g" onclick="smartAlert('WhatsApp broadcast channel ready.', 'info')">Join Now &gt;</button>
+          </div>
+
+          <div class="support-box theme-purple">
+            <div class="s-icon">❓</div>
+            <h3>Frequently Asked Questions</h3>
+            <p>Find quick answers to common questions</p>
+            <button type="button" class="s-btn btn-p" onclick="toggleFaqBox()">View FAQ &gt;</button>
+          </div>
+        </div>
+
+        <div id="faqPanel" class="announcement-bar neon-green-box hidden" style="margin-bottom:14px;">
+          <div>
+            <strong>Quick FAQ</strong>
+            <p>Minimum withdrawal is 2.00 USDT. Set your USDT wallet & 4-digit PIN in Profile before withdrawing.</p>
+          </div>
+        </div>
+
+        <div class="announcement-bar neon-green-box">
+          <div class="ann-left">
+            <span class="megaphone">📣</span>
+            <div>
+              <div class="ann-title">Latest Announcement</div>
+              <div class="ann-desc">Welcome to PDF USDT. Enjoy our services and grow together!</div>
+            </div>
+          </div>
+          <button type="button" class="view-all-btn" onclick="switchTab('sec-history')">View All &gt;</button>
         </div>
       </section>
 
-      <!-- EARN / CHECK-IN SECTION -->
-      <section id="sec-earn" class="section">
-        <div class="panel-card">
-          <div class="panel-head">
-            <div>
-              <h2>24-Hour Daily Check-In</h2>
-              <p>Claim +0.20 USDT every 24 hours straight into your available balance.</p>
-            </div>
-            <span class="pill-badge">+0.20 / 24H</span>
+      <!-- 3. TEAM TAB -->
+      <section id="sec-team" class="tab-section">
+        <div class="team-banner neon-gold-box">
+          <div>
+            <h2 class="team-banner-title">Team <span>Dashboard</span></h2>
+            <p class="team-banner-sub">Build a strong team and earn more together</p>
+            <button type="button" class="btn-gold-cta" onclick="copyReferralLink()">
+              Grow Your Team <span class="cta-circle">›</span>
+            </button>
           </div>
-          <button type="button" id="checkinBtn" class="btn btn-primary" onclick="claimCheckin()">Claim +0.20 USDT</button>
+          <div class="team-crown-art" aria-hidden="true">👑<br />👥</div>
         </div>
 
-        <div class="panel-card">
-          <div class="panel-head">
+        <div class="four-stats-grid">
+          <div class="color-stat-card theme-green">
+            <div class="stat-icon-circle">👥</div>
+            <div id="teamTotalMembers" class="stat-card-num">0</div>
+            <div class="stat-card-title">Total Members</div>
+          </div>
+          <div class="color-stat-card theme-blue">
+            <div class="stat-icon-circle">👤+</div>
+            <div id="teamActiveMembers" class="stat-card-num">0</div>
+            <div class="stat-card-title">Active Members</div>
+          </div>
+          <div class="color-stat-card theme-gold">
+            <div class="stat-icon-circle"> hierarchy </div>
+            <div id="teamDirectRefs" class="stat-card-num">0</div>
+            <div class="stat-card-title">Direct Referrals</div>
+          </div>
+          <div class="color-stat-card theme-purple">
+            <div class="stat-icon-circle">💰</div>
+            <div id="teamEarningsVal" class="stat-card-num">0.00 USDT</div>
+            <div class="stat-card-title">Team Earnings</div>
+          </div>
+        </div>
+
+        <div class="referral-card neon-green-box">
+          <div class="ref-top">
+            <div class="ref-link-icon">🔗</div>
             <div>
-              <h2>Active Packages</h2>
-              <p>Your welcome trial and purchased VIP plans.</p>
+              <h3>Your Referral Link</h3>
+              <p>Share this link to invite new members</p>
             </div>
           </div>
-          <div id="activePackagesBox" class="list-stack"></div>
+          <div class="ref-copy-row">
+            <input type="text" id="referralLinkInput" readonly value="https://pdfusdt.com/register?ref=PDF783516" />
+            <button type="button" class="btn-copy-green" onclick="copyReferralLink()">📋 Copy</button>
+          </div>
+          <div class="ref-share-row">
+            <button type="button" class="share-wa-btn" onclick="shareReferral('whatsapp')">💚 Share on WhatsApp</button>
+            <button type="button" class="share-tg-btn" onclick="shareReferral('telegram')">✈️ Share on Telegram</button>
+          </div>
+        </div>
+
+        <div class="team-members-card neon-green-box">
+          <div class="vip-section-header" style="margin-bottom:12px;">
+            <div class="vip-sec-title">👥 Your Team Members</div>
+            <button type="button" class="view-all-btn" onclick="smartAlert('Team network synced with D1.', 'info')">View All &gt;</button>
+          </div>
+          <div class="members-strip">
+            <div class="member-slot"><div class="slot-ring">👤</div><span>user001</span><small>12-11-2025</small></div>
+            <div class="member-slot"><div class="slot-ring">👤</div><span>user002</span><small>12-11-2025</small></div>
+            <div class="member-slot"><div class="slot-ring">👤</div><span>user003</span><small>12-11-2025</small></div>
+            <div class="member-slot"><div class="slot-ring">👤</div><span>user004</span><small>12-11-2025</small></div>
+            <div class="member-slot"><div class="slot-ring">👤</div><span>user005</span><small>12-11-2025</small></div>
+          </div>
+        </div>
+
+        <div class="performance-bar neon-green-box">
+          <div class="perf-left">
+            <span class="trophy-ico">🏆</span>
+            <div>
+              <div class="ann-title">Team Performance</div>
+              <div class="ann-desc">Your team is growing stronger!</div>
+            </div>
+          </div>
+          <div class="perf-right">
+            <span class="chart-ico">📊</span>
+            <div>
+              <div id="perfEarnings" class="perf-num">0.00 USDT</div>
+              <div class="ann-desc">Total Team Earnings</div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- HISTORY SECTION -->
-      <section id="sec-history" class="section">
-        <div class="panel-card">
-          <div class="panel-head">
-            <div>
-              <h2>Transaction Ledger</h2>
-              <p>Real-time record of deposits, VIP activations, rewards, and withdrawals.</p>
+      <!-- 4. PRODUCTS TAB -->
+      <section id="sec-products" class="tab-section">
+        <div class="products-hero neon-green-box">
+          <div>
+            <h2 class="prod-hero-title">📦 Products</h2>
+            <p class="prod-hero-sub">View your current VIP product and track your earnings</p>
+          </div>
+          <div class="prod-crown-box">👑<br /><small>VIP</small></div>
+        </div>
+
+        <div class="current-product-card neon-green-box">
+          <div class="current-prod-tag">✓ Your Current Product</div>
+          <div class="current-prod-body">
+            <div class="vip-gold-badge">
+              <div class="badge-crown">👑</div>
+              <div id="prodActiveTitle" class="badge-vip-name">VIP 0</div>
+              <div id="prodActivePrice" class="badge-vip-price">Free Trial</div>
+            </div>
+            <div class="prod-details-col">
+              <div class="prod-detail-line"><span>📅</span> <strong>Start Date:</strong> <span id="prodStartDate">—</span></div>
+              <div class="prod-detail-line"><span>⏱️</span> <strong>Duration:</strong> <span id="prodDuration">3 Days</span></div>
+              <div class="prod-detail-line">
+                <span>✓</span> <strong>Status:</strong> <span class="status-pill-active">Active</span>
+              </div>
             </div>
           </div>
-          <div id="historyContainer" class="list-stack"></div>
         </div>
+
+        <div class="earning-timer-bar neon-green-box">
+          <div class="earn-left">
+            <span class="sack-ico">💰</span>
+            <div>
+              <div class="small-muted">Daily Earning</div>
+              <div id="prodDailyVal" class="earn-big-green">0.20 USDT</div>
+              <div class="earn-sub-green">(Daily Check-In / VIP Yield)</div>
+            </div>
+          </div>
+          <div class="earn-right">
+            <div class="small-muted">Next Earning In:</div>
+            <div id="countdownClock" class="countdown-digits">23:59:12</div>
+            <div class="clock-labels"><span>Hrs</span><span>Min</span><span>Sec</span></div>
+            <button type="button" id="prodCheckinBtn" class="btn-claim-mini" onclick="claimDailyReward()">Claim Reward</button>
+          </div>
+        </div>
+
+        <div class="four-stats-grid three-cols">
+          <div class="color-stat-card theme-blue">
+            <div class="stat-icon-circle">📈</div>
+            <div class="stat-card-title">Total Earnings</div>
+            <div id="prodTotalEarnings" class="stat-card-num">0.00 USDT</div>
+          </div>
+          <div class="color-stat-card theme-purple">
+            <div class="stat-icon-circle">📅</div>
+            <div class="stat-card-title">Days Left</div>
+            <div id="prodDaysLeft" class="stat-card-num">3 Days</div>
+          </div>
+          <div class="color-stat-card theme-green">
+            <div class="stat-icon-circle">🪙</div>
+            <div class="stat-card-title">Total Deposit</div>
+            <div id="prodTotalDeposit" class="stat-card-num">0.00 USDT</div>
+          </div>
+        </div>
+
+        <div class="upgrade-cta-bar neon-green-box">
+          <div class="upgrade-left">
+            <span class="chart-up">📈</span>
+            <div>
+              <div class="ann-title">Upgrade Your Product</div>
+              <div class="ann-desc">Choose a higher VIP plan and earn more!</div>
+            </div>
+          </div>
+          <button type="button" class="btn-gold-cta compact" onclick="scrollToAllPlans()">👑 View VIP Plans &gt;</button>
+        </div>
+
+        <div id="allVipPlansContainer" class="vip-three-grid" style="margin-top:14px;"></div>
       </section>
 
-      <!-- WALLET SECTION -->
-      <section id="sec-wallet" class="section">
-        <div class="panel-card">
-          <div class="panel-head">
-            <div>
-              <h2>Withdrawal Wallet</h2>
-              <p>Save your preferred USDT network and receiving wallet address.</p>
-            </div>
+      <!-- 5. PROFILE & WALLET TAB -->
+      <section id="sec-profile" class="tab-section">
+        <div class="wallet-strip neon-green-box" style="margin-bottom:14px;">
+          <div>
+            <div class="strip-label">Account Email</div>
+            <div id="profileEmailVal" class="strip-id-val" style="font-size:15px;">—</div>
+            <span class="active-member-pill">✓ Verified Member</span>
           </div>
-          <div class="stack-form">
-            <div class="input-group">
+          <button type="button" class="btn-logout-dark" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">USDT Withdrawal Wallet</h3>
+          <div class="form-stack">
+            <div class="field">
               <label for="walletNetwork">Network</label>
               <select id="walletNetwork">
                 <option value="TRC20">USDT (TRC20)</option>
@@ -198,144 +463,139 @@
                 <option value="ERC20">USDT (ERC20)</option>
               </select>
             </div>
-            <div class="input-group">
+            <div class="field">
               <label for="walletAddress">USDT Wallet Address</label>
-              <input type="text" id="walletAddress" placeholder="Paste your USDT address" />
+              <input type="text" id="walletAddress" placeholder="Enter your USDT address" />
             </div>
-            <button type="button" class="btn btn-primary" onclick="saveWallet()">Save Withdrawal Wallet</button>
+            <button type="button" class="btn-deposit-green" onclick="saveWalletAddress()">Save Withdrawal Wallet</button>
           </div>
         </div>
 
-        <div class="panel-card">
-          <div class="panel-head">
-            <div>
-              <h2>Security PIN</h2>
-              <p>Set a 4-digit PIN required before authorizing any withdrawal.</p>
-            </div>
-          </div>
-          <div class="stack-form">
-            <div class="input-group">
-              <label for="newPin">4-Digit PIN</label>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">4-Digit Security PIN</h3>
+          <div class="form-stack">
+            <div class="field">
+              <label for="newPin">Set / Update 4-Digit PIN</label>
               <input type="password" maxlength="4" inputmode="numeric" id="newPin" placeholder="••••" />
             </div>
-            <button type="button" class="btn btn-secondary" onclick="savePin()">Save 4-Digit PIN</button>
+            <button type="button" class="btn-live-pill" onclick="saveSecurityPin()">Save Security PIN</button>
           </div>
         </div>
 
-        <div class="panel-card">
-          <div class="panel-head">
-            <div>
-              <h2>Request Withdrawal</h2>
-              <p>Minimum withdrawal is 2.00 USDT.</p>
-            </div>
-          </div>
-          <div class="stack-form">
-            <div class="input-group">
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Withdraw USDT (Min 2.00 USDT)</h3>
+          <div class="form-stack">
+            <div class="field">
               <label for="withdrawAmount">Amount (USDT)</label>
               <input type="number" step="0.01" min="2" id="withdrawAmount" placeholder="Minimum 2.00 USDT" />
             </div>
-            <div class="input-group">
-              <label for="withdrawPin">Security PIN</label>
+            <div class="field">
+              <label for="withdrawPin">4-Digit Security PIN</label>
               <input type="password" maxlength="4" inputmode="numeric" id="withdrawPin" placeholder="Enter 4-digit PIN" />
             </div>
-            <button type="button" class="btn btn-primary" onclick="submitWithdraw()">Submit Withdrawal Request</button>
+            <button type="button" class="btn-gold-cta full-w" onclick="submitWithdrawal()">Confirm Withdrawal</button>
           </div>
         </div>
       </section>
 
-      <!-- ADMIN PANEL SECTION -->
-      <section id="sec-admin" class="section">
-        <div class="panel-card">
-          <div class="panel-head">
-            <div>
-              <h2>VIP Plan Builder</h2>
-              <p>Add any number of VIP plans or edit price, daily yield, and duration in days.</p>
-            </div>
-            <span class="pill-badge">ADMIN</span>
+      <!-- TRANSACTION HISTORY VIEW -->
+      <section id="sec-history" class="tab-section">
+        <div class="dark-panel neon-green-box">
+          <div class="vip-section-header" style="margin-bottom:12px;">
+            <div class="vip-sec-title">📜 Transaction History</div>
+            <button type="button" class="view-all-btn" onclick="switchTab('sec-home')">Back Home &gt;</button>
           </div>
+          <div id="txHistoryList" class="tx-stack"></div>
+        </div>
+      </section>
 
-          <div class="form-grid-2">
-            <div class="input-group">
-              <label for="planLevel">VIP Level</label>
-              <input type="number" min="1" step="1" id="planLevel" placeholder="e.g. 1, 2, 7" />
+      <!-- SUPER ADMIN PANEL VIEW -->
+      <section id="sec-admin" class="tab-section">
+        <div class="dark-panel neon-gold-box">
+          <h3 class="panel-heading">👑 VIP Plan Builder (Add / Edit Any Plan)</h3>
+          <p class="auth-sub" style="margin-bottom:12px;">Set VIP level, title, price (USDT), daily yield (USDT), and duration (days).</p>
+          <div class="admin-plan-grid">
+            <div class="field">
+              <label for="adminPlanLevel">VIP Level</label>
+              <input type="number" min="1" step="1" id="adminPlanLevel" placeholder="1, 2, 3..." />
             </div>
-            <div class="input-group">
-              <label for="planTitle">Plan Title</label>
-              <input type="text" id="planTitle" placeholder="e.g. VIP 1" />
+            <div class="field">
+              <label for="adminPlanTitle">Plan Name</label>
+              <input type="text" id="adminPlanTitle" placeholder="VIP 1" />
             </div>
-            <div class="input-group">
-              <label for="planPrice">Price (USDT)</label>
-              <input type="number" min="0.01" step="0.01" id="planPrice" placeholder="e.g. 10.00" />
+            <div class="field">
+              <label for="adminPlanPrice">Price (USDT)</label>
+              <input type="number" min="0.01" step="0.01" id="adminPlanPrice" placeholder="10.00" />
             </div>
-            <div class="input-group">
-              <label for="planDaily">Daily Yield (USDT)</label>
-              <input type="number" min="0" step="0.01" id="planDaily" placeholder="e.g. 1.00" />
+            <div class="field">
+              <label for="adminPlanDaily">Daily Yield (USDT)</label>
+              <input type="number" min="0" step="0.01" id="adminPlanDaily" placeholder="1.00" />
             </div>
-            <div class="input-group full-span">
-              <label for="planDuration">Duration (Days)</label>
-              <input type="number" min="1" step="1" id="planDuration" placeholder="e.g. 30" />
+            <div class="field full-w">
+              <label for="adminPlanDuration">Duration (Days)</label>
+              <input type="number" min="1" step="1" id="adminPlanDuration" placeholder="30" />
             </div>
           </div>
-
-          <button type="button" class="btn btn-primary" onclick="saveVipPlan()">Save / Add VIP Plan</button>
-          <div id="adminPlansList" class="list-stack mt-16"></div>
+          <button type="button" class="btn-gold-cta full-w" onclick="saveAdminPlan()">Save / Add VIP Plan</button>
+          <div id="adminPlansContainer" class="tx-stack" style="margin-top:14px;"></div>
         </div>
 
-        <div class="panel-card">
-          <div class="panel-head">
-            <div>
-              <h2>Telegram Alert Chat IDs</h2>
-              <p>Comma-separated Telegram Chat IDs notified on new withdrawals.</p>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Telegram Chat IDs</h3>
+          <div class="form-stack">
+            <div class="field">
+              <label for="adminTgIds">Comma-separated Telegram Chat IDs</label>
+              <input type="text" id="adminTgIds" placeholder="7544805601,8552397401" />
             </div>
-          </div>
-          <div class="stack-form">
-            <div class="input-group">
-              <label for="adminTelegramIds">Chat IDs</label>
-              <input type="text" id="adminTelegramIds" placeholder="7544805601,8552397401" />
-            </div>
-            <button type="button" class="btn btn-primary" onclick="saveTelegramSettings()">Save Telegram IDs</button>
+            <button type="button" class="btn-deposit-green" onclick="saveAdminTgIds()">Save Telegram IDs</button>
           </div>
         </div>
 
-        <div class="panel-card">
-          <div class="panel-head">
-            <div>
-              <h2>Super Admins</h2>
-              <p>Primary Super Admin: umarsaraki96@gmail.com</p>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Super Admins (Primary: umarsaraki96@gmail.com)</h3>
+          <div class="form-stack">
+            <div class="field">
+              <label for="newSuperAdminInput">Add New Super Admin Email</label>
+              <input type="email" id="newSuperAdminInput" placeholder="admin@example.com" />
             </div>
+            <button type="button" class="btn-live-pill" onclick="addNewSuperAdmin()">Add Super Admin</button>
           </div>
-          <div class="stack-form">
-            <div class="input-group">
-              <label for="newSuperAdminEmail">New Super Admin Email</label>
-              <input type="email" id="newSuperAdminEmail" placeholder="admin@example.com" />
-            </div>
-            <button type="button" class="btn btn-secondary" onclick="addSuperAdmin()">Add Super Admin</button>
-          </div>
-          <div id="superAdminsList" class="list-stack mt-16"></div>
+          <div id="superAdminsContainer" class="tx-stack" style="margin-top:12px;"></div>
         </div>
 
-        <div class="panel-card">
-          <div class="panel-head">
-            <div>
-              <h2>Pending Withdrawals</h2>
-              <p>Approve or reject pending USDT withdrawal requests.</p>
-            </div>
-          </div>
-          <div id="pendingWithdrawalsList" class="list-stack"></div>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Pending Withdrawals</h3>
+          <div id="pendingWithdrawalsContainer" class="tx-stack"></div>
         </div>
       </section>
 
     </main>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation (Matches Screenshot 5 Tabs) -->
     <nav class="bottom-nav">
-      <button type="button" class="nav-item active" data-target="sec-home" onclick="switchSection('sec-home', this)">Home</button>
-      <button type="button" class="nav-item" data-target="sec-earn" onclick="switchSection('sec-earn', this)">Check-In</button>
-      <button type="button" class="nav-item" data-target="sec-history" onclick="switchSection('sec-history', this)">History</button>
-      <button type="button" class="nav-item" data-target="sec-wallet" onclick="switchSection('sec-wallet', this)">Wallet</button>
+      <button type="button" class="nav-tab active" data-target="sec-home" onclick="switchTab('sec-home', this)">
+        <span class="nav-ico">🏠</span>
+        <span>Home</span>
+      </button>
+      <button type="button" class="nav-tab" data-target="sec-support" onclick="switchTab('sec-support', this)">
+        <span class="nav-ico">🎧</span>
+        <span>Support</span>
+      </button>
+      <button type="button" class="nav-tab" data-target="sec-team" onclick="switchTab('sec-team', this)">
+        <span class="nav-ico">👥</span>
+        <span>Team</span>
+      </button>
+      <button type="button" class="nav-tab" data-target="sec-products" onclick="switchTab('sec-products', this)">
+        <span class="nav-ico">📦</span>
+        <span>Products</span>
+      </button>
+      <button type="button" class="nav-tab" data-target="sec-profile" onclick="switchTab('sec-profile', this)">
+        <span class="nav-ico">👤</span>
+        <span>Profile</span>
+      </button>
     </nav>
   </div>
 
   <script src="./app.js"></script>
 </body>
-</html>
+  </html>

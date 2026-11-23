@@ -1,0 +1,15 @@
+name = "prime-digital-finance"
+main = "src/index.js"
+compatibility_date = "2025-05-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pdf_usdt_db"
+database_id = "13b389e0-784a-477c-8ae9-1369f637b6b5"
+
+[vars]
+TELEGRAM_CHAT_IDS = "7544805601,8552397401"

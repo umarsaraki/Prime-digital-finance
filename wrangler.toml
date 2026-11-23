@@ -1,15 +1,20 @@
 name = "prime-digital-finance"
 main = "worker.js"
-compatibility_date = "2025-05-01"
+compatibility_date = "2026-11-23"
 
 [assets]
 directory = "./public"
 binding = "ASSETS"
+run_worker_first = ["/api/*", "/media/*"]
 
 [[d1_databases]]
 binding = "DB"
 database_name = "pdf_usdt_db"
 database_id = "13b389e0-784a-477c-8ae9-1369f637b6b5"
 
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "prime-digital-finance-uploads"
+
 [vars]
-TELEGRAM_CHAT_IDS = "7544805601,8552397401"
+PRIMARY_ADMIN_EMAIL = "umarsaraki96@gmail.com"

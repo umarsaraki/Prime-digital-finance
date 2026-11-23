@@ -1,5 +1,5 @@
 name = "prime-digital-finance"
-main = "src/index.js"
+main = "worker.js"
 compatibility_date = "2025-05-01"
 
 [assets]

@@ -13,7 +13,7 @@
 
   <div id="smartAlert" class="smart-alert info" role="status" aria-live="polite"></div>
 
-  <!-- AUTH VIEW -->
+  <!-- AUTH -->
   <section id="authWrap" class="auth-wrap">
     <div class="auth-card neon-green-box">
       <div class="brand-header">
@@ -31,19 +31,11 @@
         <h2 class="auth-title">Welcome Back</h2>
         <p class="auth-sub">Sign in to access your Prime Digital Finance account.</p>
         <form id="loginForm" class="form-stack">
-          <div class="field">
-            <label for="loginEmail">Email Address</label>
-            <input type="email" id="loginEmail" placeholder="Enter your email" required />
-          </div>
-          <div class="field">
-            <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" placeholder="Enter your password" required />
-          </div>
+          <div class="field"><label for="loginEmail">Email Address</label><input type="email" id="loginEmail" placeholder="Enter your email" required /></div>
+          <div class="field"><label for="loginPassword">Password</label><input type="password" id="loginPassword" placeholder="Enter your password" required /></div>
           <button type="submit" class="btn btn-gold-pill">Sign In Now <span class="arrow-circle">›</span></button>
         </form>
-        <p class="auth-switch">
-          Don't have an account? <button type="button" class="link-green" onclick="toggleAuth('register')">Register Here</button>
-        </p>
+        <p class="auth-switch">Don't have an account? <button type="button" class="link-green" onclick="toggleAuth('register')">Register Here</button></p>
       </div>
 
       <div id="registerBox" class="hidden">
@@ -51,42 +43,21 @@
         <p class="auth-sub">Create your Prime Digital Finance account.</p>
         <p id="regClosedNote" class="auth-sub hidden" style="color:#fca5a5;">New registrations are currently closed.</p>
         <form id="registerForm" class="form-stack">
-          <div class="field">
-            <label for="regName">Full Name</label>
-            <input type="text" id="regName" placeholder="Your full name" required />
-          </div>
-          <div class="field">
-            <label for="regEmail">Email Address</label>
-            <input type="email" id="regEmail" placeholder="Enter your email" required />
-          </div>
-          <div class="field">
-            <label for="regPhone">Phone Number</label>
-            <input type="tel" id="regPhone" placeholder="+234 800 000 0000" />
-          </div>
-          <div class="field">
-            <label for="regReferral">Referral Code (Optional)</label>
-            <input type="text" id="regReferral" placeholder="e.g. PDF783516" />
-          </div>
-          <div class="field">
-            <label for="regPassword">Password</label>
-            <input type="password" id="regPassword" placeholder="At least 8 characters" minlength="8" required />
-          </div>
-          <div class="field">
-            <label for="regSetupKey">Admin setup key (administrators only)</label>
-            <input type="password" id="regSetupKey" autocomplete="off" placeholder="Leave empty if you are a member" />
-          </div>
+          <div class="field"><label for="regName">Full Name</label><input type="text" id="regName" placeholder="Your full name" required /></div>
+          <div class="field"><label for="regEmail">Email Address</label><input type="email" id="regEmail" placeholder="Enter your email" required /></div>
+          <div class="field"><label for="regPhone">Phone Number</label><input type="tel" id="regPhone" placeholder="+234 800 000 0000" /></div>
+          <div class="field"><label for="regReferral">Referral Code (Optional)</label><input type="text" id="regReferral" placeholder="e.g. PDF123456" /></div>
+          <div class="field"><label for="regPassword">Password</label><input type="password" id="regPassword" placeholder="At least 8 characters" minlength="8" required /></div>
+          <div class="field"><label for="regSetupKey">Admin setup key (administrators only)</label><input type="password" id="regSetupKey" autocomplete="off" placeholder="Leave empty if you are a member" /></div>
           <button type="submit" class="btn btn-gold-pill">Create Account <span class="arrow-circle">›</span></button>
         </form>
-        <p class="auth-switch">
-          Already have an account? <button type="button" class="link-green" onclick="toggleAuth('login')">Sign In</button>
-        </p>
+        <p class="auth-switch">Already have an account? <button type="button" class="link-green" onclick="toggleAuth('login')">Sign In</button></p>
       </div>
     </div>
   </section>
 
-  <!-- MAIN APP -->
+  <!-- APP -->
   <div id="appShell" class="app-shell">
-    <!-- Top Header -->
     <header class="top-bar">
       <div class="brand-left">
         <div class="tether-mark">₮</div>
@@ -95,293 +66,109 @@
           <div class="brand-tagline">FINANCE • TRANSPARENCY • CONTROL</div>
         </div>
       </div>
-
       <div class="top-right-controls">
-        <button type="button" id="adminTopBtn" class="admin-pill-btn hidden" onclick="switchTab('sec-admin', this)">Admin</button>
-        <button type="button" class="bell-btn" onclick="switchTab('sec-support', this)" aria-label="Notifications">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-          </svg>
+        <button type="button" id="adminTopBtn" class="admin-pill-btn hidden" onclick="openView('sec-admin','')">Admin<span id="adminBadge" class="count-badge hidden">0</span></button>
+        <button type="button" class="bell-btn" onclick="openView('sub-notifs','')" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span id="bellBadge" class="bell-badge hidden">0</span>
         </button>
-        <button type="button" class="avatar-btn" onclick="switchTab('sec-profile', this)" aria-label="Profile">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="8" r="4"></circle>
-            <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"></path>
-          </svg>
+        <button type="button" class="avatar-btn" onclick="switchTab('sec-profile')" aria-label="Profile">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"></path></svg>
         </button>
       </div>
     </header>
 
     <main class="page-container">
 
-      <!-- 1. HOME TAB -->
+      <!-- HOME -->
       <section id="sec-home" class="tab-section active">
-        <!-- Hero Banner -->
         <div class="hero-banner neon-green-box" id="homeHeroBanner">
-          <img id="heroBannerImg" class="hero-banner-image hidden" alt="Prime Digital Finance announcement banner" />
+          <img id="heroBannerImg" class="hero-banner-image hidden" alt="Announcement banner" />
           <div class="hero-text-col">
             <div class="hero-welcome">Welcome to</div>
             <h1 class="hero-brand" id="heroTitle">PRIME DIGITAL FINANCE</h1>
-            <div class="hero-sub-bold">Prime Digital Finance</div>
-            <div class="hero-sub-italic" id="heroSubtitle">Your account. Your transactions. Clear records.</div>
-            <button type="button" class="btn-gold-cta" onclick="switchTab('sec-products')">
-              Explore Products <span class="cta-circle">›</span>
-            </button>
+            <div class="hero-sub-italic" id="heroSubtitle"></div>
+            <button type="button" class="btn-gold-cta" onclick="switchTab('sec-products')">Explore Products <span class="cta-circle">›</span></button>
           </div>
           <div class="hero-visual-col" aria-hidden="true">
-            <div class="hero-coin-stack">
-              <div class="coin-disc">₮</div>
-              <div class="coin-pile">
-                <span></span><span></span><span></span>
-              </div>
-              <div class="growth-arrow">↗</div>
-            </div>
+            <div class="hero-coin-stack"><div class="coin-disc">₮</div></div>
           </div>
         </div>
 
-        <div class="carousel-dots">
-          <span class="dot active"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </div>
-
-        <!-- Member ID & Available Balance Bar -->
         <div class="wallet-strip neon-green-box">
           <div class="wallet-left">
-            <div class="mini-avatar">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="8" r="4"></circle>
-                <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"></path>
-              </svg>
-            </div>
+            <div class="mini-avatar"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"></path></svg></div>
             <div>
               <div class="strip-label">Member ID</div>
-              <div class="strip-id-row">
-                <span id="homeMemberId" class="strip-id-val">—</span>
-                <button type="button" class="copy-mini-btn" onclick="copyMemberId()" title="Copy Member ID">⧉</button>
-              </div>
+              <div class="strip-id-row"><span id="homeMemberId" class="strip-id-val">—</span><button type="button" class="copy-mini-btn" onclick="copyMemberId()" title="Copy Member ID">⧉</button></div>
               <span id="homeStatusPill" class="active-member-pill">Member</span>
             </div>
           </div>
-
           <div class="wallet-divider"></div>
-
           <div class="wallet-right">
             <div class="balance-head-row">
               <span class="wallet-icon-box">💼</span>
-              <div>
-                <div class="strip-label">Available Balance</div>
-                <div id="homeBalanceVal" class="strip-balance-val">0.00 USDT</div>
-              </div>
+              <div><div class="strip-label">Available Balance</div><div id="homeBalanceVal" class="strip-balance-val">—</div></div>
             </div>
             <button type="button" class="btn-deposit-green" onclick="openDepositBox()">↓ Deposit</button>
           </div>
         </div>
 
-        <!-- Quick Deposit Drawer (when clicked) -->
-        <div id="depositDrawer" class="deposit-drawer neon-green-box hidden">
-          <h3 class="panel-heading">Submit a Deposit Request</h3>
-          <div class="payment-instructions">
-            <div><strong>Network:</strong> <span id="depositNetworkLabel">TRC20</span></div>
-            <div><strong>Deposit limits:</strong> <span id="depositLimitsLabel">1–5000 USDT</span></div>
-            <div><strong>Wallet address:</strong></div>
-            <div class="copy-wallet-row"><code id="depositAddressLabel">Admin has not configured a deposit wallet.</code><button type="button" class="copy-mini-btn" onclick="copyDepositAddress()">Copy</button></div>
-            <p id="depositInstructionsLabel">Please wait for payment instructions from the administrator.</p>
-          </div>
-          <div class="form-stack">
-            <div class="field"><label for="depositInput">Amount (USDT)</label><input type="number" step="0.01" min="0.01" id="depositInput" placeholder="Enter amount sent" /></div>
-            <div class="field"><label for="depositTxRef">Transaction hash / reference (optional)</label><input type="text" id="depositTxRef" placeholder="Paste transaction reference" /></div>
-            <div class="field"><label for="depositProof">Payment screenshot (JPG, PNG or WEBP, max 3 MB)</label><input type="file" accept="image/png,image/jpeg,image/webp" id="depositProof" required /></div>
-            <button type="button" class="btn-deposit-green" onclick="submitQuickDeposit()">Submit for Admin Review</button>
-            <p class="tx-sub">Your balance is not credited until an administrator verifies the payment and approves this request. Never send funds to an address that does not match the selected network.</p>
-          </div>
-        </div>
-
-        <!-- 4 Colored Stat Cards -->
-        <div class="four-stats-grid">
-          <div class="color-stat-card theme-green">
-            <div class="stat-icon-circle">💰</div>
-            <div class="stat-card-title">Total Deposit</div>
-            <div id="statTotalDeposit" class="stat-card-num">0.00 USDT</div>
-          </div>
-          <div class="color-stat-card theme-blue">
-            <div class="stat-icon-circle">📈</div>
-            <div class="stat-card-title">Total Stake</div>
-            <div id="statTotalStake" class="stat-card-num">0.00 USDT</div>
-          </div>
-          <div class="color-stat-card theme-gold">
-            <div class="stat-icon-circle">🎁</div>
-            <div class="stat-card-title">Total Reward</div>
-            <div id="statTotalReward" class="stat-card-num">0.00 USDT</div>
-          </div>
-          <div class="color-stat-card theme-purple">
-            <div class="stat-icon-circle">👥</div>
-            <div class="stat-card-title">My Team</div>
-            <div id="statMyTeam" class="stat-card-num">0 Members</div>
-          </div>
-        </div>
-
-        <!-- VIP Plans Section -->
         <div class="vip-section-header">
           <div class="vip-sec-title"><span class="crown-emoji">👑</span> VIP Plans</div>
           <button type="button" class="view-all-btn" onclick="switchTab('sec-products')">View All &gt;</button>
         </div>
-
         <div id="homeVipGrid" class="vip-three-grid"></div>
       </section>
 
-      <!-- 2. SUPPORT TAB -->
+      <!-- SUPPORT -->
       <section id="sec-support" class="tab-section">
         <div class="support-hero neon-green-box">
           <div class="support-agent-badge">🎧</div>
           <div class="support-hero-text">
             <h2>Support <span>Center</span></h2>
-            <p>We are here to help you anytime, anywhere. Feel free to contact us!</p>
+            <p>We are here to help you. Feel free to contact us!</p>
             <a id="liveChatLink" class="btn-live-pill" href="#" target="_blank" rel="noopener noreferrer">🎧 Contact Support</a>
           </div>
-          <div class="support-chat-bubble">•••</div>
         </div>
-
         <div class="support-two-grid">
-          <div class="support-box theme-green">
-            <div class="s-icon">💬</div>
-            <h3>Live Chat</h3>
-            <p>Chat with our support team instantly</p>
-            <a id="supportChatLink" class="s-btn btn-g" href="#" target="_blank" rel="noopener noreferrer">Start Chat &gt;</a>
-          </div>
-
-          <div class="support-box theme-blue">
-            <div class="s-icon">✈️</div>
-            <h3>Telegram Channel</h3>
-            <p>Follow us for latest updates and support</p>
-            <a id="telegramChannelLink" class="s-btn btn-b" href="#" target="_blank" rel="noopener noreferrer">Follow Now &gt;</a>
-          </div>
-
-          <div class="support-box theme-green">
-            <div class="s-icon">💚</div>
-            <h3>WhatsApp Channel</h3>
-            <p>Join our WhatsApp channel for instant news</p>
-            <a id="whatsappChannelLink" class="s-btn btn-g" href="#" target="_blank" rel="noopener noreferrer">Join Now &gt;</a>
-          </div>
-
-          <div class="support-box theme-purple">
-            <div class="s-icon">❓</div>
-            <h3>Frequently Asked Questions</h3>
-            <p>Find quick answers to common questions</p>
-            <button type="button" class="s-btn btn-p" onclick="toggleFaqBox()">View FAQ &gt;</button>
-          </div>
+          <div class="support-box theme-green"><div class="s-icon">💬</div><h3>Live Chat</h3><p>Chat with our support team</p><a id="supportChatLink" class="s-btn btn-g" href="#" target="_blank" rel="noopener noreferrer">Start Chat &gt;</a></div>
+          <div class="support-box theme-blue"><div class="s-icon">✈️</div><h3>Telegram</h3><p>Updates and support</p><a id="telegramChannelLink" class="s-btn btn-b" href="#" target="_blank" rel="noopener noreferrer">Follow Now &gt;</a></div>
+          <div class="support-box theme-green"><div class="s-icon">💚</div><h3>WhatsApp</h3><p>Join our WhatsApp channel</p><a id="whatsappChannelLink" class="s-btn btn-g" href="#" target="_blank" rel="noopener noreferrer">Join Now &gt;</a></div>
+          <div class="support-box theme-purple"><div class="s-icon">❓</div><h3>FAQ</h3><p>Quick answers</p><button type="button" class="s-btn btn-p" onclick="toggleFaqBox()">View FAQ &gt;</button></div>
         </div>
-
-        <div id="faqPanel" class="announcement-bar neon-green-box hidden" style="margin-bottom:14px;">
-          <div>
-            <strong>Quick FAQ</strong>
-            <p>Minimum withdrawal is 2.00 USDT. Set your USDT wallet & 4-digit PIN in Profile before withdrawing.</p>
-          </div>
-        </div>
-
+        <div id="faqPanel" class="announcement-bar neon-green-box hidden" style="margin-bottom:14px;"><div><strong>Quick FAQ</strong><p class="tx-sub"></p></div></div>
         <div class="announcement-bar neon-green-box">
-          <div class="ann-left">
-            <span class="megaphone">📣</span>
-            <div>
-              <div class="ann-title">Latest Announcement</div>
-              <div class="ann-desc" id="announcementText">Welcome to Prime Digital Finance.</div>
-            </div>
-          </div>
-          <button type="button" class="view-all-btn" onclick="switchTab('sec-history')">View All &gt;</button>
+          <div class="ann-left"><span class="megaphone">📣</span><div><div class="ann-title">Latest Announcement</div><div class="ann-desc" id="announcementText"></div></div></div>
         </div>
       </section>
 
-      <!-- 3. TEAM TAB -->
+      <!-- TEAM -->
       <section id="sec-team" class="tab-section">
         <div class="team-banner neon-gold-box">
           <div>
             <h2 class="team-banner-title">Team <span>Dashboard</span></h2>
             <p class="team-banner-sub">Invite friends with your referral link</p>
-            <button type="button" class="btn-gold-cta" onclick="copyReferralLink()">
-              Grow Your Team <span class="cta-circle">›</span>
-            </button>
           </div>
-          <div class="team-crown-art" aria-hidden="true">👑<br />👥</div>
+          <div class="team-crown-art" aria-hidden="true">👥</div>
         </div>
-
-        <div class="four-stats-grid">
-          <div class="color-stat-card theme-green">
-            <div class="stat-icon-circle">👥</div>
-            <div id="teamTotalMembers" class="stat-card-num">0</div>
-            <div class="stat-card-title">Total Members</div>
-          </div>
-          <div class="color-stat-card theme-blue">
-            <div class="stat-icon-circle">👤+</div>
-            <div id="teamActiveMembers" class="stat-card-num">0</div>
-            <div class="stat-card-title">Active Members</div>
-          </div>
-          <div class="color-stat-card theme-gold">
-            <div class="stat-icon-circle">🔗</div>
-            <div id="teamDirectRefs" class="stat-card-num">0</div>
-            <div class="stat-card-title">Direct Referrals</div>
-          </div>
-          <div class="color-stat-card theme-purple">
-            <div class="stat-icon-circle">🆕</div>
-            <div id="teamRecentVal" class="stat-card-num">0</div>
-            <div class="stat-card-title">Joined (7 days)</div>
-          </div>
+        <div class="four-stats-grid three-cols">
+          <div class="color-stat-card theme-green"><div class="stat-icon-circle">👥</div><div id="teamTotalMembers" class="stat-card-num">0</div><div class="stat-card-title">Total Members</div></div>
+          <div class="color-stat-card theme-blue"><div class="stat-icon-circle">✅</div><div id="teamActiveMembers" class="stat-card-num">0</div><div class="stat-card-title">Active Plan</div></div>
+          <div class="color-stat-card theme-purple"><div class="stat-icon-circle">🆕</div><div id="teamRecentVal" class="stat-card-num">0</div><div class="stat-card-title">Joined (7 days)</div></div>
         </div>
-
-        <div class="referral-card neon-green-box">
-          <div class="ref-top">
-            <div class="ref-link-icon">🔗</div>
-            <div>
-              <h3>Your Referral Link</h3>
-              <p>Share this link to invite new members</p>
-            </div>
-          </div>
-          <div class="ref-copy-row">
-            <input type="text" id="referralLinkInput" readonly value="" />
-            <button type="button" class="btn-copy-green" onclick="copyReferralLink()">📋 Copy</button>
-          </div>
-          <div class="ref-share-row">
-            <button type="button" class="share-wa-btn" onclick="shareReferral('whatsapp')">💚 Share on WhatsApp</button>
-            <button type="button" class="share-tg-btn" onclick="shareReferral('telegram')">✈️ Share on Telegram</button>
-          </div>
-        </div>
-
-        <div class="team-members-card neon-green-box">
-          <div class="vip-section-header" style="margin-bottom:12px;">
-            <div class="vip-sec-title">👥 Your Team Members</div>
-            <button type="button" class="view-all-btn" onclick="smartAlert('Showing your latest referrals.', 'info')">View All &gt;</button>
-          </div>
-          <div id="teamMembersList" class="members-strip"><p class="tx-sub">Your real referrals will appear here.</p></div>
-        </div>
-
-        <div class="performance-bar neon-green-box">
-          <div class="perf-left">
-            <span class="trophy-ico">🏆</span>
-            <div>
-              <div class="ann-title">Team Performance</div>
-              <div class="ann-desc">Your referred members at a glance</div>
-            </div>
-          </div>
-          <div class="perf-right">
-            <span class="chart-ico">📊</span>
-            <div>
-              <div id="perfMembers" class="perf-num">0</div>
-              <div class="ann-desc">Total Team Members</div>
-            </div>
-          </div>
+        <div class="menu-list neon-green-box">
+          <button type="button" class="menu-row" onclick="openView('sub-invite')"><span class="menu-ico">🔗</span><span class="menu-label">Invite Friends</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('sub-members')"><span class="menu-ico">👥</span><span class="menu-label">Team Members</span><span class="menu-arrow">›</span></button>
         </div>
       </section>
 
-      <!-- 4. PRODUCTS TAB -->
+      <!-- PRODUCTS -->
       <section id="sec-products" class="tab-section">
         <div class="products-hero neon-green-box">
-          <div>
-            <h2 class="prod-hero-title">📦 Products</h2>
-            <p class="prod-hero-sub">View your current product, duration and account activity</p>
-          </div>
-          <div class="prod-crown-box">👑<br /><small>VIP</small></div>
+          <div><h2 class="prod-hero-title">📦 Products</h2><p class="prod-hero-sub">Your current plan and available plans</p></div>
+          <div class="prod-crown-box">👑</div>
         </div>
-
         <div class="current-product-card neon-green-box">
           <div class="current-prod-tag">✓ Your Current Product</div>
           <div class="current-prod-body">
@@ -393,251 +180,326 @@
             <div class="prod-details-col">
               <div class="prod-detail-line"><span>📅</span> <strong>Start Date:</strong> <span id="prodStartDate">—</span></div>
               <div class="prod-detail-line"><span>⏱️</span> <strong>Duration:</strong> <span id="prodDuration">—</span></div>
-              <div class="prod-detail-line">
-                <span>✓</span> <strong>Status:</strong> <span id="prodStatusPill" class="status-pill-active">No active plan</span>
-              </div>
+              <div class="prod-detail-line"><span>⏳</span> <strong>Days Left:</strong> <span id="prodDaysLeft">—</span></div>
+              <div class="prod-detail-line"><span>✓</span> <strong>Status:</strong> <span id="prodStatusPill" class="status-pill-active">No active plan</span></div>
             </div>
           </div>
         </div>
 
         <div class="earning-timer-bar neon-green-box">
           <div class="earn-left">
-            <span class="sack-ico">💰</span>
-            <div>
-              <div class="small-muted">Daily Check-in Reward</div>
-              <div id="prodDailyVal" class="earn-big-green">0.20 USDT</div>
-              <div class="earn-sub-green">Claim once every 24 hours</div>
-            </div>
+            <span class="sack-ico">🎁</span>
+            <div><div class="small-muted">Daily Check-in Reward</div><div id="prodDailyVal" class="earn-big-green">—</div><div id="checkinNote" class="earn-sub-green">Claim once every 24 hours</div></div>
           </div>
           <div class="earn-right">
-            <div class="small-muted">Next Check-In Available In:</div>
-            <div id="countdownClock" class="countdown-digits">23:59:12</div>
+            <div class="small-muted">Next check-in in</div>
+            <div id="countdownClock" class="countdown-digits">--:--:--</div>
             <div class="clock-labels"><span>Hrs</span><span>Min</span><span>Sec</span></div>
             <button type="button" id="prodCheckinBtn" class="btn-claim-mini" onclick="claimDailyReward()">Claim Reward</button>
           </div>
         </div>
 
-        <div class="four-stats-grid three-cols">
-          <div class="color-stat-card theme-blue">
-            <div class="stat-icon-circle">📈</div>
-            <div class="stat-card-title">Total Earnings</div>
-            <div id="prodTotalEarnings" class="stat-card-num">0.00 USDT</div>
-          </div>
-          <div class="color-stat-card theme-purple">
-            <div class="stat-icon-circle">📅</div>
-            <div class="stat-card-title">Days Left</div>
-            <div id="prodDaysLeft" class="stat-card-num">—</div>
-          </div>
-          <div class="color-stat-card theme-green">
-            <div class="stat-icon-circle">🪙</div>
-            <div class="stat-card-title">Total Deposit</div>
-            <div id="prodTotalDeposit" class="stat-card-num">0.00 USDT</div>
-          </div>
-        </div>
-
-        <div class="upgrade-cta-bar neon-green-box">
-          <div class="upgrade-left">
-            <span class="chart-up">📈</span>
-            <div>
-              <div class="ann-title">Upgrade Your Product</div>
-              <div class="ann-desc">Review available products and their terms before choosing.</div>
-            </div>
-          </div>
-          <button type="button" class="btn-gold-cta compact" onclick="scrollToAllPlans()">👑 View VIP Plans &gt;</button>
-        </div>
-
-        <div id="allVipPlansContainer" class="vip-three-grid" style="margin-top:14px;"></div>
+        <div class="vip-section-header"><div class="vip-sec-title">👑 Available Plans</div></div>
+        <div id="allVipPlansContainer" class="vip-three-grid"></div>
       </section>
 
-      <!-- 5. PROFILE & WALLET TAB -->
+      <!-- PROFILE (menu) -->
       <section id="sec-profile" class="tab-section">
-        <div class="wallet-strip neon-green-box" style="margin-bottom:14px;">
+        <div class="profile-head neon-green-box">
+          <div class="profile-avatar"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"></path></svg></div>
           <div>
-            <div class="strip-label">Account Email</div>
-            <div id="profileEmailVal" class="strip-id-val" style="font-size:15px;">—</div>
-            <span class="active-member-pill">Member</span>
+            <div class="strip-label">My Profile</div>
+            <div id="profileMemberId" class="strip-id-val">—</div>
+            <span id="profileStatusPill" class="active-member-pill">Member</span>
           </div>
-          <button type="button" class="btn-logout-dark" onclick="logout()">Logout</button>
         </div>
+        <div class="menu-list neon-green-box">
+          <button type="button" class="menu-row" onclick="openView('sub-account')"><span class="menu-ico">👤</span><span class="menu-label">Account Information</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openDepositBox()"><span class="menu-ico">⬇️</span><span class="menu-label">Make a Deposit</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('sub-withdraw')"><span class="menu-ico">⬆️</span><span class="menu-label">Withdraw</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('sub-wallet')"><span class="menu-ico">👛</span><span class="menu-label">Wallet &amp; PIN</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('sub-password')"><span class="menu-ico">🔑</span><span class="menu-label">Change Password</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('sub-security')"><span class="menu-ico">🛡️</span><span class="menu-label">Security Settings</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('sub-history')"><span class="menu-ico">📜</span><span class="menu-label">Transaction History</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="switchTab('sec-support')"><span class="menu-ico">🎧</span><span class="menu-label">Help &amp; Support</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row danger" onclick="logout()"><span class="menu-ico">🚪</span><span class="menu-label">Logout</span><span class="menu-arrow">›</span></button>
+        </div>
+      </section>
 
+      <!-- SUB-VIEWS -->
+      <section id="sub-account" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Account Information</h3></div>
+        <div class="dark-panel neon-green-box info-list">
+          <div class="info-row"><span>Full Name</span><strong id="accName">—</strong></div>
+          <div class="info-row"><span>Email Address</span><strong id="accEmail">—</strong></div>
+          <div class="info-row"><span>Member ID</span><strong id="accMemberId">—</strong></div>
+          <div class="info-row"><span>Phone</span><strong id="accPhone">—</strong></div>
+          <div class="info-row"><span>Registration Date</span><strong id="accJoined">—</strong></div>
+          <div class="info-row"><span>Current Product</span><strong id="accProduct">—</strong></div>
+          <div class="info-row"><span>Withdrawal Wallet</span><strong id="accWallet" class="wrap-any">—</strong></div>
+        </div>
+      </section>
+
+      <section id="sub-deposit" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Make a Deposit</h3></div>
         <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading">Account & Transactions</h3>
-          <button type="button" class="btn-deposit-green" onclick="goToDeposit()">＋ Make a Deposit</button>
-          <button type="button" class="btn-live-pill" onclick="switchTab('sec-history')">View Deposit / Withdrawal History</button>
+          <div class="payment-instructions">
+            <div><strong>Network:</strong> <span id="depositNetworkLabel">TRC20</span></div>
+            <div><strong>Deposit limits:</strong> <span id="depositLimitsLabel"></span></div>
+            <div><strong>Wallet address:</strong></div>
+            <div class="copy-wallet-row"><code id="depositAddressLabel">Admin has not configured a deposit wallet.</code><button type="button" class="copy-mini-btn" onclick="copyDepositAddress()">Copy</button></div>
+            <p id="depositInstructionsLabel"></p>
+          </div>
+          <div class="form-stack">
+            <div class="field"><label for="depositInput">Amount (USDT)</label><input type="number" step="0.01" min="0.01" id="depositInput" placeholder="Enter amount sent" /></div>
+            <div class="field"><label for="depositTxRef">Transaction hash / reference (optional)</label><input type="text" id="depositTxRef" placeholder="Paste transaction reference" /></div>
+            <div class="field"><label for="depositProof">Payment screenshot (JPG, PNG or WEBP, max 3 MB)</label><input type="file" accept="image/png,image/jpeg,image/webp" id="depositProof" /></div>
+            <button type="button" class="btn-deposit-green" onclick="submitQuickDeposit()">Submit for Admin Review</button>
+            <p class="tx-sub">Your balance is credited only after an administrator verifies the payment. Send only on the network shown above.</p>
+          </div>
         </div>
+      </section>
 
+      <section id="sub-withdraw" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3 id="withdrawHeading">Withdraw USDT</h3></div>
+        <div class="dark-panel neon-green-box">
+          <div class="info-row"><span>Available balance</span><strong id="withdrawBalance">—</strong></div>
+          <div class="form-stack" style="margin-top:12px;">
+            <div class="field"><label for="withdrawAmount">Amount (USDT)</label><input type="number" step="0.01" min="0.01" id="withdrawAmount" placeholder="Enter withdrawal amount" /></div>
+            <div class="field"><label for="withdrawPin">4-Digit Security PIN</label><input type="password" maxlength="4" inputmode="numeric" id="withdrawPin" placeholder="••••" /></div>
+            <button type="button" class="btn-gold-cta full-w" onclick="submitWithdrawal()">Confirm Withdrawal</button>
+            <p class="tx-sub">Withdrawals go to the wallet saved in Wallet &amp; PIN and are reviewed by an administrator.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="sub-wallet" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Wallet &amp; PIN</h3></div>
         <div class="dark-panel neon-green-box">
           <h3 class="panel-heading">USDT Withdrawal Wallet</h3>
           <div class="form-stack">
-            <div class="field">
-              <label for="walletNetwork">Network</label>
-              <select id="walletNetwork">
-                <option value="TRC20">USDT (TRC20)</option>
-                <option value="BEP20">USDT (BEP20)</option>
-                <option value="ERC20">USDT (ERC20)</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="walletAddress">USDT Wallet Address</label>
-              <input type="text" id="walletAddress" placeholder="Enter your USDT address" />
-            </div>
+            <div class="field"><label for="walletNetwork">Network</label><select id="walletNetwork"><option value="TRC20">USDT (TRC20)</option><option value="BEP20">USDT (BEP20)</option><option value="ERC20">USDT (ERC20)</option></select></div>
+            <div class="field"><label for="walletAddress">USDT Wallet Address</label><input type="text" id="walletAddress" placeholder="Enter your USDT address" autocomplete="off" /></div>
             <button type="button" class="btn-deposit-green" onclick="saveWalletAddress()">Save Withdrawal Wallet</button>
           </div>
         </div>
-
         <div class="dark-panel neon-green-box">
           <h3 class="panel-heading">4-Digit Security PIN</h3>
+          <p id="pinStatus" class="tx-sub" style="margin-bottom:8px;"></p>
           <div class="form-stack">
-            <div class="field">
-              <label for="newPin">Set / Update 4-Digit PIN</label>
-              <input type="password" maxlength="4" inputmode="numeric" id="newPin" placeholder="••••" />
-            </div>
+            <div class="field"><label for="newPin">Set / Update PIN</label><input type="password" maxlength="4" inputmode="numeric" id="newPin" placeholder="••••" /></div>
             <button type="button" class="btn-live-pill" onclick="saveSecurityPin()">Save Security PIN</button>
           </div>
         </div>
+      </section>
 
+      <section id="sub-password" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Change Password</h3></div>
         <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading" id="withdrawHeading">Withdraw USDT</h3>
           <div class="form-stack">
-            <div class="field">
-              <label for="withdrawAmount">Amount (USDT)</label>
-              <input type="number" step="0.01" min="0.01" id="withdrawAmount" placeholder="Enter withdrawal amount" />
-            </div>
-            <div class="field">
-              <label for="withdrawPin">4-Digit Security PIN</label>
-              <input type="password" maxlength="4" inputmode="numeric" id="withdrawPin" placeholder="Enter 4-digit PIN" />
-            </div>
-            <button type="button" class="btn-gold-cta full-w" onclick="submitWithdrawal()">Confirm Withdrawal</button>
+            <div class="field"><label for="pwCurrent">Current password</label><input type="password" id="pwCurrent" autocomplete="current-password" /></div>
+            <div class="field"><label for="pwNew">New password (min. 8 characters)</label><input type="password" id="pwNew" autocomplete="new-password" /></div>
+            <div class="field"><label for="pwConfirm">Confirm new password</label><input type="password" id="pwConfirm" autocomplete="new-password" /></div>
+            <button type="button" class="btn-deposit-green" onclick="submitPasswordChange()">Update Password</button>
           </div>
         </div>
       </section>
 
-      <!-- TRANSACTION HISTORY VIEW -->
-      <section id="sec-history" class="tab-section">
+      <section id="sub-security" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Security Settings</h3></div>
         <div class="dark-panel neon-green-box">
-          <div class="vip-section-header" style="margin-bottom:12px;">
-            <div class="vip-sec-title">📜 Transaction History</div>
-            <button type="button" class="view-all-btn" onclick="switchTab('sec-home')">Back Home &gt;</button>
-          </div>
-          <div id="txHistoryList" class="tx-stack"></div>
+          <div class="info-row"><span>Transaction PIN</span><strong id="secPinStatus">—</strong></div>
+          <div class="info-row"><span>Withdrawal wallet</span><strong id="secWalletStatus">—</strong></div>
+        </div>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Devices</h3>
+          <p class="tx-sub" style="margin-bottom:10px;">If you think someone else used your account, sign out everywhere and change your password.</p>
+          <button type="button" class="btn-logout-dark" onclick="logoutAllDevices()">Sign out of all devices</button>
         </div>
       </section>
 
-      <!-- SUPER ADMIN PANEL VIEW -->
+      <section id="sub-history" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Transaction History</h3></div>
+        <div class="chip-row" id="historyChips">
+          <button type="button" class="chip active" data-f="all" onclick="setHistoryFilter('all')">All</button>
+          <button type="button" class="chip" data-f="deposits" onclick="setHistoryFilter('deposits')">Deposits</button>
+          <button type="button" class="chip" data-f="withdrawals" onclick="setHistoryFilter('withdrawals')">Withdrawals</button>
+          <button type="button" class="chip" data-f="plans" onclick="setHistoryFilter('plans')">Plans</button>
+          <button type="button" class="chip" data-f="rewards" onclick="setHistoryFilter('rewards')">Rewards</button>
+          <button type="button" class="chip" data-f="activity" onclick="setHistoryFilter('activity')">Activity</button>
+        </div>
+        <div class="dark-panel neon-green-box"><div id="txHistoryList" class="tx-stack"></div></div>
+      </section>
+
+      <section id="sub-notifs" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Notifications</h3></div>
+        <div id="notifList" class="tx-stack"></div>
+      </section>
+
+      <section id="sub-plan" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3 id="planDetailTitle">Plan</h3></div>
+        <div id="planDetailBody"></div>
+      </section>
+
+      <section id="sub-invite" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Invite Friends</h3></div>
+        <div class="referral-card neon-green-box">
+          <div class="ref-top"><div class="ref-link-icon">🔗</div><div><h3>Your Referral Link</h3><p>Share this link to invite new members</p></div></div>
+          <div class="ref-copy-row"><input type="text" id="referralLinkInput" readonly value="" /><button type="button" class="btn-copy-green" onclick="copyReferralLink()">📋 Copy</button></div>
+          <div class="ref-share-row">
+            <button type="button" class="share-wa-btn" onclick="shareReferral('whatsapp')">💚 WhatsApp</button>
+            <button type="button" class="share-tg-btn" onclick="shareReferral('telegram')">✈️ Telegram</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="sub-members" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Team Members</h3></div>
+        <div class="dark-panel neon-green-box"><div id="teamMembersList" class="tx-stack"></div></div>
+      </section>
+
+      <!-- ADMIN MENU -->
       <section id="sec-admin" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Admin Panel</h3></div>
+        <div class="menu-list neon-gold-box">
+          <button type="button" class="menu-row" onclick="openView('adm-deposits')"><span class="menu-ico">📥</span><span class="menu-label">Pending Deposits</span><span id="admBadgeDeposits" class="count-badge hidden">0</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-withdrawals')"><span class="menu-ico">📤</span><span class="menu-label">Pending Withdrawals</span><span id="admBadgeWithdrawals" class="count-badge hidden">0</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-members')"><span class="menu-ico">👥</span><span class="menu-label">Members</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-plans')"><span class="menu-ico">👑</span><span class="menu-label">VIP Plans</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-notify')"><span class="menu-ico">🔔</span><span class="menu-label">Send Notification</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-pay')"><span class="menu-ico">💳</span><span class="menu-label">Payments &amp; Limits</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-site')"><span class="menu-ico">🌐</span><span class="menu-label">Website &amp; Banner</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-links')"><span class="menu-ico">🔗</span><span class="menu-label">Support Links</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-admins')"><span class="menu-ico">🛡️</span><span class="menu-label">Super Admins</span><span class="menu-arrow">›</span></button>
+        </div>
+      </section>
+
+      <section id="adm-deposits" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Pending Deposits</h3></div>
+        <div class="dark-panel neon-green-box">
+          <p class="tx-sub">Check the proof and reference before approving. Approval credits the member once.</p>
+          <div id="pendingDepositsContainer" class="tx-stack"></div>
+        </div>
+      </section>
+
+      <section id="adm-withdrawals" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Pending Withdrawals</h3></div>
+        <div class="dark-panel neon-green-box"><div id="pendingWithdrawalsContainer" class="tx-stack"></div></div>
+      </section>
+
+      <section id="adm-members" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Members</h3></div>
+        <div class="dark-panel neon-green-box">
+          <div class="ref-copy-row"><input type="text" id="adminUserSearch" placeholder="Search name, email or member ID" /><button type="button" class="btn-copy-green" onclick="searchAdminUsers()">Search</button></div>
+          <div id="adminMembersContainer" class="tx-stack"></div>
+        </div>
+      </section>
+
+      <section id="adm-plans" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>VIP Plans</h3></div>
         <div class="dark-panel neon-gold-box">
-          <h3 class="panel-heading">Prime Digital Finance — Website Control</h3>
-          <p class="auth-sub">Manage the public website content, payment instructions and support links.</p>
+          <h3 class="panel-heading">Add / Edit a plan</h3>
           <div class="admin-plan-grid">
-            <div class="field"><label for="cfgCompanyName">Company name</label><input id="cfgCompanyName" value="Prime Digital Finance" /></div>
-            <div class="field"><label for="cfgBrandShort">Short brand</label><input id="cfgBrandShort" value="PDF" /></div>
-            <div class="field full-w"><label for="cfgTagline">Tagline</label><input id="cfgTagline" /></div>
-            <div class="field full-w"><label for="cfgHeroTitle">Home banner title</label><input id="cfgHeroTitle" /></div>
-            <div class="field full-w"><label for="cfgHeroSubtitle">Home banner subtitle</label><input id="cfgHeroSubtitle" /></div>
-            <div class="field full-w"><label for="cfgBannerFile">Upload / replace Home banner (JPG, PNG, WEBP; max 5 MB)</label><input type="file" id="cfgBannerFile" accept="image/png,image/jpeg,image/webp" /></div>
-            <div class="field full-w"><label for="cfgDepositAddress">USDT deposit wallet address</label><input id="cfgDepositAddress" /></div>
+            <div class="field"><label for="adminPlanLevel">Level</label><input type="number" min="1" step="1" id="adminPlanLevel" placeholder="1, 2, 3..." /></div>
+            <div class="field"><label for="adminPlanTitle">Plan name</label><input type="text" id="adminPlanTitle" placeholder="VIP 1" /></div>
+            <div class="field"><label for="adminPlanPrice">Price (USDT)</label><input type="number" min="0.01" step="0.01" id="adminPlanPrice" /></div>
+            <div class="field"><label for="adminPlanDuration">Duration (days)</label><input type="number" min="1" step="1" id="adminPlanDuration" placeholder="30" /></div>
+            <div class="field full-w"><label for="adminPlanDescription">Description shown to members</label><textarea id="adminPlanDescription" rows="4" placeholder="Describe exactly what this plan includes."></textarea></div>
+          </div>
+          <button type="button" class="btn-gold-cta full-w" onclick="saveAdminPlan()">Save Plan</button>
+        </div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Current plans</h3><div id="adminPlansContainer" class="tx-stack"></div></div>
+      </section>
+
+      <section id="adm-notify" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Send Notification</h3></div>
+        <div class="dark-panel neon-gold-box">
+          <div class="form-stack">
+            <div class="field"><label for="notifTitle">Title</label><input type="text" id="notifTitle" maxlength="80" /></div>
+            <div class="field"><label for="notifBody">Message</label><textarea id="notifBody" rows="4" maxlength="500"></textarea></div>
+            <div class="field"><label for="notifAudience">Send to</label><select id="notifAudience" onchange="toggleNotifTarget()"><option value="all">All members</option><option value="user">One member</option></select></div>
+            <div class="field hidden" id="notifTargetWrap"><label for="notifEmail">Member email</label><input type="email" id="notifEmail" placeholder="member@example.com" /></div>
+            <button type="button" class="btn-gold-cta full-w" onclick="sendAdminNotification()">Send</button>
+          </div>
+        </div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Recently sent</h3><div id="adminNotifList" class="tx-stack"></div></div>
+      </section>
+
+      <section id="adm-pay" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Payments &amp; Limits</h3></div>
+        <div class="dark-panel neon-gold-box">
+          <div class="admin-plan-grid">
+            <div class="field full-w"><label for="cfgDepositAddress">USDT deposit wallet address</label><input id="cfgDepositAddress" autocomplete="off" /></div>
             <div class="field"><label for="cfgDepositNetwork">Deposit network</label><select id="cfgDepositNetwork"><option>TRC20</option><option>BEP20</option><option>ERC20</option></select></div>
             <div class="field"><label for="cfgDepositMin">Minimum deposit (USDT)</label><input type="number" id="cfgDepositMin" min="0.01" step="0.01" /></div>
             <div class="field"><label for="cfgDepositMax">Maximum deposit (USDT)</label><input type="number" id="cfgDepositMax" min="0.01" step="0.01" /></div>
             <div class="field"><label for="cfgWithdrawMin">Minimum withdrawal (USDT)</label><input type="number" id="cfgWithdrawMin" min="0.01" step="0.01" /></div>
             <div class="field"><label for="cfgCheckinReward">Daily check-in reward (USDT; 0 disables)</label><input type="number" id="cfgCheckinReward" min="0" step="0.01" /></div>
             <div class="field"><label for="cfgRegistrationOpen">New registrations</label><select id="cfgRegistrationOpen"><option value="1">Open</option><option value="0">Closed</option></select></div>
-            <div class="field"><label for="cfgCheckinRequiresVip">Daily check-in requires an active plan</label><select id="cfgCheckinRequiresVip"><option value="1">Yes</option><option value="0">No</option></select></div>
+            <div class="field"><label for="cfgCheckinRequiresVip">Check-in requires an active plan</label><select id="cfgCheckinRequiresVip"><option value="1">Yes</option><option value="0">No</option></select></div>
             <div class="field full-w"><label for="cfgDepositInstructions">Deposit instructions</label><textarea id="cfgDepositInstructions" rows="3"></textarea></div>
+          </div>
+          <button type="button" class="btn-deposit-green" onclick="savePlatformSettings('pay')">Save</button>
+        </div>
+      </section>
+
+      <section id="adm-site" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Website &amp; Banner</h3></div>
+        <div class="dark-panel neon-gold-box">
+          <div class="admin-plan-grid">
+            <div class="field"><label for="cfgCompanyName">Company name</label><input id="cfgCompanyName" /></div>
+            <div class="field"><label for="cfgBrandShort">Short brand</label><input id="cfgBrandShort" /></div>
+            <div class="field full-w"><label for="cfgTagline">Tagline</label><input id="cfgTagline" /></div>
+            <div class="field full-w"><label for="cfgHeroTitle">Home banner title</label><input id="cfgHeroTitle" /></div>
+            <div class="field full-w"><label for="cfgHeroSubtitle">Home banner subtitle</label><input id="cfgHeroSubtitle" /></div>
+            <div class="field full-w"><label for="cfgAnnouncement">Announcement (Support page)</label><textarea id="cfgAnnouncement" rows="2"></textarea></div>
+            <div class="field full-w"><label for="cfgFaq">FAQ / Support information</label><textarea id="cfgFaq" rows="3"></textarea></div>
+          </div>
+          <button type="button" class="btn-deposit-green" onclick="savePlatformSettings('site')">Save</button>
+        </div>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Home banner image</h3>
+          <div class="form-stack">
+            <div class="field"><label for="cfgBannerFile">JPG, PNG or WEBP; max 5 MB</label><input type="file" id="cfgBannerFile" accept="image/png,image/jpeg,image/webp" /></div>
+            <button type="button" class="btn-live-pill" onclick="uploadHomeBanner()">Upload Home Banner</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="adm-links" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Support Links</h3></div>
+        <div class="dark-panel neon-gold-box">
+          <div class="form-stack">
             <div class="field"><label for="cfgLiveChat">Live chat URL</label><input id="cfgLiveChat" placeholder="https://..." /></div>
             <div class="field"><label for="cfgTelegram">Telegram channel URL</label><input id="cfgTelegram" placeholder="https://t.me/..." /></div>
             <div class="field"><label for="cfgWhatsapp">WhatsApp channel URL</label><input id="cfgWhatsapp" placeholder="https://whatsapp.com/channel/..." /></div>
-            <div class="field full-w"><label for="cfgAnnouncement">Home / Support announcement</label><textarea id="cfgAnnouncement" rows="2"></textarea></div>
-            <div class="field full-w"><label for="cfgFaq">FAQ / Support information</label><textarea id="cfgFaq" rows="3"></textarea></div>
+            <button type="button" class="btn-deposit-green" onclick="savePlatformSettings('links')">Save</button>
           </div>
-          <button type="button" class="btn-deposit-green" onclick="savePlatformSettings()">Save Website Settings</button>
-          <button type="button" class="btn-live-pill" onclick="uploadHomeBanner()">Upload Home Banner</button>
         </div>
+      </section>
 
+      <section id="adm-admins" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Super Admins</h3></div>
         <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading">Pending Deposit Requests</h3>
-          <p class="tx-sub">Check the submitted proof and transaction reference before approving. Approval credits the member balance once.</p>
-          <div id="pendingDepositsContainer" class="tx-stack"></div>
-        </div>
-
-        <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading">Members</h3>
-          <div class="ref-copy-row"><input type="text" id="adminUserSearch" placeholder="Search name, email or member ID" /><button type="button" class="btn-copy-green" onclick="searchAdminUsers()">Search</button></div>
-          <div id="adminMembersContainer" class="tx-stack"></div>
-        </div>
-
-        <div class="dark-panel neon-gold-box">
-          <h3 class="panel-heading">👑 VIP Plan Builder (Add / Edit Any Plan)</h3>
-          <p class="auth-sub" style="margin-bottom:12px;">Set product level, title, price and duration.</p>
-          <div class="admin-plan-grid">
-            <div class="field">
-              <label for="adminPlanLevel">VIP Level</label>
-              <input type="number" min="1" step="1" id="adminPlanLevel" placeholder="1, 2, 3..." />
-            </div>
-            <div class="field">
-              <label for="adminPlanTitle">Plan Name</label>
-              <input type="text" id="adminPlanTitle" placeholder="VIP 1" />
-            </div>
-            <div class="field">
-              <label for="adminPlanPrice">Price (USDT)</label>
-              <input type="number" min="0.01" step="0.01" id="adminPlanPrice" placeholder="10.00" />
-            </div>
-            <div class="field">
-              <label for="adminPlanDuration">Duration (Days)</label>
-              <input type="number" min="1" step="1" id="adminPlanDuration" placeholder="30" />
-            </div>
-          </div>
-          <button type="button" class="btn-gold-cta full-w" onclick="saveAdminPlan()">Save / Add VIP Plan</button>
-          <div id="adminPlansContainer" class="tx-stack" style="margin-top:14px;"></div>
-        </div>
-
-        
-
-        <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading">Super Admin Accounts</h3>
           <div class="form-stack">
-            <div class="field">
-              <label for="newSuperAdminInput">Add New Super Admin Email</label>
-              <input type="email" id="newSuperAdminInput" placeholder="admin@example.com" />
-            </div>
+            <div class="field"><label for="newSuperAdminInput">Add new Super Admin email</label><input type="email" id="newSuperAdminInput" placeholder="admin@example.com" /></div>
             <button type="button" class="btn-live-pill" onclick="addNewSuperAdmin()">Add Super Admin</button>
           </div>
           <div id="superAdminsContainer" class="tx-stack" style="margin-top:12px;"></div>
-        </div>
-
-        <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading">Pending Withdrawals</h3>
-          <div id="pendingWithdrawalsContainer" class="tx-stack"></div>
         </div>
       </section>
 
     </main>
 
-    <!-- Bottom Navigation (Matches Screenshot 5 Tabs) -->
     <nav class="bottom-nav">
-      <button type="button" class="nav-tab active" data-target="sec-home" onclick="switchTab('sec-home', this)">
-        <span class="nav-ico">🏠</span>
-        <span>Home</span>
-      </button>
-      <button type="button" class="nav-tab" data-target="sec-support" onclick="switchTab('sec-support', this)">
-        <span class="nav-ico">🎧</span>
-        <span>Support</span>
-      </button>
-      <button type="button" class="nav-tab" data-target="sec-team" onclick="switchTab('sec-team', this)">
-        <span class="nav-ico">👥</span>
-        <span>Team</span>
-      </button>
-      <button type="button" class="nav-tab" data-target="sec-products" onclick="switchTab('sec-products', this)">
-        <span class="nav-ico">📦</span>
-        <span>Products</span>
-      </button>
-      <button type="button" class="nav-tab" data-target="sec-profile" onclick="switchTab('sec-profile', this)">
-        <span class="nav-ico">👤</span>
-        <span>Profile</span>
-      </button>
+      <button type="button" class="nav-tab active" data-target="sec-home" onclick="switchTab('sec-home')"><span class="nav-ico">🏠</span><span>Home</span></button>
+      <button type="button" class="nav-tab" data-target="sec-support" onclick="switchTab('sec-support')"><span class="nav-ico">🎧</span><span>Support</span></button>
+      <button type="button" class="nav-tab" data-target="sec-team" onclick="switchTab('sec-team')"><span class="nav-ico">👥</span><span>Team</span></button>
+      <button type="button" class="nav-tab" data-target="sec-products" onclick="switchTab('sec-products')"><span class="nav-ico">📦</span><span>Products</span></button>
+      <button type="button" class="nav-tab" data-target="sec-profile" onclick="switchTab('sec-profile')"><span class="nav-ico">👤</span><span>Profile</span></button>
     </nav>
   </div>
 
   <script src="./app.js"></script>
 </body>
-  </html>
+</html>

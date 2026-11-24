@@ -1455,3 +1455,45 @@ select:focus {
 .admin-review-actions .reject { background:#7f1d1d; color:#fff; }
 .tx-sub { line-height:1.45; }
 @media (max-width:560px) { .hero-banner { min-height:175px; } .admin-plan-grid { grid-template-columns:1fr; } .copy-wallet-row { align-items:flex-start; } }
+
+/* ---- Menu-style navigation, sub-views, badges ---- */
+.menu-list { padding: 6px 4px; margin-bottom: 14px; }
+.menu-row { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 12px; background: transparent; border: 0; border-bottom: 1px solid rgba(148,163,184,.15); color: #fff; font: inherit; font-size: 15px; font-weight: 700; text-align: left; cursor: pointer; }
+.menu-row:last-child { border-bottom: 0; }
+.menu-row:active { background: rgba(0,255,102,.08); }
+.menu-ico { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.1); font-size: 17px; flex-shrink: 0; }
+.menu-label { flex: 1; }
+.menu-arrow { color: var(--text-muted); font-size: 22px; }
+.menu-row.danger { color: #fca5a5; }
+.sub-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.sub-head h3 { font-size: 18px; font-weight: 900; }
+.back-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(0,255,102,.5); background: rgba(7,25,16,.85); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
+.profile-head { display: flex; align-items: center; gap: 14px; padding: 16px; margin-bottom: 14px; }
+.profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: rgba(16,185,129,.25); border: 2px solid var(--neon-green); display: grid; place-items: center; color: var(--neon-green); }
+.profile-avatar svg { width: 34px; height: 34px; }
+.info-list { padding: 4px 14px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(148,163,184,.15); font-size: 13px; }
+.info-row:last-child { border-bottom: 0; }
+.info-row span { color: var(--text-dim); }
+.info-row strong { text-align: right; }
+.wrap-any { overflow-wrap: anywhere; }
+.chip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px; }
+.chip { flex-shrink: 0; padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(148,163,184,.4); background: rgba(15,23,42,.85); color: #e2e8f0; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+.chip.active { background: linear-gradient(180deg,#22c55e,#15803d); border-color: var(--neon-green); color: #fff; }
+.count-badge, .bell-badge { min-width: 17px; height: 17px; border-radius: 999px; background: #ef4444; color: #fff; font-size: 10px; font-weight: 800; display: inline-grid; place-items: center; padding: 0 4px; }
+.bell-badge { position: absolute; top: -4px; right: -4px; }
+.admin-pill-btn { position: relative; }
+.admin-pill-btn .count-badge { position: absolute; top: -6px; right: -6px; }
+.notif-item { padding: 12px 14px; border-radius: 14px; background: rgba(2,14,8,.9); border: 1px solid rgba(0,255,102,.25); }
+.notif-item.is-new { border-color: var(--neon-green); box-shadow: 0 0 12px rgba(0,255,102,.2); }
+.notif-title { font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.notif-body { font-size: 13px; color: #e2e8f0; margin: 4px 0; overflow-wrap: anywhere; }
+.new-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; flex-shrink: 0; }
+.vip-card-item { cursor: pointer; }
+.vip-upgrade-btn { display: block; text-align: center; }
+.plan-desc { font-size: 13.5px; line-height: 1.6; color: #e2e8f0; overflow-wrap: anywhere; }
+.dark-panel textarea, #sec-admin textarea, .tab-section textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(0,255,102,.28); background: rgba(2,12,7,.92); color: #fff; font: inherit; resize: vertical; }
+.ref-copy-row input { flex: 1; min-width: 0; }
+.vip-three-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+@media (max-width: 560px) { .vip-three-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+.btn-gold-cta:disabled, .btn-deposit-green:disabled { opacity: .5; cursor: not-allowed; }

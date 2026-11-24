@@ -46,6 +46,10 @@ export default {
       if (method === "POST" && path === "/api/payment-method") return await savePaymentMethod(await readJson(request), user, env);
       if (method === "POST" && path === "/api/security-pin") return await savePin(await readJson(request), user, env);
       if (method === "POST" && path === "/api/withdraw") return await requestWithdrawal(await readJson(request), user, env);
+      if (method === "GET" && path === "/api/notifications") return await listNotifications(user, env);
+      if (method === "POST" && path === "/api/notifications/seen") return await markNotificationsSeen(user, env);
+      if (method === "POST" && path === "/api/change-password") return await changePassword(await readJson(request), user, request, env);
+      if (method === "POST" && path === "/api/logout-all") return await logoutAll(user, env);
 
       if (path.startsWith("/api/admin/")) {
         if (!user.is_super_admin) return out({ ok: false, message: "Super Admin access required." }, 403);
@@ -59,6 +63,8 @@ export default {
         if (method === "POST" && path === "/api/admin/deposit-action") return await decideDeposit(await readJson(request), user.email, env);
         if (method === "POST" && path === "/api/admin/withdrawal-action") return await decideWithdrawal(await readJson(request), user.email, env);
         if (method === "POST" && path === "/api/admin/user-action") return await userAction(await readJson(request), user.email, env);
+        if (method === "POST" && path === "/api/admin/send-notification") return await sendNotification(await readJson(request), user.email, env);
+        if (method === "POST" && path === "/api/admin/delete-notification") return await deleteNotification(await readJson(request), env);
         if (method === "POST" && path === "/api/admin/banner") return await uploadBanner(request, env);
         if (method === "GET" && path.startsWith("/api/admin/deposit-proof/")) return await getDepositProof(url, env);
       }
@@ -136,9 +142,9 @@ async function clearHits(db, key) { await db.prepare("DELETE FROM rate_limits WH
 async function initDb(db, primaryAdmin) {
   const now = Date.now();
   await db.batch([
-    db.prepare(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, custom_id TEXT UNIQUE NOT NULL, fullname TEXT NOT NULL, email TEXT UNIQUE NOT NULL, phone TEXT, referral_code TEXT, password_hash TEXT NOT NULL, balance_usdt REAL NOT NULL DEFAULT 0, vip_level INTEGER NOT NULL DEFAULT 0, vip_expires_at INTEGER DEFAULT 0, wallet_address TEXT DEFAULT '', wallet_network TEXT DEFAULT 'TRC20', withdraw_pin TEXT DEFAULT '', last_checkin_ms INTEGER DEFAULT 0, checkin_count INTEGER DEFAULT 0, is_banned INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, custom_id TEXT UNIQUE NOT NULL, fullname TEXT NOT NULL, email TEXT UNIQUE NOT NULL, phone TEXT, referral_code TEXT, password_hash TEXT NOT NULL, balance_usdt REAL NOT NULL DEFAULT 0, vip_level INTEGER NOT NULL DEFAULT 0, vip_expires_at INTEGER DEFAULT 0, wallet_address TEXT DEFAULT '', wallet_network TEXT DEFAULT 'TRC20', withdraw_pin TEXT DEFAULT '', last_checkin_ms INTEGER DEFAULT 0, checkin_count INTEGER DEFAULT 0, is_banned INTEGER NOT NULL DEFAULT 0, notif_seen_at INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT NOT NULL, type TEXT NOT NULL, amount_usdt REAL NOT NULL DEFAULT 0, status TEXT NOT NULL DEFAULT 'Pending', details TEXT DEFAULT '', created_at INTEGER NOT NULL)`),
-    db.prepare(`CREATE TABLE IF NOT EXISTS vip_plans (vip_level INTEGER PRIMARY KEY, title TEXT NOT NULL, price_usdt REAL NOT NULL, daily_usdt REAL NOT NULL DEFAULT 0, duration_days INTEGER NOT NULL DEFAULT 30, updated_at INTEGER NOT NULL)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS vip_plans (vip_level INTEGER PRIMARY KEY, title TEXT NOT NULL, price_usdt REAL NOT NULL, daily_usdt REAL NOT NULL DEFAULT 0, duration_days INTEGER NOT NULL DEFAULT 30, description TEXT NOT NULL DEFAULT '', updated_at INTEGER NOT NULL)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS super_admins (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE NOT NULL, role TEXT NOT NULL DEFAULT 'SUPER_ADMIN', added_by TEXT NOT NULL, created_at INTEGER NOT NULL)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_email TEXT NOT NULL, expires_at INTEGER NOT NULL, created_at INTEGER NOT NULL)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS deposit_requests (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT NOT NULL, amount_usdt REAL NOT NULL, network TEXT NOT NULL, tx_reference TEXT DEFAULT '', proof_key TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'Pending', admin_note TEXT DEFAULT '', credited_at TEXT DEFAULT '', created_at INTEGER NOT NULL, reviewed_at INTEGER DEFAULT 0)`),
@@ -149,12 +155,15 @@ async function initDb(db, primaryAdmin) {
     db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS deposit_tx_ref_active ON deposit_requests(tx_reference) WHERE tx_reference <> '' AND status <> 'Rejected'`),
     db.prepare(`CREATE INDEX IF NOT EXISTS idx_tx_user ON transactions(user_email, id)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS idx_users_ref ON users(referral_code)`),
-    db.prepare(`INSERT OR IGNORE INTO vip_plans (vip_level,title,price_usdt,daily_usdt,duration_days,updated_at) VALUES (1,'VIP 1',10,0,30,?)`).bind(now),
-    db.prepare(`INSERT OR IGNORE INTO vip_plans (vip_level,title,price_usdt,daily_usdt,duration_days,updated_at) VALUES (2,'VIP 2',25,0,30,?)`).bind(now),
-    db.prepare(`INSERT OR IGNORE INTO vip_plans (vip_level,title,price_usdt,daily_usdt,duration_days,updated_at) VALUES (3,'VIP 3',60,0,30,?)`).bind(now)
+    db.prepare(`CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, title TEXT NOT NULL, body TEXT NOT NULL DEFAULT '', created_by TEXT NOT NULL DEFAULT 'SYSTEM', created_at INTEGER NOT NULL)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_email, created_at)`)
   ]);
   // Older databases do not have the is_banned column yet; the error for "duplicate column" is expected and ignored.
-  try { await db.prepare("ALTER TABLE users ADD COLUMN is_banned INTEGER NOT NULL DEFAULT 0").run(); } catch { /* already exists */ }
+  for (const ddl of [
+    "ALTER TABLE users ADD COLUMN is_banned INTEGER NOT NULL DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN notif_seen_at INTEGER NOT NULL DEFAULT 0",
+    "ALTER TABLE vip_plans ADD COLUMN description TEXT NOT NULL DEFAULT ''"
+  ]) { try { await db.prepare(ddl).run(); } catch { /* column already exists */ } }
   if (primaryAdmin) await db.prepare("INSERT OR IGNORE INTO super_admins (email,role,added_by,created_at) VALUES (?,'SUPER_ADMIN','SYSTEM',?)").bind(cleanEmail(primaryAdmin), now).run();
   const defaults = {
     company_name: "Prime Digital Finance", brand_short: "PDF", tagline: "Digital Finance • Transparency • Control",
@@ -236,17 +245,24 @@ async function authRoute(request, env) {
 }
 
 /* ---------- public data ---------- */
-async function getPlans(db) { const r = await db.prepare("SELECT vip_level,title,price_usdt,duration_days FROM vip_plans ORDER BY vip_level").all(); return r.results || []; }
+async function getPlans(db) { const r = await db.prepare("SELECT vip_level,title,price_usdt,duration_days,description FROM vip_plans ORDER BY vip_level").all(); return r.results || []; }
 async function getSettings(db) { const r = await db.prepare("SELECT setting_key,setting_value FROM site_settings").all(); return Object.fromEntries((r.results || []).map((x) => [x.setting_key, x.setting_value])); }
 
 async function userData(user, env) {
-  const [tx, team, total] = await Promise.all([
-    env.DB.prepare("SELECT id,type,amount_usdt,status,details,created_at FROM transactions WHERE user_email=? ORDER BY id DESC LIMIT 100").bind(user.email).all(),
+  const [tx, team, total, unread, pend] = await Promise.all([
+    env.DB.prepare("SELECT id,type,amount_usdt,status,details,created_at FROM transactions WHERE user_email=? ORDER BY id DESC LIMIT 200").bind(user.email).all(),
     env.DB.prepare("SELECT custom_id,fullname,created_at,vip_level,vip_expires_at FROM users WHERE referral_code=? ORDER BY id DESC LIMIT 100").bind(user.custom_id).all(),
-    env.DB.prepare("SELECT COUNT(*) AS c, SUM(CASE WHEN vip_level>0 AND vip_expires_at>? THEN 1 ELSE 0 END) AS a FROM users WHERE referral_code=?").bind(Date.now(), user.custom_id).first()
+    env.DB.prepare("SELECT COUNT(*) AS c, SUM(CASE WHEN vip_level>0 AND vip_expires_at>? THEN 1 ELSE 0 END) AS a FROM users WHERE referral_code=?").bind(Date.now(), user.custom_id).first(),
+    env.DB.prepare("SELECT COUNT(*) AS c FROM notifications WHERE (user_email=? OR (user_email IS NULL AND created_at>=?)) AND created_at>(SELECT notif_seen_at FROM users WHERE email=?)").bind(user.email, user.created_at, user.email).first(),
+    user.is_super_admin ? env.DB.prepare("SELECT (SELECT COUNT(*) FROM deposit_requests WHERE status='Pending') AS d, (SELECT COUNT(*) FROM transactions WHERE type='USDT Withdrawal' AND status='Pending') AS w").first() : Promise.resolve(null)
   ]);
   const members = (team.results || []).map((m) => ({ custom_id: m.custom_id, fullname: m.fullname, created_at: m.created_at }));
-  return out({ ok: true, user, plans: await getPlans(env.DB), transactions: tx.results || [], settings: await getSettings(env.DB), team: { members, total: Number(total?.c || 0), active: Number(total?.a || 0) } });
+  return out({
+    ok: true, user, plans: await getPlans(env.DB), transactions: tx.results || [], settings: await getSettings(env.DB),
+    team: { members, total: Number(total?.c || 0), active: Number(total?.a || 0) },
+    unread: Number(unread?.c || 0),
+    admin_pending: pend ? { deposits: Number(pend.d), withdrawals: Number(pend.w) } : null
+  });
 }
 
 /* ---------- deposits ---------- */
@@ -298,6 +314,8 @@ async function decideDeposit(body, adminEmail, env) {
       env.DB.prepare("UPDATE transactions SET status='Rejected',details=details || ? WHERE user_email=? AND type='USDT Deposit' AND status='Pending' AND details LIKE ?").bind(` • Rejected: ${note || "Not approved"}`, dep.user_email, `%Deposit request #${id}`)
     ]);
   }
+  await notify(env.DB, dep.user_email, decision === "Approved" ? "Deposit approved" : "Deposit not approved",
+    decision === "Approved" ? `Your deposit of ${Number(dep.amount_usdt).toFixed(2)} USDT has been credited to your balance.` : `Your deposit of ${Number(dep.amount_usdt).toFixed(2)} USDT was not approved.${note ? " Reason: " + note : ""}`);
   return out({ ok: true, message: decision === "Approved" ? "Deposit approved and member balance credited." : "Deposit rejected. No balance was credited." });
 }
 
@@ -336,15 +354,16 @@ async function getPublicMedia(url, env) {
 
 /* ---------- admin ---------- */
 async function adminOverview(env) {
-  const [plans, admins, deposits, withdrawals, users, settings] = await Promise.all([
-    env.DB.prepare("SELECT vip_level,title,price_usdt,duration_days FROM vip_plans ORDER BY vip_level").all().then((r) => r.results || []),
+  const [plans, admins, deposits, withdrawals, users, settings, notes] = await Promise.all([
+    env.DB.prepare("SELECT vip_level,title,price_usdt,duration_days,description FROM vip_plans ORDER BY vip_level").all().then((r) => r.results || []),
     env.DB.prepare("SELECT email,role,added_by,created_at FROM super_admins ORDER BY id").all(),
     env.DB.prepare("SELECT id,user_email,amount_usdt,network,tx_reference,status,admin_note,created_at FROM deposit_requests WHERE status='Pending' ORDER BY id DESC LIMIT 100").all(),
     env.DB.prepare("SELECT id,user_email,amount_usdt,status,details,created_at FROM transactions WHERE type='USDT Withdrawal' AND status='Pending' ORDER BY id DESC LIMIT 100").all(),
     env.DB.prepare("SELECT custom_id,fullname,email,balance_usdt,vip_level,vip_expires_at,is_banned,created_at FROM users ORDER BY id DESC LIMIT 50").all(),
-    getSettings(env.DB)
+    getSettings(env.DB),
+    env.DB.prepare("SELECT id,user_email,title,body,created_at FROM notifications WHERE created_by<>'SYSTEM' ORDER BY id DESC LIMIT 20").all()
   ]);
-  return out({ ok: true, plans, super_admins: admins.results || [], pending_deposits: deposits.results || [], pending_withdrawals: withdrawals.results || [], recent_users: users.results || [], settings });
+  return out({ ok: true, plans, super_admins: admins.results || [], pending_deposits: deposits.results || [], pending_withdrawals: withdrawals.results || [], recent_users: users.results || [], settings, notifications: notes.results || [] });
 }
 
 async function adminUsers(url, env) {
@@ -391,8 +410,9 @@ async function saveAdminSettings(body, env) {
 
 async function upsertPlan(b, env) {
   const level = Number(b.vip_level), price = money(b.price_usdt), days = Number(b.duration_days), title = String(b.title || `VIP ${level}`).trim().slice(0, 60);
+  const description = String(b.description || "").trim().slice(0, 1500);
   if (!Number.isInteger(level) || level < 1 || !title || !Number.isFinite(price) || price <= 0 || !Number.isInteger(days) || days < 1 || days > 3650) return out({ ok: false, message: "Enter valid product details." }, 400);
-  await env.DB.prepare(`INSERT INTO vip_plans(vip_level,title,price_usdt,daily_usdt,duration_days,updated_at) VALUES(?,?,?,0,?,?) ON CONFLICT(vip_level) DO UPDATE SET title=excluded.title,price_usdt=excluded.price_usdt,duration_days=excluded.duration_days,updated_at=excluded.updated_at`).bind(level, title, price, days, Date.now()).run();
+  await env.DB.prepare(`INSERT INTO vip_plans(vip_level,title,price_usdt,daily_usdt,duration_days,description,updated_at) VALUES(?,?,?,0,?,?,?) ON CONFLICT(vip_level) DO UPDATE SET title=excluded.title,price_usdt=excluded.price_usdt,duration_days=excluded.duration_days,description=excluded.description,updated_at=excluded.updated_at`).bind(level, title, price, days, description, Date.now()).run();
   return out({ ok: true, message: "Product saved." });
 }
 async function deletePlan(b, env) {
@@ -426,6 +446,8 @@ async function decideWithdrawal(b, adminEmail, env) {
       env.DB.prepare("UPDATE users SET balance_usdt=ROUND(balance_usdt + ?,2) WHERE email=? AND EXISTS(SELECT 1 FROM transactions WHERE id=? AND status='Rejected' AND details LIKE ?)").bind(tx.amount_usdt, tx.user_email, id, `%${refundToken}%`)
     ]);
   } else await env.DB.prepare("UPDATE transactions SET status='Approved',details=details || ? WHERE id=? AND status='Pending'").bind(` • Approved by ${adminEmail}`, id).run();
+  await notify(env.DB, tx.user_email, decision === "Approved" ? "Withdrawal approved" : "Withdrawal rejected",
+    decision === "Approved" ? `Your withdrawal of ${Number(tx.amount_usdt).toFixed(2)} USDT has been approved and sent.` : `Your withdrawal of ${Number(tx.amount_usdt).toFixed(2)} USDT was rejected and the amount was returned to your balance.`);
   return out({ ok: true, message: `Withdrawal ${decision.toLowerCase()}.` });
 }
 
@@ -434,6 +456,7 @@ async function savePaymentMethod(b, user, env) {
   const addr = String(b.wallet_address || "").trim(), net = String(b.wallet_network || "").trim();
   if (!NETWORKS.includes(net) || !validWallet(net, addr)) return out({ ok: false, message: `Enter a valid ${net || "USDT"} wallet address for the selected network.` }, 400);
   await env.DB.prepare("UPDATE users SET wallet_address=?,wallet_network=? WHERE email=?").bind(addr, net, user.email).run();
+  await logActivity(env.DB, user.email, `Withdrawal wallet saved (${net})`);
   return out({ ok: true, message: "Withdrawal wallet saved." });
 }
 
@@ -441,6 +464,7 @@ async function savePin(b, user, env) {
   const pin = String(b.pin || "");
   if (!/^\d{4}$/.test(pin)) return out({ ok: false, message: "PIN must be exactly 4 digits." }, 400);
   await env.DB.prepare("UPDATE users SET withdraw_pin=? WHERE email=?").bind(await hashPassword(pin), user.email).run();
+  await logActivity(env.DB, user.email, user.has_pin ? "Transaction PIN changed" : "Transaction PIN created");
   return out({ ok: true, message: "Transaction PIN saved securely." });
 }
 
@@ -494,4 +518,60 @@ async function checkin(user, env) {
   ]);
   if (!res[1].meta?.changes) return out({ ok: false, message: "Daily check-in is not available yet." }, 400);
   return out({ ok: true, message: "Check-in recorded." });
+}
+
+/* ---------- activity, notifications, password ---------- */
+async function logActivity(db, email, text) {
+  await db.prepare("INSERT INTO transactions(user_email,type,amount_usdt,status,details,created_at) VALUES(?,'Account Activity',0,'Approved',?,?)").bind(email, text, Date.now()).run();
+}
+async function notify(db, email, title, body) {
+  try { await db.prepare("INSERT INTO notifications(user_email,title,body,created_by,created_at) VALUES(?,?,?,'SYSTEM',?)").bind(email, title, body, Date.now()).run(); } catch (e) { console.error("notify failed", e); }
+}
+
+async function listNotifications(user, env) {
+  const seen = await env.DB.prepare("SELECT notif_seen_at FROM users WHERE email=?").bind(user.email).first();
+  const seenAt = Number(seen?.notif_seen_at || 0);
+  const r = await env.DB.prepare("SELECT id,title,body,created_at FROM notifications WHERE user_email=? OR (user_email IS NULL AND created_at>=?) ORDER BY id DESC LIMIT 50").bind(user.email, user.created_at).all();
+  return out({ ok: true, notifications: (r.results || []).map((n) => ({ ...n, is_new: Number(n.created_at) > seenAt })) });
+}
+async function markNotificationsSeen(user, env) {
+  await env.DB.prepare("UPDATE users SET notif_seen_at=? WHERE email=?").bind(Date.now(), user.email).run();
+  return out({ ok: true });
+}
+async function sendNotification(b, adminEmail, env) {
+  const title = String(b.title || "").trim().slice(0, 80), body = String(b.body || "").trim().slice(0, 500);
+  if (!title) return out({ ok: false, message: "Enter a notification title." }, 400);
+  let target = null;
+  if (b.audience === "user") {
+    target = cleanEmail(b.email);
+    if (!(await env.DB.prepare("SELECT id FROM users WHERE email=?").bind(target).first())) return out({ ok: false, message: "No member with that email." }, 404);
+  }
+  await env.DB.prepare("INSERT INTO notifications(user_email,title,body,created_by,created_at) VALUES(?,?,?,?,?)").bind(target, title, body, adminEmail, Date.now()).run();
+  return out({ ok: true, message: target ? "Notification sent to the member." : "Notification sent to all members." });
+}
+async function deleteNotification(b, env) {
+  const id = Number(b.id);
+  if (!Number.isInteger(id)) return out({ ok: false, message: "Invalid notification." }, 400);
+  await env.DB.prepare("DELETE FROM notifications WHERE id=? AND created_by<>'SYSTEM'").bind(id).run();
+  return out({ ok: true, message: "Notification deleted." });
+}
+
+async function changePassword(b, user, request, env) {
+  const db = env.DB; const cur = String(b.current_password || ""), next = String(b.new_password || "");
+  if (next.length < 8 || next.length > 200) return out({ ok: false, message: "New password must be at least 8 characters." }, 400);
+  const key = `pw:${user.email}`;
+  if ((await hits(db, key)) >= 5) return out({ ok: false, message: "Too many attempts. Try again in 30 minutes." }, 429);
+  const row = await db.prepare("SELECT password_hash FROM users WHERE email=?").bind(user.email).first();
+  if (!row || !(await verifyPassword(cur, row.password_hash))) { await hit(db, key, 30 * MIN_MS); return out({ ok: false, message: "Current password is incorrect." }, 403); }
+  await clearHits(db, key);
+  await db.batch([
+    db.prepare("UPDATE users SET password_hash=? WHERE email=?").bind(await hashPassword(next), user.email),
+    db.prepare("DELETE FROM sessions WHERE user_email=? AND token_hash<>?").bind(user.email, await sha256(bearer(request)))
+  ]);
+  await logActivity(db, user.email, "Password changed (other devices signed out)");
+  return out({ ok: true, message: "Password changed. Other devices were signed out." });
+}
+async function logoutAll(user, env) {
+  await env.DB.prepare("DELETE FROM sessions WHERE user_email=?").bind(user.email).run();
+  return out({ ok: true, message: "Signed out of all devices." });
 }

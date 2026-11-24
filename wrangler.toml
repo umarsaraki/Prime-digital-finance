@@ -18,3 +18,9 @@ bucket_name = "prime-digital-finance-uploads"
 
 [vars]
 PRIMARY_ADMIN_EMAIL = "umarsaraki96@gmail.com"
+# Optional: lock API calls to your own domain, e.g. APP_ORIGIN = "https://your-domain.com"
+# APP_ORIGIN = ""
+
+# SECRET (do not write it here). Set it once with:
+#   npx wrangler secret put ADMIN_SETUP_KEY
+# The owner e-mail above can only be registered by entering this key on the register form.

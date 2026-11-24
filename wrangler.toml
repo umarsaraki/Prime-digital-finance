@@ -24,3 +24,7 @@ PRIMARY_ADMIN_EMAIL = "umarsaraki96@gmail.com"
 # SECRET (do not write it here). Set it once with:
 #   npx wrangler secret put ADMIN_SETUP_KEY
 # The owner e-mail above can only be registered by entering this key on the register form.
+
+# Automatic earnings (only used when the admin chooses "auto"): runs hourly
+[triggers]
+crons = ["0 * * * *"]

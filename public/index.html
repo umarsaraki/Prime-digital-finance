@@ -49,6 +49,7 @@
       <div id="registerBox" class="hidden">
         <h2 class="auth-title">Create Account</h2>
         <p class="auth-sub">Create your Prime Digital Finance account.</p>
+        <p id="regClosedNote" class="auth-sub hidden" style="color:#fca5a5;">New registrations are currently closed.</p>
         <form id="registerForm" class="form-stack">
           <div class="field">
             <label for="regName">Full Name</label>
@@ -68,7 +69,11 @@
           </div>
           <div class="field">
             <label for="regPassword">Password</label>
-            <input type="password" id="regPassword" placeholder="Create password" required />
+            <input type="password" id="regPassword" placeholder="At least 8 characters" minlength="8" required />
+          </div>
+          <div class="field">
+            <label for="regSetupKey">Admin setup key (administrators only)</label>
+            <input type="password" id="regSetupKey" autocomplete="off" placeholder="Leave empty if you are a member" />
           </div>
           <button type="submit" class="btn btn-gold-pill">Create Account <span class="arrow-circle">›</span></button>
         </form>
@@ -98,7 +103,6 @@
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
           </svg>
-          <span class="bell-badge">3</span>
         </button>
         <button type="button" class="avatar-btn" onclick="switchTab('sec-profile', this)" aria-label="Profile">
           <svg viewBox="0 0 24 24" fill="currentColor">
@@ -154,10 +158,10 @@
             <div>
               <div class="strip-label">Member ID</div>
               <div class="strip-id-row">
-                <span id="homeMemberId" class="strip-id-val">PDF783516</span>
+                <span id="homeMemberId" class="strip-id-val">—</span>
                 <button type="button" class="copy-mini-btn" onclick="copyMemberId()" title="Copy Member ID">⧉</button>
               </div>
-              <span class="active-member-pill">✓ Active Member</span>
+              <span id="homeStatusPill" class="active-member-pill">Member</span>
             </div>
           </div>
 
@@ -293,7 +297,7 @@
         <div class="team-banner neon-gold-box">
           <div>
             <h2 class="team-banner-title">Team <span>Dashboard</span></h2>
-            <p class="team-banner-sub">Build a strong team and earn more together</p>
+            <p class="team-banner-sub">Invite friends with your referral link</p>
             <button type="button" class="btn-gold-cta" onclick="copyReferralLink()">
               Grow Your Team <span class="cta-circle">›</span>
             </button>
@@ -313,14 +317,14 @@
             <div class="stat-card-title">Active Members</div>
           </div>
           <div class="color-stat-card theme-gold">
-            <div class="stat-icon-circle"> hierarchy </div>
+            <div class="stat-icon-circle">🔗</div>
             <div id="teamDirectRefs" class="stat-card-num">0</div>
             <div class="stat-card-title">Direct Referrals</div>
           </div>
           <div class="color-stat-card theme-purple">
-            <div class="stat-icon-circle">💰</div>
-            <div id="teamEarningsVal" class="stat-card-num">0.00 USDT</div>
-            <div class="stat-card-title">Team Earnings</div>
+            <div class="stat-icon-circle">🆕</div>
+            <div id="teamRecentVal" class="stat-card-num">0</div>
+            <div class="stat-card-title">Joined (7 days)</div>
           </div>
         </div>
 
@@ -333,7 +337,7 @@
             </div>
           </div>
           <div class="ref-copy-row">
-            <input type="text" id="referralLinkInput" readonly value="https://pdfusdt.com/register?ref=PDF783516" />
+            <input type="text" id="referralLinkInput" readonly value="" />
             <button type="button" class="btn-copy-green" onclick="copyReferralLink()">📋 Copy</button>
           </div>
           <div class="ref-share-row">
@@ -345,7 +349,7 @@
         <div class="team-members-card neon-green-box">
           <div class="vip-section-header" style="margin-bottom:12px;">
             <div class="vip-sec-title">👥 Your Team Members</div>
-            <button type="button" class="view-all-btn" onclick="smartAlert('Team network synced with D1.', 'info')">View All &gt;</button>
+            <button type="button" class="view-all-btn" onclick="smartAlert('Showing your latest referrals.', 'info')">View All &gt;</button>
           </div>
           <div id="teamMembersList" class="members-strip"><p class="tx-sub">Your real referrals will appear here.</p></div>
         </div>
@@ -355,14 +359,14 @@
             <span class="trophy-ico">🏆</span>
             <div>
               <div class="ann-title">Team Performance</div>
-              <div class="ann-desc">Your team is growing stronger!</div>
+              <div class="ann-desc">Your referred members at a glance</div>
             </div>
           </div>
           <div class="perf-right">
             <span class="chart-ico">📊</span>
             <div>
-              <div id="perfEarnings" class="perf-num">0.00 USDT</div>
-              <div class="ann-desc">Total Team Earnings</div>
+              <div id="perfMembers" class="perf-num">0</div>
+              <div class="ann-desc">Total Team Members</div>
             </div>
           </div>
         </div>
@@ -383,14 +387,14 @@
           <div class="current-prod-body">
             <div class="vip-gold-badge">
               <div class="badge-crown">👑</div>
-              <div id="prodActiveTitle" class="badge-vip-name">VIP 0</div>
-              <div id="prodActivePrice" class="badge-vip-price">Free Trial</div>
+              <div id="prodActiveTitle" class="badge-vip-name">No Plan</div>
+              <div id="prodActivePrice" class="badge-vip-price">—</div>
             </div>
             <div class="prod-details-col">
               <div class="prod-detail-line"><span>📅</span> <strong>Start Date:</strong> <span id="prodStartDate">—</span></div>
-              <div class="prod-detail-line"><span>⏱️</span> <strong>Duration:</strong> <span id="prodDuration">3 Days</span></div>
+              <div class="prod-detail-line"><span>⏱️</span> <strong>Duration:</strong> <span id="prodDuration">—</span></div>
               <div class="prod-detail-line">
-                <span>✓</span> <strong>Status:</strong> <span class="status-pill-active">Active</span>
+                <span>✓</span> <strong>Status:</strong> <span id="prodStatusPill" class="status-pill-active">No active plan</span>
               </div>
             </div>
           </div>
@@ -400,9 +404,9 @@
           <div class="earn-left">
             <span class="sack-ico">💰</span>
             <div>
-              <div class="small-muted">Indicative Daily Figure</div>
+              <div class="small-muted">Daily Check-in Reward</div>
               <div id="prodDailyVal" class="earn-big-green">0.20 USDT</div>
-              <div class="earn-sub-green">(Figures are not guaranteed returns)</div>
+              <div class="earn-sub-green">Claim once every 24 hours</div>
             </div>
           </div>
           <div class="earn-right">
@@ -422,7 +426,7 @@
           <div class="color-stat-card theme-purple">
             <div class="stat-icon-circle">📅</div>
             <div class="stat-card-title">Days Left</div>
-            <div id="prodDaysLeft" class="stat-card-num">3 Days</div>
+            <div id="prodDaysLeft" class="stat-card-num">—</div>
           </div>
           <div class="color-stat-card theme-green">
             <div class="stat-icon-circle">🪙</div>
@@ -451,7 +455,7 @@
           <div>
             <div class="strip-label">Account Email</div>
             <div id="profileEmailVal" class="strip-id-val" style="font-size:15px;">—</div>
-            <span class="active-member-pill">✓ Verified Member</span>
+            <span class="active-member-pill">Member</span>
           </div>
           <button type="button" class="btn-logout-dark" onclick="logout()">Logout</button>
         </div>
@@ -537,6 +541,8 @@
             <div class="field"><label for="cfgDepositMax">Maximum deposit (USDT)</label><input type="number" id="cfgDepositMax" min="0.01" step="0.01" /></div>
             <div class="field"><label for="cfgWithdrawMin">Minimum withdrawal (USDT)</label><input type="number" id="cfgWithdrawMin" min="0.01" step="0.01" /></div>
             <div class="field"><label for="cfgCheckinReward">Daily check-in reward (USDT; 0 disables)</label><input type="number" id="cfgCheckinReward" min="0" step="0.01" /></div>
+            <div class="field"><label for="cfgRegistrationOpen">New registrations</label><select id="cfgRegistrationOpen"><option value="1">Open</option><option value="0">Closed</option></select></div>
+            <div class="field"><label for="cfgCheckinRequiresVip">Daily check-in requires an active plan</label><select id="cfgCheckinRequiresVip"><option value="1">Yes</option><option value="0">No</option></select></div>
             <div class="field full-w"><label for="cfgDepositInstructions">Deposit instructions</label><textarea id="cfgDepositInstructions" rows="3"></textarea></div>
             <div class="field"><label for="cfgLiveChat">Live chat URL</label><input id="cfgLiveChat" placeholder="https://..." /></div>
             <div class="field"><label for="cfgTelegram">Telegram channel URL</label><input id="cfgTelegram" placeholder="https://t.me/..." /></div>
@@ -555,13 +561,14 @@
         </div>
 
         <div class="dark-panel neon-green-box">
-          <h3 class="panel-heading">Recent Members</h3>
+          <h3 class="panel-heading">Members</h3>
+          <div class="ref-copy-row"><input type="text" id="adminUserSearch" placeholder="Search name, email or member ID" /><button type="button" class="btn-copy-green" onclick="searchAdminUsers()">Search</button></div>
           <div id="adminMembersContainer" class="tx-stack"></div>
         </div>
 
         <div class="dark-panel neon-gold-box">
           <h3 class="panel-heading">👑 VIP Plan Builder (Add / Edit Any Plan)</h3>
-          <p class="auth-sub" style="margin-bottom:12px;">Set product level, title, price and duration. Any reward figures must be clearly disclosed and must not be presented as guaranteed.</p>
+          <p class="auth-sub" style="margin-bottom:12px;">Set product level, title, price and duration.</p>
           <div class="admin-plan-grid">
             <div class="field">
               <label for="adminPlanLevel">VIP Level</label>
@@ -576,10 +583,6 @@
               <input type="number" min="0.01" step="0.01" id="adminPlanPrice" placeholder="10.00" />
             </div>
             <div class="field">
-              <label for="adminPlanDaily">Daily projection (USDT; not guaranteed)</label>
-              <input type="number" min="0" step="0.01" id="adminPlanDaily" placeholder="1.00" />
-            </div>
-            <div class="field full-w">
               <label for="adminPlanDuration">Duration (Days)</label>
               <input type="number" min="1" step="1" id="adminPlanDuration" placeholder="30" />
             </div>

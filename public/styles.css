@@ -277,7 +277,7 @@ select:focus {
   width: 18px;
   height: 18px;
   }
-  bell-badge {
+.bell-badge {
   position: absolute;
   top: -4px;
   right: -4px;

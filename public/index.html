@@ -160,13 +160,14 @@
         <div class="menu-list neon-green-box">
           <button type="button" class="menu-row" onclick="openView('sub-invite')"><span class="menu-ico">🔗</span><span class="menu-label">Invite Friends</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="openView('sub-members')"><span class="menu-ico">👥</span><span class="menu-label">Team Members</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('sub-rewards')"><span class="menu-ico">🎁</span><span class="menu-label">Referral Rewards</span><span class="menu-arrow">›</span></button>
         </div>
       </section>
 
       <!-- PRODUCTS -->
       <section id="sec-products" class="tab-section">
         <div class="products-hero neon-green-box">
-          <div><h2 class="prod-hero-title">📦 Products</h2><p class="prod-hero-sub">Your current plan and available plans</p></div>
+          <div><h2 class="prod-hero-title">📦 Products</h2><p class="prod-hero-sub">Your current plan</p></div>
           <div class="prod-crown-box">👑</div>
         </div>
         <div class="current-product-card neon-green-box">
@@ -186,6 +187,16 @@
           </div>
         </div>
 
+        <div id="prodEarnCard" class="dark-panel neon-green-box hidden">
+          <h3 class="panel-heading">Daily earning</h3>
+          <div class="info-row"><span>Daily earning</span><strong id="earnDaily">—</strong></div>
+          <div class="info-row"><span>Total received</span><strong id="earnTotal">—</strong></div>
+          <div class="info-row"><span>Remaining eligible days</span><strong id="earnDays">—</strong></div>
+          <div class="info-row"><span>Next earning</span><strong id="earnNext">—</strong></div>
+          <button type="button" id="earnClaimBtn" class="btn-gold-cta full-w hidden" onclick="claimEarning()">Claim earning</button>
+          <p id="earnNote" class="tx-sub" style="margin-top:8px;"></p>
+        </div>
+
         <div class="earning-timer-bar neon-green-box">
           <div class="earn-left">
             <span class="sack-ico">🎁</span>
@@ -198,9 +209,7 @@
             <button type="button" id="prodCheckinBtn" class="btn-claim-mini" onclick="claimDailyReward()">Claim Reward</button>
           </div>
         </div>
-
-        <div class="vip-section-header"><div class="vip-sec-title">👑 Available Plans</div></div>
-        <div id="allVipPlansContainer" class="vip-three-grid"></div>
+        <div id="prodEmpty" class="dark-panel neon-green-box hidden"><p class="tx-sub" style="text-align:center;margin:8px 0;">You don't have an active VIP plan yet.</p><button type="button" class="btn-gold-cta full-w" onclick="switchTab('sec-home')">Browse plans on Home</button></div>
       </section>
 
       <!-- PROFILE (menu) -->
@@ -221,6 +230,7 @@
           <button type="button" class="menu-row" onclick="openView('sub-password')"><span class="menu-ico">🔑</span><span class="menu-label">Change Password</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="openView('sub-security')"><span class="menu-ico">🛡️</span><span class="menu-label">Security Settings</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="openView('sub-history')"><span class="menu-ico">📜</span><span class="menu-label">Transaction History</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('sub-company')"><span class="menu-ico">🏢</span><span class="menu-label">Company Profile</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="switchTab('sec-support')"><span class="menu-ico">🎧</span><span class="menu-label">Help &amp; Support</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row danger" onclick="logout()"><span class="menu-ico">🚪</span><span class="menu-label">Logout</span><span class="menu-arrow">›</span></button>
         </div>
@@ -358,40 +368,123 @@
         <div class="dark-panel neon-green-box"><div id="teamMembersList" class="tx-stack"></div></div>
       </section>
 
-      <!-- ADMIN MENU -->
+      <section id="sub-company" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Company Profile</h3></div>
+        <div id="companyBody"></div>
+      </section>
+
+      <section id="sub-rewards" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Referral Rewards</h3></div>
+        <div class="dark-panel neon-green-box">
+          <div class="info-row"><span>Pending</span><strong id="rwPending">—</strong></div>
+          <div class="info-row"><span>Approved &amp; credited</span><strong id="rwApproved">—</strong></div>
+          <p id="rwRules" class="tx-sub" style="margin-top:8px;"></p>
+        </div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Referral history</h3><div id="rwList" class="tx-stack"></div></div>
+      </section>
+
+      <!-- ADMIN -->
       <section id="sec-admin" class="tab-section">
         <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Admin Panel</h3></div>
         <div class="menu-list neon-gold-box">
-          <button type="button" class="menu-row" onclick="openView('adm-deposits')"><span class="menu-ico">📥</span><span class="menu-label">Pending Deposits</span><span id="admBadgeDeposits" class="count-badge hidden">0</span><span class="menu-arrow">›</span></button>
-          <button type="button" class="menu-row" onclick="openView('adm-withdrawals')"><span class="menu-ico">📤</span><span class="menu-label">Pending Withdrawals</span><span id="admBadgeWithdrawals" class="count-badge hidden">0</span><span class="menu-arrow">›</span></button>
-          <button type="button" class="menu-row" onclick="openView('adm-members')"><span class="menu-ico">👥</span><span class="menu-label">Members</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-dashboard')"><span class="menu-ico">📊</span><span class="menu-label">Dashboard</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-members')"><span class="menu-ico">👥</span><span class="menu-label">Manage Users</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-deposits')"><span class="menu-ico">📥</span><span class="menu-label">Deposits</span><span id="admBadgeDeposits" class="count-badge hidden">0</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-withdrawals')"><span class="menu-ico">📤</span><span class="menu-label">Withdrawals</span><span id="admBadgeWithdrawals" class="count-badge hidden">0</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="openView('adm-plans')"><span class="menu-ico">👑</span><span class="menu-label">VIP Plans</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-purchases')"><span class="menu-ico">🧾</span><span class="menu-label">VIP Purchases</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-earnings')"><span class="menu-ico">💹</span><span class="menu-label">Daily Earnings</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-commissions')"><span class="menu-ico">🤝</span><span class="menu-label">Team &amp; Referral Settings</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-company')"><span class="menu-ico">🏢</span><span class="menu-label">Company Profile</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="openView('adm-notify')"><span class="menu-ico">🔔</span><span class="menu-label">Send Notification</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="openView('adm-pay')"><span class="menu-ico">💳</span><span class="menu-label">Payments &amp; Limits</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-global')"><span class="menu-ico">🎛️</span><span class="menu-label">Global Controls</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="openView('adm-site')"><span class="menu-ico">🌐</span><span class="menu-label">Website &amp; Banner</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="openView('adm-links')"><span class="menu-ico">🔗</span><span class="menu-label">Support Links</span><span class="menu-arrow">›</span></button>
           <button type="button" class="menu-row" onclick="openView('adm-admins')"><span class="menu-ico">🛡️</span><span class="menu-label">Super Admins</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-audit')"><span class="menu-ico">📜</span><span class="menu-label">Audit Log</span><span class="menu-arrow">›</span></button>
+          <button type="button" class="menu-row" onclick="openView('adm-health')"><span class="menu-ico">🩺</span><span class="menu-label">System Health</span><span class="menu-arrow">›</span></button>
         </div>
       </section>
 
-      <section id="adm-deposits" class="tab-section">
-        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Pending Deposits</h3></div>
+      <section id="adm-dashboard" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Dashboard</h3></div>
+        <div class="dark-panel neon-gold-box"><div class="ref-copy-row"><input type="date" id="dashFrom" /><input type="date" id="dashTo" /><button type="button" class="btn-copy-green" onclick="loadDashboard()">Apply</button></div><p class="tx-sub">The date range applies to deposits, withdrawals, purchases and check-ins. Totals for users and balances are always current.</p></div>
+        <div id="dashCards" class="four-stats-grid"></div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Recent transactions</h3><div id="dashRecent" class="tx-stack"></div></div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">System alerts</h3><div id="dashAlerts" class="tx-stack"></div></div>
+      </section>
+
+      <section id="adm-members" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Manage Users</h3></div>
         <div class="dark-panel neon-green-box">
-          <p class="tx-sub">Check the proof and reference before approving. Approval credits the member once.</p>
-          <div id="pendingDepositsContainer" class="tx-stack"></div>
+          <div class="ref-copy-row"><input type="text" id="adminUserSearch" placeholder="Search name, email, phone or member ID" /><button type="button" class="btn-copy-green" onclick="searchAdminUsers()">Search</button></div>
+          <div id="adminMembersContainer" class="tx-stack"></div>
+        </div>
+      </section>
+
+      <section id="adm-user" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Member Details</h3></div>
+        <div id="userDetailHead" class="dark-panel neon-gold-box"></div>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Account controls</h3>
+          <div class="field"><label for="udReason">Reason / note (recorded in the audit log)</label><input id="udReason" maxlength="500" /></div>
+          <div class="tx-btns wrap" id="udActions"></div>
+          <div class="field" style="margin-top:10px;"><label for="udNote">Internal note (visible to administrators only)</label><textarea id="udNote" rows="3" maxlength="1000"></textarea></div>
+          <button type="button" class="btn-live-pill" onclick="saveUserNote()">Save note</button>
+        </div>
+        <div class="dark-panel neon-gold-box">
+          <h3 class="panel-heading">Adjust balance</h3>
+          <p class="tx-sub">Every adjustment creates a transaction record and an audit entry. You cannot adjust your own balance.</p>
+          <div class="admin-plan-grid">
+            <div class="field"><label for="adjType">Type</label><select id="adjType"><option value="credit">Credit (add)</option><option value="debit">Debit (remove)</option></select></div>
+            <div class="field"><label for="adjAmount">Amount (USDT)</label><input type="number" id="adjAmount" min="0.01" step="0.01" /></div>
+            <div class="field full-w"><label for="adjReason">Reason (required)</label><input id="adjReason" maxlength="500" /></div>
+          </div>
+          <button type="button" class="btn-gold-cta full-w" onclick="submitAdjust()">Review &amp; confirm</button>
+        </div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">VIP history</h3><div id="udVip" class="tx-stack"></div></div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Deposits</h3><div id="udDeps" class="tx-stack"></div></div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Invited members</h3><div id="udInvited" class="tx-stack"></div></div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Transactions</h3><div id="udTx" class="tx-stack"></div></div>
+      </section>
+
+      <section id="adm-deposits" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Deposits</h3></div>
+        <div class="dark-panel neon-green-box">
+          <div class="ref-copy-row"><input type="text" id="depQ" placeholder="Search user, reference, amount" /><button type="button" class="btn-copy-green" onclick="loadAdminDeposits()">Search</button></div>
+          <div class="chip-row" id="depChips"><button type="button" class="chip active" data-f="">All</button><button type="button" class="chip" data-f="Pending">Pending</button><button type="button" class="chip" data-f="Approved">Approved</button><button type="button" class="chip" data-f="Rejected">Rejected</button></div>
+          <div class="ref-copy-row"><input type="date" id="depFrom" /><input type="date" id="depTo" /></div>
+          <div id="depList" class="tx-stack"></div>
         </div>
       </section>
 
       <section id="adm-withdrawals" class="tab-section">
-        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Pending Withdrawals</h3></div>
-        <div class="dark-panel neon-green-box"><div id="pendingWithdrawalsContainer" class="tx-stack"></div></div>
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Withdrawals</h3></div>
+        <div class="dark-panel neon-green-box">
+          <div class="ref-copy-row"><input type="text" id="wdQ" placeholder="Search user, reference, amount" /><button type="button" class="btn-copy-green" onclick="loadAdminWithdrawals()">Search</button></div>
+          <div class="chip-row" id="wdChips"><button type="button" class="chip active" data-f="">All</button><button type="button" class="chip" data-f="Pending">Pending</button><button type="button" class="chip" data-f="Approved">Approved</button><button type="button" class="chip" data-f="Rejected">Rejected</button></div>
+          <div class="ref-copy-row"><input type="date" id="wdFrom" /><input type="date" id="wdTo" /></div>
+          <div id="wdList" class="tx-stack"></div>
+        </div>
       </section>
 
-      <section id="adm-members" class="tab-section">
-        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Members</h3></div>
+      <section id="adm-purchases" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>VIP Purchases</h3></div>
         <div class="dark-panel neon-green-box">
-          <div class="ref-copy-row"><input type="text" id="adminUserSearch" placeholder="Search name, email or member ID" /><button type="button" class="btn-copy-green" onclick="searchAdminUsers()">Search</button></div>
-          <div id="adminMembersContainer" class="tx-stack"></div>
+          <div class="ref-copy-row"><input type="text" id="purQ" placeholder="Search user, reference, amount" /><button type="button" class="btn-copy-green" onclick="loadAdminPurchases()">Search</button></div>
+          <div class="chip-row" id="purChips"><button type="button" class="chip active" data-f="">All</button><button type="button" class="chip" data-f="purchase">Purchases</button><button type="button" class="chip" data-f="upgrade">Upgrades</button></div>
+          <div class="ref-copy-row"><input type="date" id="purFrom" /><input type="date" id="purTo" /></div>
+          <div id="purList" class="tx-stack"></div>
+        </div>
+      </section>
+
+      <section id="adm-audit" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Audit Log</h3></div>
+        <div class="dark-panel neon-green-box">
+          <p class="tx-sub">Audit entries cannot be edited or deleted.</p>
+          <div class="ref-copy-row"><input type="text" id="auditQ" placeholder="Search actor, action, target, reason" /><button type="button" class="btn-copy-green" onclick="loadAudit()">Search</button></div>
+          <div id="auditList" class="tx-stack"></div>
         </div>
       </section>
 
@@ -404,11 +497,109 @@
             <div class="field"><label for="adminPlanTitle">Plan name</label><input type="text" id="adminPlanTitle" placeholder="VIP 1" /></div>
             <div class="field"><label for="adminPlanPrice">Price (USDT)</label><input type="number" min="0.01" step="0.01" id="adminPlanPrice" /></div>
             <div class="field"><label for="adminPlanDuration">Duration (days)</label><input type="number" min="1" step="1" id="adminPlanDuration" placeholder="30" /></div>
-            <div class="field full-w"><label for="adminPlanDescription">Description shown to members</label><textarea id="adminPlanDescription" rows="4" placeholder="Describe exactly what this plan includes."></textarea></div>
+            <div class="field"><label for="adminPlanActive">Status</label><select id="adminPlanActive"><option value="1">Active (shown on Home)</option><option value="0">Inactive (hidden)</option></select></div>
+            <div class="field"><label for="adminPlanDaily">Daily earning (USDT; 0 = none)</label><input type="number" min="0" step="0.01" id="adminPlanDaily" /></div>
+            <div class="field"><label for="adminPlanLimit">Total earning limit (USDT; 0 = none)</label><input type="number" min="0" step="0.01" id="adminPlanLimit" /></div>
+            <div class="field"><label for="adminPlanEStart">Earning start date</label><input type="date" id="adminPlanEStart" /></div>
+            <div class="field"><label for="adminPlanEEnd">Earning end date</label><input type="date" id="adminPlanEEnd" /></div>
+            <div class="field full-w"><label for="adminPlanApply">If earning terms changed</label><select id="adminPlanApply"><option value="0">Apply to NEW purchases only (existing members keep their terms)</option><option value="1">Also change terms for members who already hold this plan</option></select></div>
+            <div class="field full-w"><label for="adminPlanDescription">Description shown to members</label><textarea id="adminPlanDescription" rows="4" placeholder="Describe exactly what this plan includes. Do not promise profits or returns."></textarea></div>
           </div>
           <button type="button" class="btn-gold-cta full-w" onclick="saveAdminPlan()">Save Plan</button>
         </div>
-        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Current plans</h3><div id="adminPlansContainer" class="tx-stack"></div></div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">All plans</h3><div id="adminPlansContainer" class="tx-stack"></div></div>
+      </section>
+
+      <section id="adm-earnings" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Daily Earnings</h3></div>
+        <div id="earnCompliance" class="dark-panel neon-gold-box"></div>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Earning controls</h3>
+          <div class="admin-plan-grid">
+            <div class="field"><label for="cfgEarningsEnabled">Daily earnings</label><select id="cfgEarningsEnabled"><option value="0">Disabled</option><option value="1">Enabled</option></select></div>
+            <div class="field"><label for="cfgEarningsMethod">Method</label><select id="cfgEarningsMethod"><option value="claim">Member claims daily</option><option value="auto">Automatic credit</option></select></div>
+            <div class="field"><label for="cfgEarningsFreq">Frequency (hours)</label><input type="number" id="cfgEarningsFreq" min="1" max="720" step="1" /></div>
+          </div>
+          <p class="tx-sub">Earnings are paid ONLY from the payout fund below. If the fund is empty, earnings stay pending and nothing is credited. Per-plan amounts are set under VIP Plans.</p>
+          <button type="button" class="btn-deposit-green" onclick="savePlatformSettings('earn')">Save</button>
+          <button type="button" class="btn-live-pill" onclick="runAutoEarnings()">Run automatic earnings now</button>
+        </div>
+        <div class="dark-panel neon-gold-box">
+          <h3 class="panel-heading">Payout fund</h3>
+          <div id="earnStats"></div>
+          <p class="tx-sub">Record only genuine, documented company revenue. User deposits and VIP payments are never added automatically.</p>
+          <div class="admin-plan-grid">
+            <div class="field"><label for="fundAmount">Amount (USDT)</label><input type="number" id="fundAmount" min="0.01" step="0.01" /></div>
+            <div class="field"><label for="fundRef">Document / bank reference</label><input id="fundRef" /></div>
+            <div class="field full-w"><label for="fundNote">Revenue source description</label><input id="fundNote" /></div>
+          </div>
+          <button type="button" class="btn-gold-cta full-w" onclick="submitAllocation()">Allocate verified revenue</button>
+          <div class="admin-plan-grid" style="margin-top:12px;">
+            <div class="field"><label for="corrAmount">Correction (+ or − USDT)</label><input type="number" id="corrAmount" step="0.01" /></div>
+            <div class="field"><label for="corrReason">Reason</label><input id="corrReason" /></div>
+          </div>
+          <button type="button" class="btn-live-pill" onclick="submitCorrection()">Record accounting correction</button>
+        </div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Active earning schedules</h3><div class="ref-copy-row"><input id="earnQ" placeholder="Search member" /><button type="button" class="btn-copy-green" onclick="loadEarnings()">Search</button></div><div id="earnSchedules" class="tx-stack"></div></div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Ledger</h3><div id="earnLedger" class="tx-stack"></div><button type="button" class="btn-live-pill full-w" onclick="exportLedger()">Export ledger (CSV)</button></div>
+      </section>
+
+      <section id="adm-commissions" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Team &amp; Referral Settings</h3></div>
+        <div class="dark-panel neon-gold-box">
+          <div class="admin-plan-grid">
+            <div class="field"><label for="cfgReferralEnabled">Referral commissions</label><select id="cfgReferralEnabled"><option value="0">Disabled</option><option value="1">Enabled</option></select></div>
+            <div class="field"><label for="cfgReferralPercent">Direct referral commission (%)</label><input type="number" id="cfgReferralPercent" min="0" max="100" step="0.01" /></div>
+            <div class="field"><label for="cfgReferralManual">Approval</label><select id="cfgReferralManual"><option value="1">Manual review (recommended)</option><option value="0">Automatic</option></select></div>
+            <div class="field"><label for="cfgReferralUpgrades">Commission on upgrades</label><select id="cfgReferralUpgrades"><option value="0">No – first purchase only</option><option value="1">Yes</option></select></div>
+          </div>
+          <p class="tx-sub">Direct referrals only; no multi-level. Commissions are paid from the payout fund only, once per purchase. A new percentage applies to future purchases only.</p>
+          <button type="button" class="btn-deposit-green" onclick="savePlatformSettings('ref')">Save</button>
+        </div>
+        <div class="dark-panel neon-green-box">
+          <div class="ref-copy-row"><input id="commQ" placeholder="Search referrer or referred e-mail" /><button type="button" class="btn-copy-green" onclick="loadCommissions()">Search</button></div>
+          <div class="chip-row" id="commChips"><button type="button" class="chip active" data-f="">All</button><button type="button" class="chip" data-f="Pending">Pending</button><button type="button" class="chip" data-f="Approved">Approved</button><button type="button" class="chip" data-f="Rejected">Rejected</button></div>
+          <div id="commList" class="tx-stack"></div>
+        </div>
+      </section>
+
+      <section id="adm-company" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Company Profile</h3></div>
+        <div class="dark-panel neon-gold-box">
+          <p class="tx-sub">Publish only real, verifiable information. Never enter a CAC number, licence or claim that you do not hold.</p>
+          <div class="admin-plan-grid">
+            <div class="field"><label for="cfgLegalName">Registered company name</label><input id="cfgLegalName" /></div>
+            <div class="field"><label for="cfgCac">CAC registration number</label><input id="cfgCac" /></div>
+            <div class="field"><label for="cfgCompanyAddress">Company address</label><input id="cfgCompanyAddress" /></div>
+            <div class="field"><label for="cfgCompanyPhone">Phone</label><input id="cfgCompanyPhone" /></div>
+            <div class="field"><label for="cfgCompanyEmail">Official e-mail</label><input id="cfgCompanyEmail" /></div>
+            <div class="field"><label for="cfgCompanyWebsite">Official website (https://…)</label><input id="cfgCompanyWebsite" /></div>
+            <div class="field full-w"><label for="cfgCompanyDesc">Company description</label><textarea id="cfgCompanyDesc" rows="3"></textarea></div>
+            <div class="field full-w"><label for="cfgMission">Mission</label><textarea id="cfgMission" rows="3"></textarea></div>
+            <div class="field full-w"><label for="cfgVision">Vision</label><textarea id="cfgVision" rows="3"></textarea></div>
+            <div class="field full-w"><label for="cfgProducts">Products and services sold</label><textarea id="cfgProducts" rows="3"></textarea></div>
+            <div class="field full-w"><label for="cfgHowOperate">How the company operates</label><textarea id="cfgHowOperate" rows="3"></textarea></div>
+            <div class="field full-w"><label for="cfgRevenueModel">How the business generates revenue</label><textarea id="cfgRevenueModel" rows="3"></textarea></div>
+            <div class="field full-w"><label for="cfgEarningsFunding">How eligible VIP earnings are funded</label><textarea id="cfgEarningsFunding" rows="3"></textarea></div>
+            <div class="field full-w"><label for="cfgLicense">Licences / regulatory approvals (e.g. SEC Nigeria reference)</label><textarea id="cfgLicense" rows="3"></textarea></div>
+            <div class="field full-w"><label for="cfgTerms">Terms and conditions</label><textarea id="cfgTerms" rows="3"></textarea></div>
+            <div class="field full-w"><label for="cfgPrivacy">Privacy policy</label><textarea id="cfgPrivacy" rows="3"></textarea></div>
+          </div>
+          <button type="button" class="btn-deposit-green" onclick="savePlatformSettings('company')">Publish</button>
+        </div>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Company logo</h3>
+          <div class="form-stack"><div class="field"><label for="companyLogoFile">JPG, PNG or WEBP; max 3 MB</label><input type="file" id="companyLogoFile" accept="image/png,image/jpeg,image/webp" /></div><button type="button" class="btn-live-pill" onclick="uploadCompanyLogo()">Upload logo</button></div>
+        </div>
+        <div class="dark-panel neon-green-box">
+          <h3 class="panel-heading">Official documents &amp; certificates</h3>
+          <div class="form-stack">
+            <div class="field"><label for="companyDocTitle">Document title</label><input id="companyDocTitle" maxlength="100" placeholder="CAC certificate" /></div>
+            <div class="field"><label for="companyDocFile">PDF, JPG, PNG or WEBP; max 8 MB</label><input type="file" id="companyDocFile" accept="application/pdf,image/png,image/jpeg,image/webp" /></div>
+            <button type="button" class="btn-live-pill" onclick="uploadCompanyDoc()">Upload &amp; publish</button>
+          </div>
+          <div id="adminCompanyDocs" class="tx-stack" style="margin-top:10px;"></div>
+        </div>
       </section>
 
       <section id="adm-notify" class="tab-section">
@@ -429,17 +620,36 @@
         <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Payments &amp; Limits</h3></div>
         <div class="dark-panel neon-gold-box">
           <div class="admin-plan-grid">
-            <div class="field full-w"><label for="cfgDepositAddress">USDT deposit wallet address</label><input id="cfgDepositAddress" autocomplete="off" /></div>
+            <div class="field full-w"><label for="cfgDepositAddress">USDT deposit wallet address (public address only, never private keys)</label><input id="cfgDepositAddress" autocomplete="off" /></div>
             <div class="field"><label for="cfgDepositNetwork">Deposit network</label><select id="cfgDepositNetwork"><option>TRC20</option><option>BEP20</option><option>ERC20</option></select></div>
             <div class="field"><label for="cfgDepositMin">Minimum deposit (USDT)</label><input type="number" id="cfgDepositMin" min="0.01" step="0.01" /></div>
             <div class="field"><label for="cfgDepositMax">Maximum deposit (USDT)</label><input type="number" id="cfgDepositMax" min="0.01" step="0.01" /></div>
             <div class="field"><label for="cfgWithdrawMin">Minimum withdrawal (USDT)</label><input type="number" id="cfgWithdrawMin" min="0.01" step="0.01" /></div>
-            <div class="field"><label for="cfgCheckinReward">Daily check-in reward (USDT; 0 disables)</label><input type="number" id="cfgCheckinReward" min="0" step="0.01" /></div>
-            <div class="field"><label for="cfgRegistrationOpen">New registrations</label><select id="cfgRegistrationOpen"><option value="1">Open</option><option value="0">Closed</option></select></div>
+            <div class="field"><label for="cfgWithdrawMax">Maximum withdrawal (USDT; 0 = no limit)</label><input type="number" id="cfgWithdrawMax" min="0" step="0.01" /></div>
+            <div class="field"><label for="cfgWithdrawFee">Withdrawal fee (USDT)</label><input type="number" id="cfgWithdrawFee" min="0" step="0.01" /></div>
+            <div class="field"><label for="cfgCheckinReward">Check-in reward (USDT; 0 disables)</label><input type="number" id="cfgCheckinReward" min="0" step="0.01" /></div>
+            <div class="field"><label for="cfgCheckinInterval">Check-in interval (hours)</label><input type="number" id="cfgCheckinInterval" min="1" max="720" step="1" /></div>
             <div class="field"><label for="cfgCheckinRequiresVip">Check-in requires an active plan</label><select id="cfgCheckinRequiresVip"><option value="1">Yes</option><option value="0">No</option></select></div>
             <div class="field full-w"><label for="cfgDepositInstructions">Deposit instructions</label><textarea id="cfgDepositInstructions" rows="3"></textarea></div>
           </div>
           <button type="button" class="btn-deposit-green" onclick="savePlatformSettings('pay')">Save</button>
+        </div>
+      </section>
+
+      <section id="adm-global" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Global Controls</h3></div>
+        <div class="dark-panel neon-gold-box">
+          <p class="tx-sub">These switches take effect for every member within seconds.</p>
+          <div class="admin-plan-grid">
+            <div class="field"><label for="cfgRegistrationOpen">New registrations</label><select id="cfgRegistrationOpen"><option value="1">Open</option><option value="0">Closed</option></select></div>
+            <div class="field"><label for="cfgDepositsEnabled">Deposits</label><select id="cfgDepositsEnabled"><option value="1">Enabled</option><option value="0">Disabled</option></select></div>
+            <div class="field"><label for="cfgWithdrawalsEnabled">Withdrawals</label><select id="cfgWithdrawalsEnabled"><option value="1">Enabled</option><option value="0">Disabled</option></select></div>
+            <div class="field"><label for="cfgVipEnabled">VIP purchases</label><select id="cfgVipEnabled"><option value="1">Enabled</option><option value="0">Disabled</option></select></div>
+            <div class="field"><label for="cfgCheckinEnabled">Daily check-in</label><select id="cfgCheckinEnabled"><option value="1">Enabled</option><option value="0">Disabled</option></select></div>
+            <div class="field"><label for="cfgMaintenance">Maintenance mode (blocks all members; admins stay in)</label><select id="cfgMaintenance"><option value="0">Off</option><option value="1">On</option></select></div>
+            <div class="field full-w"><label for="cfgMaintenanceMsg">Maintenance message</label><textarea id="cfgMaintenanceMsg" rows="2"></textarea></div>
+          </div>
+          <button type="button" class="btn-deposit-green" onclick="savePlatformSettings('global')">Save</button>
         </div>
       </section>
 
@@ -489,6 +699,14 @@
         </div>
       </section>
 
+      <section id="adm-health" class="tab-section">
+        <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>System Health</h3></div>
+        <div id="healthBox" class="dark-panel neon-gold-box"></div>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Recent system events</h3><div id="healthEvents" class="tx-stack"></div></div>
+        <button type="button" class="btn-live-pill full-w" onclick="exportDiagnostics()">Export diagnostic report (JSON)</button>
+        <div class="dark-panel neon-green-box"><h3 class="panel-heading">Backup &amp; restore</h3><p class="tx-sub">Backups are managed by Cloudflare D1 (Time Travel). To restore: Cloudflare dashboard → Workers &amp; Pages → D1 → your database → Time Travel, or run <code>npx wrangler d1 time-travel restore pdf_usdt_db --timestamp=&lt;ISO time&gt;</code>. For an extra copy, run <code>npx wrangler d1 export pdf_usdt_db --remote --output=backup.sql</code>. There is deliberately no reset button here.</p></div>
+      </section>
+
     </main>
 
     <nav class="bottom-nav">
@@ -500,6 +718,7 @@
     </nav>
   </div>
 
+  <div id="maintenanceScreen" class="maint-screen hidden"><div class="maint-card"><div style="font-size:44px">🛠️</div><h2>Under maintenance</h2><p id="maintMsg"></p><button type="button" class="btn-deposit-green" onclick="location.reload()">Try again</button></div></div>
   <script src="./app.js"></script>
 </body>
 </html>

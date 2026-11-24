@@ -1497,3 +1497,10 @@ select:focus {
 .vip-three-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 @media (max-width: 560px) { .vip-three-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
 .btn-gold-cta:disabled, .btn-deposit-green:disabled { opacity: .5; cursor: not-allowed; }
+
+.maint-screen { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #05080a; padding: 16px; }
+.maint-screen.hidden { display: none; }
+.maint-card { max-width: 380px; text-align: center; padding: 28px 20px; border: 1px solid var(--neon-gold, #d4af37); border-radius: 18px; color: #e2e8f0; }
+.tx-btns.wrap { flex-wrap: wrap; }
+.tx-row[role="button"] { cursor: pointer; }
+.admin-review-row img { max-width: 100%; border-radius: 10px; margin-top: 6px; }

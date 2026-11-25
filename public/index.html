@@ -519,6 +519,7 @@
             <div class="field"><label for="cfgEarningsEnabled">Daily earnings</label><select id="cfgEarningsEnabled"><option value="0">Disabled</option><option value="1">Enabled</option></select></div>
             <div class="field"><label for="cfgEarningsMethod">Method</label><select id="cfgEarningsMethod"><option value="claim">Member claims daily</option><option value="auto">Automatic credit</option></select></div>
             <div class="field"><label for="cfgEarningsFreq">Frequency (hours)</label><input type="number" id="cfgEarningsFreq" min="1" max="720" step="1" /></div>
+            <div class="field full-w"><label for="cfgEarnDisclaimer">Note shown to members under earnings (leave empty for the default wording)</label><textarea id="cfgEarnDisclaimer" rows="3" maxlength="500"></textarea></div>
           </div>
           <p class="tx-sub">Earnings are paid ONLY from the payout fund below. If the fund is empty, earnings stay pending and nothing is credited. Per-plan amounts are set under VIP Plans.</p>
           <button type="button" class="btn-deposit-green" onclick="savePlatformSettings('earn')">Save</button>
@@ -566,10 +567,10 @@
       <section id="adm-company" class="tab-section">
         <div class="sub-head"><button type="button" class="back-btn" onclick="goBack()">‹</button><h3>Company Profile</h3></div>
         <div class="dark-panel neon-gold-box">
-          <p class="tx-sub">Publish only real, verifiable information. Never enter a CAC number, licence or claim that you do not hold.</p>
+          <p class="tx-sub">Publish only real, verifiable information. Never enter a registration number, licence or claim that you do not hold.</p>
           <div class="admin-plan-grid">
             <div class="field"><label for="cfgLegalName">Registered company name</label><input id="cfgLegalName" /></div>
-            <div class="field"><label for="cfgCac">CAC registration number</label><input id="cfgCac" /></div>
+            <div class="field"><label for="cfgCac">Company registration number (e.g. CAC in Nigeria, or the state/federal registration number in the USA)</label><input id="cfgCac" /></div>
             <div class="field"><label for="cfgCompanyAddress">Company address</label><input id="cfgCompanyAddress" /></div>
             <div class="field"><label for="cfgCompanyPhone">Phone</label><input id="cfgCompanyPhone" /></div>
             <div class="field"><label for="cfgCompanyEmail">Official e-mail</label><input id="cfgCompanyEmail" /></div>

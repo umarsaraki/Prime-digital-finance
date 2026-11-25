@@ -13,7 +13,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const BOOL_KEYS = ["earnings_enabled", "referral_enabled", "referral_manual_approval", "referral_on_upgrades", "registration_open", "deposits_enabled", "withdrawals_enabled", "vip_purchases_enabled", "checkin_enabled", "checkin_requires_vip", "maintenance_mode"];
 const COMPANY_KEYS = ["company_legal_name", "cac_number", "company_description", "company_address", "company_phone", "company_email", "company_website", "company_mission", "company_vision", "products_services", "how_we_operate", "revenue_model", "earnings_funding", "license_info", "terms_text", "privacy_text"];
 const LONG_KEYS = ["terms_text", "privacy_text", "how_we_operate", "revenue_model", "earnings_funding", "products_services", "company_description"];
-const SETTING_KEYS = ["company_name", "brand_short", "tagline", "hero_title", "hero_subtitle", "deposit_address", "deposit_network", "deposit_instructions", "deposit_min", "deposit_max", "withdraw_min", "withdraw_max", "withdraw_fee", "checkin_reward", "checkin_interval_hours", "telegram_url", "whatsapp_url", "live_chat_url", "announcement", "faq_text", "maintenance_message", "earnings_method", "earnings_frequency_hours", "referral_percent", ...COMPANY_KEYS, ...BOOL_KEYS];
+const SETTING_KEYS = ["company_name", "brand_short", "tagline", "hero_title", "hero_subtitle", "deposit_address", "deposit_network", "deposit_instructions", "deposit_min", "deposit_max", "withdraw_min", "withdraw_max", "withdraw_fee", "checkin_reward", "checkin_interval_hours", "telegram_url", "whatsapp_url", "live_chat_url", "announcement", "faq_text", "maintenance_message", "earnings_method", "earnings_frequency_hours", "earnings_disclaimer", "referral_percent", ...COMPANY_KEYS, ...BOOL_KEYS];
 
 let dbReady = null;      // schema is prepared once per isolate, not on every request
 let allowedOrigin = "";
@@ -270,7 +270,7 @@ async function initDb(db, primaryAdmin) {
     telegram_url: "", whatsapp_url: "", live_chat_url: "", announcement: "Welcome to Prime Digital Finance.",
     faq_text: "Contact support if you need help with a payment or account.",
     registration_open: "1", deposits_enabled: "1", withdrawals_enabled: "1", vip_purchases_enabled: "1", checkin_enabled: "1", checkin_requires_vip: "1",
-    earnings_enabled: "0", earnings_method: "claim", earnings_frequency_hours: "24", referral_enabled: "0", referral_percent: "0", referral_manual_approval: "1", referral_on_upgrades: "0", company_logo_key: "",
+    earnings_enabled: "0", earnings_disclaimer: "", earnings_method: "claim", earnings_frequency_hours: "24", referral_enabled: "0", referral_percent: "0", referral_manual_approval: "1", referral_on_upgrades: "0", company_logo_key: "",
     ...Object.fromEntries(COMPANY_KEYS.map((k) => [k, ""])),
     maintenance_mode: "0", maintenance_message: "We are performing maintenance. Please check back soon."
   };
@@ -909,7 +909,7 @@ async function deleteCompanyDoc(b, adminEmail, env) {
 
 /* ---------- payout compliance gate and funding ledger ---------- */
 async function complianceMissing(db, cfg) {
-  const need = [["company_legal_name", "registered company name"], ["cac_number", "CAC registration number"], ["company_address", "company address"], ["license_info", "licence or regulatory approval details (e.g. SEC Nigeria)"], ["revenue_model", "how the business generates revenue"], ["earnings_funding", "how VIP earnings are funded"], ["terms_text", "terms and conditions"]];
+  const need = [["company_legal_name", "registered company name"], ["cac_number", "company registration number"], ["company_address", "company address"], ["license_info", "licence or regulatory approval details (e.g. SEC Nigeria)"], ["revenue_model", "how the business generates revenue"], ["earnings_funding", "how VIP earnings are funded"], ["terms_text", "terms and conditions"]];
   const missing = need.filter(([k]) => !String(cfg[k] || "").trim()).map((x) => x[1]);
   const docs = await db.prepare("SELECT COUNT(*) AS c FROM company_documents").first();
   if (!Number(docs?.c)) missing.push("at least one uploaded official company document (e.g. CAC certificate)");

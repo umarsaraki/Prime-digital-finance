@@ -242,7 +242,7 @@ function renderApp() {
   ).join("") || `<p class="tx-sub">No referred members yet.</p>`;
 
   // plans: only plans created in the admin panel
-  $("homeVipGrid").innerHTML = plans.length ? plans.slice(0, 6).map((p, i) => planCardHtml(p, i, vipLevel)).join("") : `<p class="tx-sub">No plans available yet.</p>`;
+  $("homeVipGrid").innerHTML = plans.length ? plans.map((p, i) => planCardHtml(p, i, vipLevel)).join("") : `<p class="tx-sub">No plans available yet.</p>`;
 
   // products: current plan
   $("prodDailyVal").textContent = usdt(siteSettings.checkin_reward);
@@ -306,7 +306,7 @@ function openPlan(lvl) {
   const perk = siteSettings.checkin_requires_vip !== "0" && Number(siteSettings.checkin_reward) > 0 ? `<div class="info-row"><span>Includes</span><strong>Daily check-in (${usdt(siteSettings.checkin_reward)})</strong></div>` : "";
   const earnOn = siteSettings.earnings_enabled === "1" && Number(p.daily_usdt) > 0;
   const earnRow = earnOn ? `<div class="info-row"><span>Daily earning</span><strong>${usdt(p.daily_usdt)}</strong></div>${Number(p.earn_total_limit) > 0 ? `<div class="info-row"><span>Total earning limit</span><strong>${usdt(p.earn_total_limit)}</strong></div>` : ""}` : "";
-  const earnNote = earnOn ? `<p class="tx-sub">Earnings are not guaranteed. They are paid only from the company's verified payout fund and may be pending or paused if funding is insufficient.</p>` : "";
+  const earnNote = earnOn ? `<p class="tx-sub">${escapeHtml(earnDisclaimer())}</p>` : "";
   $("planDetailBody").innerHTML = `
     <div class="dark-panel neon-green-box">
       <div class="info-row"><span>Price</span><strong>${usdt(p.price_usdt)}</strong></div>
@@ -365,6 +365,8 @@ function startCountdownTicker() {
 }
 
 /* ---------- daily earning (member) ---------- */
+const DEFAULT_EARN_NOTE = "Earnings are not guaranteed and are paid only from the company's verified payout fund.";
+function earnDisclaimer() { return String(siteSettings.earnings_disclaimer || "").trim() || DEFAULT_EARN_NOTE; }
 function earnNextAt() {
   const cv = currentVip; if (!cv) return 0;
   const freq = Math.max(1, Number(siteSettings.earnings_frequency_hours || 24)) * 3600000;
@@ -390,7 +392,7 @@ function renderEarnCard() {
   $("earnTotal").textContent = usdt(cv.earned_total) + (Number(cv.earn_limit) > 0 ? " / " + usdt(cv.earn_limit) : "");
   $("earnDays").textContent = `${Math.max(0, Math.ceil((end - Date.now()) / 86400000))} Days`;
   $("earnClaimBtn").classList.toggle("hidden", siteSettings.earnings_method !== "claim");
-  $("earnNote").textContent = "Earnings are not guaranteed. They are paid only from the company's verified payout fund and may be pending or paused if funding is insufficient. Only credited amounts appear in your balance and history.";
+  $("earnNote").textContent = earnDisclaimer();
   tickEarn();
 }
 function tickEarn() {
@@ -416,7 +418,7 @@ async function loadCompany() {
   const hasCore = String(p.company_legal_name || "").trim() || String(p.cac_number || "").trim();
   box.innerHTML = `<div class="dark-panel neon-gold-box" style="text-align:center;">${logo}<h3 class="panel-heading">${escapeHtml(p.company_legal_name || siteSettings.company_name || "Company")}</h3></div>
     ${hasCore ? "" : `<div class="dark-panel neon-green-box"><p class="tx-sub">The company has not published its registration details yet.</p></div>`}
-    <div class="dark-panel neon-green-box">${row("Registered name", p.company_legal_name)}${row("CAC registration no.", p.cac_number)}${row("Address", p.company_address)}${row("Phone", p.company_phone)}${row("E-mail", p.company_email)}${site}${row("Licences / approvals", p.license_info)}</div>
+    <div class="dark-panel neon-green-box">${row("Registered name", p.company_legal_name)}${row("Company registration no.", p.cac_number)}${row("Address", p.company_address)}${row("Phone", p.company_phone)}${row("E-mail", p.company_email)}${site}${row("Licences / approvals", p.license_info)}</div>
     ${sec("About", p.company_description)}${sec("Mission", p.company_mission)}${sec("Vision", p.company_vision)}${sec("Products & services", p.products_services)}${sec("How we operate", p.how_we_operate)}${sec("How the business earns revenue", p.revenue_model)}${sec("How VIP earnings are funded", p.earnings_funding)}
     ${(d.documents || []).length ? `<div class="dark-panel neon-green-box"><h3 class="panel-heading">Official documents</h3>${d.documents.map((x) => `<div class="tx-row"><div><strong>${escapeHtml(x.title)}</strong></div><a class="mini-action-btn" href="/media/${escapeHtml(x.file_key)}" target="_blank" rel="noopener noreferrer">Open</a></div>`).join("")}</div>` : ""}
     ${p.terms_text ? `<details class="dark-panel neon-green-box"><summary class="panel-heading">Terms and conditions</summary><p class="plan-desc">${escapeHtml(p.terms_text).replace(/\n/g, "<br />")}</p></details>` : ""}
@@ -531,13 +533,13 @@ async function logoutAllDevices() {
 }
 
 /* ---------- admin ---------- */
-const SETTING_FIELDS = { cfgCompanyName: "company_name", cfgBrandShort: "brand_short", cfgTagline: "tagline", cfgHeroTitle: "hero_title", cfgHeroSubtitle: "hero_subtitle", cfgAnnouncement: "announcement", cfgFaq: "faq_text", cfgDepositAddress: "deposit_address", cfgDepositNetwork: "deposit_network", cfgDepositMin: "deposit_min", cfgDepositMax: "deposit_max", cfgWithdrawMin: "withdraw_min", cfgWithdrawMax: "withdraw_max", cfgWithdrawFee: "withdraw_fee", cfgCheckinReward: "checkin_reward", cfgCheckinInterval: "checkin_interval_hours", cfgDepositInstructions: "deposit_instructions", cfgRegistrationOpen: "registration_open", cfgCheckinRequiresVip: "checkin_requires_vip", cfgDepositsEnabled: "deposits_enabled", cfgWithdrawalsEnabled: "withdrawals_enabled", cfgVipEnabled: "vip_purchases_enabled", cfgCheckinEnabled: "checkin_enabled", cfgMaintenance: "maintenance_mode", cfgMaintenanceMsg: "maintenance_message", cfgLegalName: "company_legal_name", cfgCac: "cac_number", cfgCompanyAddress: "company_address", cfgCompanyPhone: "company_phone", cfgCompanyEmail: "company_email", cfgCompanyWebsite: "company_website", cfgCompanyDesc: "company_description", cfgMission: "company_mission", cfgVision: "company_vision", cfgProducts: "products_services", cfgHowOperate: "how_we_operate", cfgRevenueModel: "revenue_model", cfgEarningsFunding: "earnings_funding", cfgLicense: "license_info", cfgTerms: "terms_text", cfgPrivacy: "privacy_text", cfgEarningsEnabled: "earnings_enabled", cfgEarningsMethod: "earnings_method", cfgEarningsFreq: "earnings_frequency_hours", cfgReferralEnabled: "referral_enabled", cfgReferralPercent: "referral_percent", cfgReferralManual: "referral_manual_approval", cfgReferralUpgrades: "referral_on_upgrades", cfgLiveChat: "live_chat_url", cfgTelegram: "telegram_url", cfgWhatsapp: "whatsapp_url" };
+const SETTING_FIELDS = { cfgCompanyName: "company_name", cfgBrandShort: "brand_short", cfgTagline: "tagline", cfgHeroTitle: "hero_title", cfgHeroSubtitle: "hero_subtitle", cfgAnnouncement: "announcement", cfgFaq: "faq_text", cfgDepositAddress: "deposit_address", cfgDepositNetwork: "deposit_network", cfgDepositMin: "deposit_min", cfgDepositMax: "deposit_max", cfgWithdrawMin: "withdraw_min", cfgWithdrawMax: "withdraw_max", cfgWithdrawFee: "withdraw_fee", cfgCheckinReward: "checkin_reward", cfgCheckinInterval: "checkin_interval_hours", cfgDepositInstructions: "deposit_instructions", cfgRegistrationOpen: "registration_open", cfgCheckinRequiresVip: "checkin_requires_vip", cfgDepositsEnabled: "deposits_enabled", cfgWithdrawalsEnabled: "withdrawals_enabled", cfgVipEnabled: "vip_purchases_enabled", cfgCheckinEnabled: "checkin_enabled", cfgMaintenance: "maintenance_mode", cfgMaintenanceMsg: "maintenance_message", cfgLegalName: "company_legal_name", cfgCac: "cac_number", cfgCompanyAddress: "company_address", cfgCompanyPhone: "company_phone", cfgCompanyEmail: "company_email", cfgCompanyWebsite: "company_website", cfgCompanyDesc: "company_description", cfgMission: "company_mission", cfgVision: "company_vision", cfgProducts: "products_services", cfgHowOperate: "how_we_operate", cfgRevenueModel: "revenue_model", cfgEarningsFunding: "earnings_funding", cfgLicense: "license_info", cfgTerms: "terms_text", cfgPrivacy: "privacy_text", cfgEarningsEnabled: "earnings_enabled", cfgEarningsMethod: "earnings_method", cfgEarningsFreq: "earnings_frequency_hours", cfgEarnDisclaimer: "earnings_disclaimer", cfgReferralEnabled: "referral_enabled", cfgReferralPercent: "referral_percent", cfgReferralManual: "referral_manual_approval", cfgReferralUpgrades: "referral_on_upgrades", cfgLiveChat: "live_chat_url", cfgTelegram: "telegram_url", cfgWhatsapp: "whatsapp_url" };
 const SETTING_GROUPS = {
   site: ["cfgCompanyName", "cfgBrandShort", "cfgTagline", "cfgHeroTitle", "cfgHeroSubtitle", "cfgAnnouncement", "cfgFaq"],
   pay: ["cfgDepositAddress", "cfgDepositNetwork", "cfgDepositMin", "cfgDepositMax", "cfgWithdrawMin", "cfgWithdrawMax", "cfgWithdrawFee", "cfgCheckinReward", "cfgCheckinInterval", "cfgDepositInstructions", "cfgCheckinRequiresVip"],
   global: ["cfgRegistrationOpen", "cfgDepositsEnabled", "cfgWithdrawalsEnabled", "cfgVipEnabled", "cfgCheckinEnabled", "cfgMaintenance", "cfgMaintenanceMsg"],
   company: ["cfgLegalName", "cfgCac", "cfgCompanyAddress", "cfgCompanyPhone", "cfgCompanyEmail", "cfgCompanyWebsite", "cfgCompanyDesc", "cfgMission", "cfgVision", "cfgProducts", "cfgHowOperate", "cfgRevenueModel", "cfgEarningsFunding", "cfgLicense", "cfgTerms", "cfgPrivacy"],
-  earn: ["cfgEarningsEnabled", "cfgEarningsMethod", "cfgEarningsFreq"],
+  earn: ["cfgEarningsEnabled", "cfgEarningsMethod", "cfgEarningsFreq", "cfgEarnDisclaimer"],
   ref: ["cfgReferralEnabled", "cfgReferralPercent", "cfgReferralManual", "cfgReferralUpgrades"],
   links: ["cfgLiveChat", "cfgTelegram", "cfgWhatsapp"]
 };
